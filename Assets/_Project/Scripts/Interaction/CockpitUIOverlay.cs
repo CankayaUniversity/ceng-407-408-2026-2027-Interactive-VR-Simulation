@@ -86,7 +86,7 @@ namespace Simulation.Interaction
             // Update bottom bar
             if (bottomTitleText != null)
             {
-                bottomTitleText.text = $"{data.id:02d}. {data.title}";
+                bottomTitleText.text = $"{data.id:D2}. {data.title}";
             }
 
             // Show and update detail card

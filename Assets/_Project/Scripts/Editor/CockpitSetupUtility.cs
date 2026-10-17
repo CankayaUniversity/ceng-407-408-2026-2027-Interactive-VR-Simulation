@@ -183,13 +183,13 @@ namespace Simulation.Editor
                 }
 
                 GameObject pinObj = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                pinObj.name = $"Pin_{i:02d}_{componentName}";
+                pinObj.name = $"Pin_{i:D2}_{componentName}";
                 pinObj.transform.parent = pinsRoot.transform;
                 pinObj.transform.position = pinPos;
                 pinObj.transform.localScale = Vector3.one * 0.055f;
 
                 // Load pin texture
-                string texPath = $"{PinsTextureFolder}/Pin_{i:02d}.png";
+                string texPath = $"{PinsTextureFolder}/Pin_{i:D2}.png";
                 Texture2D pinTex = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
                 Material pinMat = new Material(pinBaseMat);
                 if (pinTex != null)
