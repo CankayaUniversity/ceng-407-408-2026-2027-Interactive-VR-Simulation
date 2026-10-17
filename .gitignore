@@ -3,6 +3,7 @@
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
+[Dd]ata/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
 [Mm]emoryCaptures/
@@ -14,6 +15,8 @@
 *.sln
 *.suo
 *.tmp
+*.blend1
+*.blend1.meta
 *.user
 *.userprefs
 *.pidb
