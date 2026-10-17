@@ -188,7 +188,7 @@ namespace Simulation.Interaction
             return null;
         }
 
-        private void InitializeDefaultHotspots()
+        public void InitializeDefaultHotspots()
         {
             if (hotspots != null && hotspots.Count == 22) return;
 

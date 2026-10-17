@@ -135,6 +135,7 @@ namespace Simulation.Editor
             // 6. Setup Manager
             GameObject managerObj = new GameObject("CockpitInspectionManager");
             CockpitInspectionManager manager = managerObj.AddComponent<CockpitInspectionManager>();
+            manager.InitializeDefaultHotspots();
             manager.targetCamera = Camera.main;
             Undo.RegisterCreatedObjectUndo(managerObj, "Create Cockpit Inspection Manager");
 
