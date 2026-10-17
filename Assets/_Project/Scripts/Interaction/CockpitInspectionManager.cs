@@ -24,6 +24,8 @@ namespace Simulation.Interaction
         [Header("Overview Views (World Space relative to Cockpit)")]
         public Vector3 overviewEyeOffset = new Vector3(0.0f, 0.94f, -0.65f); // Between pilot seats at eye level
         public Vector3 overviewLookAtOffset = new Vector3(0.0f, 0.92f, 0.65f); // Looking forward at dashboard center
+        public Vector3 defaultOverviewPos { get => overviewEyeOffset; set => overviewEyeOffset = value; }
+        public Vector3 defaultOverviewLookAt { get => overviewLookAtOffset; set => overviewLookAtOffset = value; }
         public float defaultOverviewFOV = 68f;
 
         [Header("Hotspot Database")]
@@ -92,7 +94,7 @@ namespace Simulation.Interaction
         private void DisableConflictingControllers()
         {
             // Disable DesktopPlayerController if present so it doesn't fight the inspection camera
-            var playerControllers = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+            var playerControllers = FindObjectsByType<MonoBehaviour>();
             foreach (var mb in playerControllers)
             {
                 if (mb == null) continue;
