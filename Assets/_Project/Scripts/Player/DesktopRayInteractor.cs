@@ -36,7 +36,10 @@ namespace Simulation.Player
 
             PerformRaycast();
 
-            if (currentTarget != null && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+            bool ePressed = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
+            bool leftClickPressed = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && Cursor.lockState == CursorLockMode.Locked;
+
+            if (currentTarget != null && (ePressed || leftClickPressed))
             {
                 if (currentTarget.CanInteract(context))
                 {

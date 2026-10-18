@@ -14,6 +14,13 @@ namespace Simulation.WebBridge
         [DllImport("__Internal")]
         private static extern void SendSimulationResultToWeb(string jsonPayload);
 
+        public static WebBridgeService Instance { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+        }
+
         private void Start()
         {
             #if UNITY_WEBGL && !UNITY_EDITOR
@@ -21,6 +28,19 @@ namespace Simulation.WebBridge
             #else
             Debug.Log("[WebBridge Mock -> Web] Unity Simulation Ready!");
             #endif
+        }
+
+        public static void ReportStepCompletedStatic(string stepId, bool isSuccess, float timeSpent)
+        {
+            if (Instance != null)
+            {
+                Instance.ReportStepCompleted(stepId, isSuccess, timeSpent);
+            }
+            else
+            {
+                string json = $"{{\"stepId\":\"{stepId}\",\"isSuccess\":{isSuccess.ToString().ToLower()},\"timeSpent\":{timeSpent:F2}}}";
+                Debug.Log($"[WebBridge Mock -> Web] Step Completed: {json}");
+            }
         }
 
         public void ReportStepCompleted(string stepId, bool isSuccess, float timeSpent)

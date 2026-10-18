@@ -16,18 +16,9 @@ namespace Simulation.Editor
         private const string ScenePath = "Assets/_Project/Scenes/02_TrainingLab.unity";
         private const string PinsTextureFolder = "Assets/_Project/Art/Textures/Cockpit/Pins";
 
-        [InitializeOnLoadMethod]
-        private static void AutoRunOnEditorLoad()
-        {
-            EditorApplication.delayCall += () =>
-            {
-                if (GameObject.Find("Helicopter_Cockpit_Modular") == null || GameObject.Find("CockpitInspectionManager") == null)
-                {
-                    Debug.Log("[CockpitSetup] Auto-executing ReplacePlaceholder()...");
-                    ReplacePlaceholder();
-                }
-            };
-        }
+        // [InitializeOnLoadMethod]
+        // private static void AutoRunOnEditorLoad()
+        // { ... }
 
         [MenuItem("Simulation/Replace Placeholder With Modular Cockpit")]
         public static void ReplacePlaceholder()
