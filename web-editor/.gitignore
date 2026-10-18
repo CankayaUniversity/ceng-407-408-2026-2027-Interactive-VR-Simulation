@@ -1,0 +1,53 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local environment variables (commit only an example without secrets)
+.env
+.env.*
+!.env.example
+
+# Test and TypeScript build output
+coverage/
+# Üçüncü taraf modeller lisans incelemesi olmadan sürümlenmez.
+public/environments/**/*.glb
+public/boeing_737-800_cockpit.glb
+*.tsbuildinfo
+
+# Yerel araç/cache çıktıları; ekip yayın listesine dahil edilmez.
+.codex/
+.agents/
+.cache/
+tmp/
+temp/
+*.tmp
+
+# Asset dağıtımı ayrı lisans/ekip onayı gerektirir (docs/ASSETS.md).
+public/**/*.glb
+public/**/*.gltf
+public/**/*.fbx
+public/**/*.blend
+public/**/*.bin
+public/guides/wisp/
+public/previews/environments/*.jpg

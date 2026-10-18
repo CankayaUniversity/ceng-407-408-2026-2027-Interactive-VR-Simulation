@@ -1,0 +1,16 @@
+node_modules
+dist
+dist-ssr
+.git
+.env
+.env.*
+!.env.example
+*.local
+*.log
+logs
+coverage
+*.tsbuildinfo
+.vscode
+.idea
+.codex
+.agents

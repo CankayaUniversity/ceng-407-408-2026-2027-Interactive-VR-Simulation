@@ -1,0 +1,56 @@
+import { useEffect, useRef, useState } from 'react'
+import type { EnvironmentEditorState } from './useEnvironmentEditor'
+import { HotspotInfoCard } from './HotspotInfoCard'
+
+export function HotspotPanel({ editor }: { editor: EnvironmentEditorState }) {
+  const heading = useRef<HTMLHeadingElement>(null)
+  const item = editor.draft ?? editor.selected
+  const itemId = item?.id
+  useEffect(() => { if (itemId) heading.current?.focus() }, [itemId])
+  if (!item) return null
+  if (editor.mode === 'preview') return <HotspotInfoCard hotspot={item} zoneTitle={item.zoneId ? editor.data.zones.find(zone => zone.id === item.zoneId)?.title ?? 'Unavailable zone (saved reference)' : undefined} onClose={editor.closePanel} />
+  return <section className="hotspot-panel" aria-labelledby="hotspot-panel-title">
+    <div className="hotspot-panel-heading">
+      <h2 id="hotspot-panel-title" tabIndex={-1} ref={heading}>{editor.draft ? (editor.selected ? 'Edit hotspot' : 'New hotspot · draft') : item.title}</h2>
+      <button className="text-button" onClick={editor.closePanel} aria-label="Close hotspot information">Close ×</button>
+    </div>
+    {editor.draft && editor.editable ? <form onSubmit={event => { event.preventDefault(); editor.saveHotspot() }}>
+      <label>Hotspot title<input autoComplete="off" maxLength={100} required value={editor.draft.title} onChange={event => editor.setDraft({ ...editor.draft!, title: event.target.value })} />
+      </label>
+      <label>Training information<textarea maxLength={2000} rows={4} value={editor.draft.description} onChange={event => editor.setDraft({ ...editor.draft!, description: event.target.value })} />
+      </label>
+      <label>Inspection zone (optional)<select value={editor.draft.zoneId ?? ''} onChange={event => {
+        const { zoneId: _zoneId, ...rest } = editor.draft!
+        editor.setDraft(event.target.value ? { ...rest, zoneId: event.target.value } : rest)
+      }}>
+        <option value="">No zone</option>{editor.draft.zoneId && !editor.data.zones.some(zone => zone.id === editor.draft?.zoneId) && <option value={editor.draft.zoneId}>Unavailable zone (saved reference)</option>}{editor.data.zones.map(zone => <option key={zone.id} value={zone.id}>{zone.title}</option>)}</select>
+      </label>
+      <p className="editor-help">Marker position is model-local. Save confirms placement; Cancel discards this draft.</p>
+      <div className="hotspot-panel-actions">
+        <button className="primary-button" type="submit" disabled={!editor.draft.title.trim()}>Save hotspot</button>
+        <button className="secondary-button" type="button" onClick={editor.closePanel}>Cancel</button>{editor.selected && <button className="text-button delete-action" type="button" onClick={editor.deleteHotspot}>Delete hotspot</button>}</div>
+    </form> : <>
+      <p className="hotspot-description">{item.description || 'No training information has been added.'}</p>{item.zoneId && <p className="editor-help">Zone: {editor.data.zones.find(zone => zone.id === item.zoneId)?.title ?? 'Unavailable zone (saved reference)'}</p>}</>}
+  </section>
+}
+
+export function ZoneCalibration({ editor, ready, transitioning, expanded = false }: { editor: EnvironmentEditorState; ready: boolean; transitioning: boolean; expanded?: boolean }) {
+  const [title, setTitle] = useState('')
+  const [reviewed, setReviewed] = useState(false)
+  if (editor.mode !== 'editor') return null
+  return <details className="zone-calibration" open={expanded || undefined}>
+    <summary>Save current view as an inspection zone</summary>
+    <p>Developer calibration: use Spectator Mode, drag, wheel zoom or Camera calibration to frame real geometry. Save captures the actual current pose. No close-up poses are provided automatically. Review both the destination and travel path. Straight paths through geometry are blocked, but this is not a complete collision guarantee.</p>
+    <form onSubmit={event => { event.preventDefault(); if (editor.saveZone(title, reviewed)) { setTitle(''); setReviewed(false) } }}>
+      <label>Zone title<input maxLength={100} required value={title} onChange={event => setTitle(event.target.value)} placeholder="Your reviewed view" />
+      </label>
+      <label className="checkbox-label">
+        <input type="checkbox" checked={reviewed} onChange={event => setReviewed(event.target.checked)} />I visually reviewed this camera pose. I will test the full transition before training use.</label>
+      <button className="secondary-button" type="submit" disabled={!editor.editable || !ready || transitioning || !reviewed || !title.trim()}>Save current view</button>
+    </form>
+    {editor.data.zones.length > 0 && <ul className="zone-management">{editor.data.zones.map(zone => <li key={zone.id}>
+      <span>{zone.title}</span>
+      <button className="text-button delete-action" disabled={!editor.editable || transitioning} onClick={() => editor.deleteZone(zone.id)} aria-label={`Delete zone ${zone.title}`}>Delete zone</button>
+    </li>)}</ul>}
+  </details>
+}
