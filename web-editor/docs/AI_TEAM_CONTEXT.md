@@ -9,7 +9,7 @@ React 19, strict TypeScript 6, Vite 8, Babylon 9, npm/lock; Node 24 ekip standar
 - src/main.tsx → src/app/App.tsx: bellek içi gezinme, Dashboard/proje/ortam.
 - src/features/projects/: Dashboard ve localStorage CRUD; proje workspace'i placeholder.
 - src/features/environments/: types/registry, ortak BabylonViewport, editor state/storage, navigation/kamera yardımcıları, paneller.
-- src/styles/: mevcut Obsidian/Acid tasarım.
+- src/styles/: Studio Neutral tasarım; kesin token ve ölçüler DESIGN.md içinde.
 - public/environments/: lisanslı yerel GLB'ler Git'ten hariç; docs/ASSETS.md.
 - tests/: Node çekirdek testleri; scripts/inspect-glb.mjs asset incelemesi.
 

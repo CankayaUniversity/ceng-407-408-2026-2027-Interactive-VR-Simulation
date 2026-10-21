@@ -79,9 +79,9 @@ Spectator kapatma, navigation, placement, Editor→Preview, blur/gizlenme, unmou
 
 ## Editor Workspace V2 ve çoklu ortam
 
-EnvironmentWorkspace aynı BabylonViewport'u tam yükseklikte açar. Top toolbar, tool rail, Scene Explorer, merkez viewport ve contextual Inspector vardır. Search gerçek zone/hotspot başlıklarını filtreler; listeler mevcut editor.goToZone/select eylemlerine bağlanır. Sağ panel hotspot formunu, seçili zone'un gerçek pose bilgisini veya ortam bilgisini gösterir. Save Current View rail kısayoluyla erişilir; Advanced Camera Calibration kapalı details altındadır. Preview edit kontrollerini gizler ve önceki HotspotInfoCard'ı viewport overlay olarak korur.
+EnvironmentWorkspace aynı BabylonViewport'u tam yükseklikte açar. Kompakt başlık, tek gruplu görev toolbar'ı, Scene Explorer, merkez viewport ve başlangıçta kapalı contextual Inspector vardır. Search gerçek zone/hotspot başlıklarını filtreler; listeler mevcut editor.goToZone/select eylemlerine bağlanır. Sağ panel hotspot formunu veya görünüm kaydını/özelliklerini eylem bağlamında gösterir; teknik pose/ortam bilgisi ve Advanced Camera Calibration ayrı details altındadır. Save view ve Add hotspot görünür metinli araçlardır. Preview authoring araçlarını gizler; HotspotInfoCard viewport overlay olarak kalır.
 
-CSS yalnız editor-v2 kapsamındadır. Desktop body kaymaz; paneller kendi içinde kayar. 1000px ve altında tek seferde bir drawer açılır. Canvas JSX ağacında sabit kalır; panel, mod veya arama değişimi engine effect dependency'lerini değiştirmez. ResizeObserver mevcut engine.resize çağrısını sürdürür. Fullscreen gerçek tarayıcı API'sine bağlıdır.
+CSS yalnız editor-v2 kapsamındadır. Desktop body kaymaz; paneller kendi içinde kayar. 1200px ve altında tek seferde bir drawer açılır. Canvas JSX ağacında sabit kalır; panel, mod veya arama değişimi engine effect dependency'lerini değiştirmez. Picking callback'i mevcut place eylemini çağırdıktan sonra yalnız UI Inspector'ını açar. ResizeObserver mevcut engine.resize çağrısını sürdürür. Fullscreen gerçek tarayıcı API'sine bağlıdır.
 
 App'in mevcut bellek içi gezinmesi ortam anahtarını taşır. EnvironmentWorkspace key'i ortam kimliğine bağlıdır; çıkışta observer/input/controller/scene/engine dispose olur. Yeni ortamda useEnvironmentEditor ayrı başlangıç kaydı yükler. Proje CRUD ve localStorage anahtarı değişmez.
 

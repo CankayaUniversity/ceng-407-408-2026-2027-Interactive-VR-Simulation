@@ -1,23 +1,26 @@
-/* Design System V1. Card and dialog structure remains from the first iteration. */
+/* Studio Neutral: shared semantic colors and interface sizing. */
 :root {
   color-scheme: dark;
-  --color-bg: #111216;
-  --color-surface: #22242A;
-  --color-hover: #2c2f36;
-  --color-text: #F1F0E9;
-  --color-muted: #a7a8b0;
-  --color-line: #3a3c44;
-  --color-accent: #D8F36B;
-  --color-accent-text: #111216;
+  --color-bg: #111318;
+  --color-surface: #1c2028;
+  --color-hover: #282d37;
+  --color-text: #f3f5f8;
+  --color-muted: #aeb6c3;
+  --color-line: #353b47;
+  --color-accent: #6699ff;
+  --color-accent-text: #0b1425;
+  --color-accent-hover: #85adff;
+  --color-accent-soft: #20304d;
+  --color-accent-line: #527fc8;
   --color-danger: #efaba3;
-  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-headline: 'Space Grotesk', 'Inter', sans-serif;
-  --font-editorial: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-headline: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-editorial: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
   --motion-duration: 160ms;
   --motion-easing: ease-out;
   --font-label: ui-monospace, 'Cascadia Code', monospace;
-  --text-small: .78rem;
-  --text-body: .94rem;
+  --text-small: .8125rem;
+  --text-body: .9375rem;
   --text-title: clamp(2.5rem, 5vw, 4.5rem);
   --space-1: .5rem;
   --space-2: 1rem;
@@ -25,17 +28,23 @@
   --space-4: 2rem;
   --space-5: 3rem;
   --space-6: 5rem;
-  --radius: .4rem;
+  --radius: 6px;
   font-family: var(--font-body);
   color: var(--color-text);
   background: var(--color-bg);
   font-synthesis: none;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { margin: 0; }
 button, input, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; color: inherit; }
+button svg { flex-shrink: 0; }
+::selection { background: var(--color-accent); color: var(--color-accent-text); }
+input, textarea { caret-color: var(--color-accent); }
+/* A transform would make the stretched card hit target relative to its small title button. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) { button:not(:disabled):not(.home-environment-open):active { transform: translateY(1px); } }
 button:disabled { opacity: .4; cursor: not-allowed; }
 button, a, input, textarea { outline-offset: 5px; }
 :focus-visible { outline: 2px solid var(--color-accent); }

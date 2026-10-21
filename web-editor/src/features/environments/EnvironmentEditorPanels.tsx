@@ -19,16 +19,16 @@ export function HotspotPanel({ editor }: { editor: EnvironmentEditorState }) {
       </label>
       <label>Training information<textarea maxLength={2000} rows={4} value={editor.draft.description} onChange={event => editor.setDraft({ ...editor.draft!, description: event.target.value })} />
       </label>
-      <label>Inspection zone (optional)<select value={editor.draft.zoneId ?? ''} onChange={event => {
+      <label>Inspection view (optional)<select value={editor.draft.zoneId ?? ''} onChange={event => {
         const { zoneId: _zoneId, ...rest } = editor.draft!
         editor.setDraft(event.target.value ? { ...rest, zoneId: event.target.value } : rest)
       }}>
-        <option value="">No zone</option>{editor.draft.zoneId && !editor.data.zones.some(zone => zone.id === editor.draft?.zoneId) && <option value={editor.draft.zoneId}>Unavailable zone (saved reference)</option>}{editor.data.zones.map(zone => <option key={zone.id} value={zone.id}>{zone.title}</option>)}</select>
+        <option value="">No inspection view</option>{editor.draft.zoneId && !editor.data.zones.some(zone => zone.id === editor.draft?.zoneId) && <option value={editor.draft.zoneId}>Unavailable view (saved reference)</option>}{editor.data.zones.map(zone => <option key={zone.id} value={zone.id}>{zone.title}</option>)}</select>
       </label>
-      <p className="editor-help">Marker position is model-local. Save confirms placement; Cancel discards this draft.</p>
+      <p className="editor-help">Save keeps this hotspot and its surface position. Cancel discards your changes.</p>
       <div className="hotspot-panel-actions">
         <button className="primary-button" type="submit" disabled={!editor.draft.title.trim()}>Save hotspot</button>
-        <button className="secondary-button" type="button" onClick={editor.closePanel}>Cancel</button>{editor.selected && <button className="text-button delete-action" type="button" onClick={editor.deleteHotspot}>Delete hotspot</button>}</div>
+        <button className="secondary-button" type="button" onClick={editor.closePanel}>Cancel</button></div>{editor.selected && <details className="v2-danger-section"><summary>Delete this hotspot</summary><p>Permanently removes this hotspot and its training information. This cannot be undone.</p><button className="danger-button" type="button" onClick={editor.deleteHotspot}>Delete hotspot</button></details>}
     </form> : <>
       <p className="hotspot-description">{item.description || 'No training information has been added.'}</p>{item.zoneId && <p className="editor-help">Zone: {editor.data.zones.find(zone => zone.id === item.zoneId)?.title ?? 'Unavailable zone (saved reference)'}</p>}</>}
   </section>
@@ -39,15 +39,16 @@ export function ZoneCalibration({ editor, ready, transitioning, expanded = false
   const [reviewed, setReviewed] = useState(false)
   if (editor.mode !== 'editor') return null
   return <details className="zone-calibration" open={expanded || undefined}>
-    <summary>Save current view as an inspection zone</summary>
-    <p>Developer calibration: use Spectator Mode, drag, wheel zoom or Camera calibration to frame real geometry. Save captures the actual current pose. No close-up poses are provided automatically. Review both the destination and travel path. Straight paths through geometry are blocked, but this is not a complete collision guarantee.</p>
+    <summary>Save an inspection view</summary>
+    <p>Frame the equipment with drag and zoom, or use Spectator to move. Save captures your current camera angle.</p>
     <form onSubmit={event => { event.preventDefault(); if (editor.saveZone(title, reviewed)) { setTitle(''); setReviewed(false) } }}>
-      <label>Zone title<input maxLength={100} required value={title} onChange={event => setTitle(event.target.value)} placeholder="Your reviewed view" />
+      <label>View title<input maxLength={100} required value={title} onChange={event => setTitle(event.target.value)} placeholder="Name this camera view" />
       </label>
       <label className="checkbox-label">
         <input type="checkbox" checked={reviewed} onChange={event => setReviewed(event.target.checked)} />I visually reviewed this camera pose. I will test the full transition before training use.</label>
       <button className="secondary-button" type="submit" disabled={!editor.editable || !ready || transitioning || !reviewed || !title.trim()}>Save current view</button>
     </form>
+    <details className="v2-review-note"><summary>Before training use</summary><p>Test the destination and the complete camera transition. Paths have limited geometry checks, not full collision protection. Camera scale is provisional.</p></details>
     {editor.data.zones.length > 0 && <ul className="zone-management">{editor.data.zones.map(zone => <li key={zone.id}>
       <span>{zone.title}</span>
       <button className="text-button delete-action" disabled={!editor.editable || transitioning} onClick={() => editor.deleteZone(zone.id)} aria-label={`Delete zone ${zone.title}`}>Delete zone</button>

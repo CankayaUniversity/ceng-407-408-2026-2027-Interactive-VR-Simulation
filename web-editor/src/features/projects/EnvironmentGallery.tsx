@@ -20,9 +20,8 @@ function EnvironmentCard({ definition, onOpen }: { definition: SceneDefinition; 
     </div>
     <div className="home-environment-body">
       <div className="home-environment-copy">
-        <p className="home-label">{definition.navigationMode === 'seated' ? 'Seated inspection' : 'Walking prototype'}</p>
         <h2><button className="home-environment-open" onClick={onOpen} aria-label={`Open ${definition.displayName}`}>{definition.displayName}</button></h2>
-        <p className="home-environment-description">{definition.navigationMode === 'seated' ? 'Explore the cockpit, inspection views and saved annotations.' : 'Explore the room with flat-floor prototype navigation.'}</p>
+        <p className="home-environment-description">{definition.navigationMode === 'seated' ? 'Seated inspection · Views and equipment hotspots' : 'Walking prototype · Flat floor, no equipment collision'}</p>
       </div>
       <span className="home-open-action" aria-hidden="true">Open environment <span>↗</span></span>
     </div>

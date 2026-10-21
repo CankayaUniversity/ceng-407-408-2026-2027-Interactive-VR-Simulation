@@ -1,0 +1,14 @@
+.simulation-preparation{position:fixed;inset:0;z-index:30;overflow:hidden;background:#090f1c;color:#efdfc6;font-family:'Segoe UI Light','Segoe UI',sans-serif;font-weight:300;--breath-x:0px;--breath-y:0px}
+.preparation-background{position:absolute;inset:-36px;background-position:center 58%;background-size:cover;filter:blur(8px) saturate(.35);opacity:.27;transform:scale(1.02)}
+.preparation-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 46%,#0c152448 0%,#090f1ca8 53%,#070d19ed 100%)}
+.preparation-breath{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;transform:translateY(-10px)}
+.preparation-light{position:relative;width:280px;height:280px;display:grid;place-items:center;transform:translate(var(--breath-x),var(--breath-y));margin-bottom:38px}
+.preparation-halo{position:absolute;inset:-100px;border-radius:50%;background:radial-gradient(circle,#dc9e411b 0%,#d3953520 16%,#bc80300d 38%,#bd802600 66%);animation:preparation-halo 10s both}
+.preparation-sphere{width:108px;height:108px;border-radius:50%;background:radial-gradient(circle at 45% 41%,#fff0c9 0%,#f4d093 21%,#e9b96d 48%,#ca8d3d8a 70%,#a66f2500 76%);filter:blur(2px);animation:preparation-sphere 10s both}
+.preparation-corona{position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,#edc7811a 13%,#e1a84426 36%,#bd7c2900 70%);filter:blur(9px);animation:preparation-corona 10s both}
+.preparation-breath h1{position:absolute;top:calc(50% + 97px);left:0;right:0;margin:0;padding:0 22px;text-align:center;font-size:clamp(26px,3vw,36px);font-weight:300;line-height:1.5;letter-spacing:.18em;text-indent:.18em;color:#efdfc6}
+@keyframes preparation-sphere{0%,100%{transform:scale(.78);opacity:.45;animation-timing-function:ease-in-out}40%{transform:scale(1.36);opacity:.95;animation-timing-function:ease-in-out}}
+@keyframes preparation-halo{0%,100%{transform:scale(.8);opacity:.4;animation-timing-function:ease-in-out}40%{transform:scale(1.2);opacity:1;animation-timing-function:ease-in-out}}
+@keyframes preparation-corona{0%,100%{transform:scale(.85);opacity:.3;animation-timing-function:ease-in-out}40%{transform:scale(1.25);opacity:.8;animation-timing-function:ease-in-out}}
+@media(max-height:500px){.preparation-breath{transform:translateY(-10px) scale(.75)}}
+@media(prefers-reduced-motion:reduce){.preparation-light{transform:none}.preparation-sphere,.preparation-halo,.preparation-corona{animation:none;opacity:.7;transform:none}}

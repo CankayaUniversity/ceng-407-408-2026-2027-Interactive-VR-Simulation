@@ -16,7 +16,8 @@ import { HotspotPanel, ZoneCalibration } from './EnvironmentEditorPanels'
 import { isCameraPose } from './editorStorage'
 import { pitchLimit, poseOrientation, setOrientation } from './cameraOrientation'
 import { defaultInspector } from './inspectorNavigation'
-import { EnvironmentInfo, SceneExplorer, ZoneInspector } from './WorkspacePanels'
+import { AuthoringHelp, EnvironmentInfo, SceneExplorer, ZoneInspector } from './WorkspacePanels'
+import { WorkspaceIcon } from './WorkspaceIcon'
 
 interface ViewportProps {
   definition: SceneDefinition
@@ -28,8 +29,8 @@ type LoadState = { phase: 'loading' | 'ready' | 'error'; message: string; progre
 
 export function BabylonViewport({ definition, headingRef, onBack }: ViewportProps) {
   const workspaceRef = useRef<HTMLElement>(null)
-  const [explorerOpen, setExplorerOpen] = useState(() => !window.matchMedia('(max-width: 1000px)').matches)
-  const [inspectorOpen, setInspectorOpen] = useState(() => !window.matchMedia('(max-width: 1000px)').matches)
+  const [explorerOpen, setExplorerOpen] = useState(() => !window.matchMedia('(max-width: 1200px)').matches)
+  const [inspectorOpen, setInspectorOpen] = useState(false)
   const [inspectorTab, setInspectorTab] = useState<'environment' | 'zone' | 'save'>('environment')
   const [zoneId, setZoneId] = useState<string | null>(null)
   const [fullscreen, setFullscreen] = useState(false)
@@ -133,7 +134,13 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
         await scene.whenReadyAsync()
         if (disposed) return
         viewer.current = createViewerInteraction(scene, camera, modelRoot, canvas, definition.interaction ?? defaultInteraction, {
-          place: (position, targetNode) => editorRef.current.place(position, targetNode),
+          place: (position, targetNode) => {
+            if (disposed) return
+            editorRef.current.place(position, targetNode)
+            setInspectorTab('environment')
+            setInspectorOpen(true)
+            if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false)
+          },
           message: message => editorRef.current.setMessage(message),
           transitioning: active => { if (!disposed) setTransitioning(active) },
           inspectorChanged: enabled => { if (!disposed) setInspector(enabled) },
@@ -210,20 +217,20 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
   }, [])
 
   useEffect(() => {
-    const narrow = window.matchMedia('(max-width: 1000px)')
-    const update = () => { setExplorerOpen(!narrow.matches); setInspectorOpen(!narrow.matches) }
+    const narrow = window.matchMedia('(max-width: 1200px)')
+    const update = () => { setExplorerOpen(!narrow.matches); if (narrow.matches) setInspectorOpen(false) }
     narrow.addEventListener('change', update)
     return () => narrow.removeEventListener('change', update)
   }, [])
 
   function revealInspector(tab: 'environment' | 'zone' | 'save') {
     setInspectorTab(tab); setInspectorOpen(true)
-    if (window.matchMedia('(max-width: 1000px)').matches) setExplorerOpen(false)
+    if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false)
   }
   function selectHotspot(id: string) {
     setInspectorTab('environment')
     if (editor.mode === 'editor') revealInspector('environment')
-    else if (window.matchMedia('(max-width: 1000px)').matches) setExplorerOpen(false)
+    else if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false)
     void editor.select(id)
   }
   const selectedZone = editor.data.zones.find(zone => zone.id === zoneId)
@@ -231,58 +238,51 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
   const editing = editor.mode === 'editor'
   return <section ref={workspaceRef} className={`editor-v2 ${editing ? 'is-editing' : 'is-preview'}`} data-explorer={explorerOpen} data-inspector={inspectorOpen} aria-labelledby="environment-heading">
     <header className="v2-topbar">
-      <button className="v2-brand" onClick={onBack} aria-label="Workplace Studio dashboard">
-        <span aria-hidden="true">W</span>
-      </button>
-      <div className="v2-breadcrumb">
-        <span>WORKPLACE STUDIO / ENVIRONMENTS</span>
-        <h1 id="environment-heading" ref={headingRef} tabIndex={-1}>{definition.displayName}</h1>
-      </div>
+      <button className="v2-back" onClick={onBack} aria-label="Back to environments"><WorkspaceIcon name="back" /><span>Environments</span></button>
+      <div className="v2-breadcrumb"><h1 id="environment-heading" ref={headingRef} tabIndex={-1}>{definition.displayName}</h1></div>
       <div className="mode-switch" role="group" aria-label="Interaction mode">
-        <button id="environment-mode-preview" aria-pressed={!editing} onClick={() => { editor.changeMode('preview'); setInspectorTab('environment') }}>Preview</button>
+        <button id="environment-mode-preview" aria-pressed={!editing} onClick={() => { editor.changeMode('preview'); setInspectorTab('environment'); setInspectorOpen(false) }}>Preview</button>
         <button aria-pressed={editing} onClick={() => editor.changeMode('editor')}>Editor</button>
       </div>
       <div className="v2-top-actions">
-        <button disabled={!ready} onClick={editor.reset}>Reset Camera</button>
+        <button id="v2-explorer-toggle" aria-expanded={explorerOpen} aria-controls="v2-explorer" onClick={() => { setExplorerOpen(value => !value); if (window.matchMedia('(max-width: 1200px)').matches) setInspectorOpen(false) }}>Scene Explorer</button>
+        <button id="v2-inspector-toggle" aria-expanded={inspectorOpen} aria-controls="v2-inspector" onClick={() => { setInspectorOpen(value => !value); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }}>{editing ? 'Inspector' : 'Details'}</button>
         {document.fullscreenEnabled && <button aria-pressed={fullscreen} onClick={async () => {
           try { if (document.fullscreenElement === workspaceRef.current) await document.exitFullscreen(); else await workspaceRef.current?.requestFullscreen() }
           catch { setInteractionError('Fullscreen is unavailable in this browser.') }
         }}>{fullscreen ? 'Exit fullscreen' : 'Fullscreen'}</button>}
-        <button onClick={onBack}>← Back to Dashboard</button>
+
       </div>
     </header>
-    <div className="v2-panel-controls">
-      <button id="v2-explorer-toggle" aria-expanded={explorerOpen} aria-controls="v2-explorer" onClick={() => { setExplorerOpen(value => !value); if (window.matchMedia('(max-width: 1000px)').matches) setInspectorOpen(false) }}>Scene Explorer</button>
-      <span>{editing ? 'Editor workspace' : 'Read-only preview'}</span>
-      <button id="v2-inspector-toggle" aria-expanded={inspectorOpen} aria-controls="v2-inspector" onClick={() => { setInspectorOpen(value => !value); if (window.matchMedia('(max-width: 1000px)').matches) setExplorerOpen(false) }}>Inspector</button>
-    </div>
-    <div className="v2-body">
+    <div className="v2-toolbar">
       <nav className="v2-toolrail" aria-label="Workspace tools">
-        <button title="Selection tool" aria-label="Selection tool" aria-pressed={!inspector && !walking && !editor.placing} onClick={() => { editor.closePanel(); revealInspector('environment') }}>↖</button>
+        <button title="Selection tool" aria-label="Selection tool" aria-pressed={!inspector && !walking && !editor.placing && !(inspectorTab === 'save' && inspectorOpen)} onClick={() => { editor.closePanel(); setZoneId(null); setInspectorOpen(false) }}><WorkspaceIcon name="select" />Select</button>
         {editing && <>
-          <button title="Spectator Mode" aria-label={inspector ? 'Exit Spectator' : 'Spectator Mode'} aria-pressed={inspector} disabled={!ready || transitioning || editor.placing} onClick={() => { const enabled = viewer.current?.isInspectorEnabled(); editor.cancelNavigation(); viewer.current?.setInspector(!enabled) }}>⌁</button>
-          <button title="Add Hotspot" aria-label="Add hotspot" aria-pressed={editor.placing} disabled={!ready || transitioning || !editor.editable || editor.data.hotspots.length >= 100} onClick={() => { editor.startPlacement(); revealInspector('environment') }}>⊙</button>
-          <button title="Save Current View" aria-label="Save Current View" disabled={!ready || transitioning || !editor.editable} aria-pressed={inspectorTab === 'save' && inspectorOpen} onClick={() => { editor.closePanel(); revealInspector('save') }}>▣</button>
+          <button title="Spectator Mode" aria-label={inspector ? 'Exit Spectator' : 'Spectator Mode'} aria-pressed={inspector} disabled={!ready || transitioning || editor.placing} onClick={() => { const enabled = viewer.current?.isInspectorEnabled(); editor.cancelNavigation(); viewer.current?.setInspector(!enabled) }}><WorkspaceIcon name="move" />{inspector ? 'Exit Spectator' : 'Spectator'}</button>
+          <button title="Add Hotspot" aria-label="Add hotspot" aria-pressed={editor.placing} disabled={!ready || transitioning || !editor.editable || editor.data.hotspots.length >= 100} onClick={() => { editor.startPlacement(); setInspectorOpen(false); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }}><WorkspaceIcon name="hotspot" />{editor.placing ? 'Placing hotspot…' : 'Add hotspot'}</button>
+          <button title="Save Current View" aria-label="Save Current View" disabled={!ready || transitioning || !editor.editable} aria-pressed={inspectorTab === 'save' && inspectorOpen} onClick={() => { editor.closePanel(); revealInspector('save') }}><WorkspaceIcon name="view" />Save view</button>
         </>}
       </nav>
-      <aside className="v2-explorer v2-panel" id="v2-explorer" aria-label="Scene Explorer">
-        <div className="v2-panel-heading">
-          <h2>Scene Explorer</h2>
-          <button aria-label="Close Scene Explorer" onClick={() => { setExplorerOpen(false); document.getElementById('v2-explorer-toggle')?.focus() }}>×</button>
-        </div>
-        <div className="v2-panel-scroll">
-          <SceneExplorer editor={editor} ready={ready} onZone={id => { setZoneId(id); revealInspector('zone'); void editor.goToZone(id) }} onHotspot={selectHotspot} />
-        </div>
-      </aside>
-      <section className="v2-stage" aria-label="Environment viewport">
-        <div className="v2-viewbar">
-          <span>
-            <i /> {editing ? 'EDITOR' : 'PREVIEW'} / {definition.navigationMode}</span>
-          <div>{!editing && definition.navigationMode === 'walking' && <button aria-pressed={walking} disabled={!ready || transitioning} onClick={() => { const enabled = viewer.current?.isWalkingEnabled(); editor.cancelNavigation(); viewer.current?.setWalking(!enabled) }}>{walking ? 'Stop walking' : 'Start walking'}</button>}<button disabled={!ready} onClick={editor.overview}>Back to Overview</button>
-            <button disabled={!ready || !editor.hasPrevious} onClick={editor.previous}>Back to Previous View</button>
+      <div className="v2-viewbar">
+
+          <div><button disabled={!ready} onClick={editor.reset}>Reset camera</button>{!editing && definition.navigationMode === 'walking' && <button aria-pressed={walking} disabled={!ready || transitioning} onClick={() => { const enabled = viewer.current?.isWalkingEnabled(); editor.cancelNavigation(); viewer.current?.setWalking(!enabled) }}>{walking ? 'Stop walking' : 'Start walking'}</button>}<button disabled={!ready} onClick={editor.overview}>Overview</button>
+            <button disabled={!ready || !editor.hasPrevious} onClick={editor.previous}>Previous view</button>
             <button disabled={!ready || transitioning || editor.placing} onClick={toggleLook}>{locked ? 'Release cursor (Esc)' : 'Capture mouse'}</button>
           </div>
         </div>
+    </div>
+    <div className="v2-body">
+
+      <aside className="v2-explorer v2-panel" id="v2-explorer" aria-label="Scene Explorer">
+        <div className="v2-panel-heading">
+          <h2>Scene Explorer</h2>
+          <button aria-label="Close Scene Explorer" onClick={() => { setExplorerOpen(false); document.getElementById('v2-explorer-toggle')?.focus() }}><WorkspaceIcon name="close" /></button>
+        </div>
+        <div className="v2-panel-scroll">
+          <SceneExplorer editor={editor} ready={ready} onSaveView={() => revealInspector('save')} onAddHotspot={() => { editor.startPlacement(); setInspectorOpen(false); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }} onClear={() => { editor.closePanel(); setZoneId(null); setInspectorOpen(false) }} onZone={id => { setZoneId(id); revealInspector('zone'); void editor.goToZone(id) }} onHotspot={selectHotspot} />
+        </div>
+      </aside>
+      <section className="v2-stage" aria-label="Environment viewport">
         <div className="v2-canvas-wrap">
           <div className={`environment-viewport${editor.placing ? ' is-placing' : ''}`} aria-busy={load.phase === 'loading'}>
             <canvas ref={canvasRef} tabIndex={0} aria-label={`${definition.displayName} — drag to look around; wheel to zoom; Escape closes information or returns to overview`} />
@@ -320,14 +320,15 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
       <aside className="v2-inspector v2-panel" id="v2-inspector" aria-label="Contextual Inspector">
         <div className="v2-panel-heading">
           <h2>Inspector</h2>
-          <button aria-label="Close Inspector" onClick={() => { setInspectorOpen(false); document.getElementById('v2-inspector-toggle')?.focus() }}>×</button>
+          <button aria-label="Close Inspector" onClick={() => { setInspectorOpen(false); document.getElementById('v2-inspector-toggle')?.focus() }}><WorkspaceIcon name="close" /></button>
         </div>
         <div className="v2-panel-scroll">
           {editing && (editor.draft || editor.selected) ? <HotspotPanel editor={editor} /> : <>
-            {inspectorTab === 'zone' && selectedZone ? <ZoneInspector zone={selectedZone} editor={editor} ready={ready && !transitioning} /> : inspectorTab !== 'save' || !editing ? <EnvironmentInfo definition={definition} /> : null}
+            {inspectorTab === 'zone' && selectedZone ? <ZoneInspector zone={selectedZone} editor={editor} ready={ready && !transitioning} /> : inspectorTab !== 'save' || !editing ? <AuthoringHelp editing={editing} disabled={!ready || !editor.editable} onSaveView={() => revealInspector('save')} onAddHotspot={() => { editor.startPlacement(); setInspectorOpen(false); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }} /> : null}
+
             {editing && <>
               {inspectorTab === 'save' && <ZoneCalibration editor={editor} ready={ready} transitioning={transitioning} expanded />}
-              {inspectorTab !== 'save' && <button className="v2-save-shortcut" disabled={!ready || !editor.editable} onClick={() => revealInspector('save')}>Save current view as a zone ↗</button>}
+
               <details className="camera-calibration">
                 <summary>Advanced Camera Calibration · {definition.camera.calibration === 'provisional' ? 'Review required' : 'Reviewed viewpoint'}</summary>
                 <p>Temporary setup controls. Right-handed scene coordinates; one unit is not yet verified as one metre. Changes stay in this session.</p>
@@ -355,10 +356,10 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
                 </div>
               </details>
             </>}
+            <details className="v2-environment-details"><summary>Environment information</summary><EnvironmentInfo definition={definition} /></details>
           </>}
         </div>
       </aside>
     </div>
   </section>
 }
-

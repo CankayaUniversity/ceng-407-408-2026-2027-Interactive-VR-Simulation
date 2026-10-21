@@ -1,6 +1,6 @@
 # Mimari
 
-18 Ekim 2026 kaynak denetimi. Ayrıntılar [ENVIRONMENT_CONTRACT](ENVIRONMENT_CONTRACT.md) içinde; raporlar yerine güncel kod/testler esas alınır.
+18 Ekim 2026 çekirdek kaynak denetimi; 20 Ekim 2026 UI kompozisyonu güncellemesi. Ayrıntılar [ENVIRONMENT_CONTRACT](ENVIRONMENT_CONTRACT.md) içinde; raporlar yerine güncel kod/testler esas alınır.
 
 ## Yapı ve sorumluluklar
 
@@ -12,7 +12,7 @@
 - `useEnvironmentEditor`: mode/draft/selection/history, kayıt ve eylemler. `editorStorage`: doğrulama ve yerel kalıcılık.
 - `viewerInteraction`: controller, move Promise, picking, marker projeksiyonu, zoom ve hareket araçları.
 - `cameraOrientation`, `cameraPath`, `inspectorNavigation`, `hotspotNavigation`: yönelim, sınırlı yol kontrolü, odaklı hareket ve seçim sıralaması.
-- `WorkspacePanels`, `EnvironmentEditorPanels`, `HotspotInfoCard`: Explorer, Inspector/form ve read-only sunum.
+- `WorkspacePanels` (AuthoringHelp dahil), `EnvironmentEditorPanels`, `HotspotInfoCard`, `WorkspaceIcon`: Explorer, eyleme bağlı Inspector/form, ortak SVG araç ikonları ve read-only sunum. Görünür görev toolbar'ı BabylonViewport'un UI bölümündedir; sağ panel ilk açılışta kapalı, 1200px altında tek drawer vardır.
 - `src/styles/`: ortak, Dashboard kapsamlı ve editor-v2 kapsamlı CSS.
 - `scripts/inspect-glb.mjs`: yerel GLB metadata/bounds/hash; reconstruction değildir.
 - `tests/`: Node runner, bazı testlerde gerçek Babylon NullEngine; browser otomasyon paketi yoktur.
@@ -62,3 +62,6 @@ Unity/OpenXR ayrı standalone VR hedefidir. Ortak repository çalışan interope
 ## Teknik borç
 
 Büyük lazy bundle/modeller, provisional ölçü/kameralar, sade yol kontrolü, eksik marker occlusion ve yalnız localStorage başlıca sınırlardır. Tam fizik, çok kullanıcı, server persistence, browser E2E ve tüm cihazlarda profiling yoktur. Mutlak asset URL'leri alt yol hosting için ayrı çalışma gerektirir.
+
+## Simülasyon öncesi hazırlık
+App ortam seçimini önce preparing state'ine alır. Ortak SimulationPreparation seçilen definition.id ile mevcut önizlemeyi kullanır; 4sn inhale / 6sn exhale sonrası exploring'e geçilir. Hazırlık sırasında Babylon mount edilmez. Escape iptalinde Dashboard odağı geri gelir. Timer ve pointer RAF/listener'ları unmount sırasında temizlenir; reduced-motion altında küre/parallax hareket etmez. Yeni kayıt/storage alanı yoktur.

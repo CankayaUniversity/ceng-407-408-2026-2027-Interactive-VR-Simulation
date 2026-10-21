@@ -6,7 +6,7 @@ Hedef pipeline: fotoğraf/video → bağımsız 3D reconstruction → GLB → e�
 
 ## Bugün neler var?
 
-- Obsidian / Acid Dashboard: iki eşit ortam kartı, gerçek proje listesi, create/rename/delete diyalogları ve localStorage.
+- Studio Neutral Dashboard: iki eşit ortam kartı, gerçek proje listesi, create/rename/delete diyalogları ve localStorage.
 - Boeing 737-800 kokpit ve Charité ameliyathane için ortak Editor Workspace V2; Editor/Preview, Explorer araması, Inspector ve responsive drawer'lar.
 - Gerçek mesh üzerinde hotspot yerleştirme/düzenleme/silme ve salt okunur bilgi kartı; gerçek kayıtlı başlık/açıklama.
 - Inspection Zones: kamera position/target/FOV kaydı; ilişkili zone'a geçiş tamamlanınca hotspot kartını açma.
@@ -21,7 +21,7 @@ Durum ve test kapsamı: [PROJECT_STATUS](docs/PROJECT_STATUS.md). Mimari: [ARCHI
 
 Node.js **24** ve npm ekip standardıdır; Dockerfile da Node 24 kullanır. Denetlenen yerel sürümler: Node 24.18.0 / npm 11.16.0. package.json içinde engines/packageManager veya test script'i yoktur. Lock dosyasındaki Vite 8.3.4 ve React plugin'i Node `^20.19.0 || >=22.12.0` ister; TypeScript strip destekli test akışı için Node 24 kullanın. React 19, TypeScript 6, Babylon 9; kesin sürümler package-lock.json içindedir.
 
-Unity ekip deposu entegrasyonu yayınlandıktan sonra:
+Mevcut ekip branch kurulumu (PR #2; main ile birleştirilmiş kabul etmeyin):
 
 ```powershell
 git clone https://github.com/Cengaverler/interactive-vr-simulation.git
@@ -33,7 +33,7 @@ npm ci
 npm run dev
 ```
 
-**Bu branch henüz yayınlanmadı.** [Yayın raporunda](GITHUB_TEAM_HANDOFF_PUBLISH_REPORT.md) doğrulanmadan checkout komutunun çalışacağı varsayılmamalı. Merge sonrasında main içindeki web-editor kullanılır. Mevcut bağımsız yerel web klasöründe doğrudan npm ci ve npm run dev yeterlidir.
+Mevcut branch ve PR #2 head referansları 21 Ekim 2026 tarihinde Git üzerinden doğrulandı. Son eşitlemenin sonucu [GITHUB_LATEST_SYNC_REPORT.md](GITHUB_LATEST_SYNC_REPORT.md) içindedir. Merge yapılmadı. Bağımsız yerel web klasöründe doğrudan npm ci ve npm run dev yeterlidir.
 
 npm ci lock'a göre temiz kurulum yapar; mevcut node_modules yeniden kurulur. npm install bilinçli bağımlılık/lock güncellemesi içindir; package.json ve package-lock.json birlikte incelenir. Yeni klonda npm ci tercih edin.
 
@@ -100,7 +100,12 @@ Bu denetimde **compose config geçti; Linux engine pipe bulunamadığından cont
 - Kayıt görünmüyor: origin/port/id kontrol edin. Model URL/transform değişimi uyumsuzluk yaratabilir; migration yoktur.
 - Docker pipe: Docker Desktop Linux engine'i açın; config doğrulaması çalışan servis kanıtı değildir.
 - Büyük lazy workspace >500 kB; 82/44 MiB modeller düşük donanımda maliyetlidir. Tam collision ve marker occlusion yoktur.
-- Google Fonts ağdan yüklenir; offline fallback fontlar vardır.
+- Arayüz Segoe UI Variable / Segoe UI / sistem sans ailesini kullanır; harici Google Fonts isteği yoktur.
 - Mutlak asset URL'leri origin kökünü varsayar. Kaynakların web-editor/ altında olması URL'nin otomatik /web-editor/ altında çalıştığı anlamına gelmez; alt yol deployment ayrı iştir.
 
 Ekip akışı: [CONTRIBUTING](docs/CONTRIBUTING.md). Yayın planı: [PUBLISHING](docs/PUBLISHING.md).
+
+
+## Ekip ve AI devri
+
+Yapılanlar, son tasarım kararları, sınırlar ve sonraki öneriler: [TEAM_HANDOFF](docs/TEAM_HANDOFF.md). İki ortamdan önce 4sn Breathe in / 6sn Slowly exhale hazırlığı açılır; Escape iptal eder. Bağımsız Resq landing denemesi ürünün parçası değildir.
