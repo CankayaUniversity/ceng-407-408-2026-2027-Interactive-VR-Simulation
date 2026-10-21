@@ -58,4 +58,6 @@ Hedef build geçici 127.0.0.1:5176 preview ile başlatıldı. Browser aracı sek
 
 ## Yayın kaydı
 
+**Doğrulanan sonuç:** Kaynak/UI ve rehber commit SHA `7c3bdb22063363f63800495cc9524d988cd01ec9`. Push başarılı. İkinci uzak kontrolde hem feature/web-editor-integration hem refs/pull/2/head aynı yeni SHA değerini verdi; mevcut PR #2 kaynak commitini yansıtıyor. İlk kontroldeki eski PR referansı kısa süre sonra güncellendi. Hedef çalışma ağacı temiz. 25 değişen/eklenen dosyanın tamamı web-editor altında; Unity Assets/Packages/ProjectSettings, manifest/lock, registry, viewerInteraction ve editorStorage farkı yok. Bu sonuç belgesi ayrıca yalnız dokümantasyon commitinde aynı branch üzerinden yayımlanır. Merge yapılmadı.
+
 Bu dosyanın son yayın durumu ayrıca doğrulanarak güncellenecek. Commit yalnız açık allowlist ile hazırlanır. Push öncesi remote tekrar kontrol edilir. Başarılı push sonrası branch ve refs/pull/2/head SHA eşleşmesi raporlanır; merge yapılmaz. GitHub connector PR bilgi isteği 404 döndü, yerel gh kurulu değil; PR web/API açık/kapalı durumu doğrulanamadı. Git ref erişimi ayrı olarak çalışıyor. Yeni PR açılmadı.

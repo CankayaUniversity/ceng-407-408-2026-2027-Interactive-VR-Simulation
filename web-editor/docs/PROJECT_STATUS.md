@@ -1,5 +1,7 @@
 # Proje durumu
 
+21 Ekim 2026 ekip eşitlemesi: hedef web-editor içinde npm ci/build/lint ve 23 test başarılı. Kaynak commit 7c3bdb2 uzak feature branch ve PR #2 head üzerinde doğrulandı. GLB dağıtımı lisans/LFS kota doğrulaması bekliyor; hedef browser kontrolü güvenlik politikasıyla engellendi. Ayrıntılar GITHUB_LATEST_SYNC_REPORT.md ve docs/TEAM_HANDOFF.md içinde.
+
 Son UI kaynak/test denetimi: 20 Ekim 2026. Çekirdek özelliklerin önceki kapsamlı denetimi: 18 Ekim 2026. Bu belge ürünün tamamlandığını iddia etmez.
 
 20 Ekim 2026 Studio Neutral kalite turu: kullanıcı önceki zeytin/küçük kontrol görünümünü reddetti. Çalışan Dashboard ve ortak editör CSS'i nötr palet, 15px gövde/Explorer, 14px araçlar, 40–44px kontroller, 260px Explorer/352px Inspector ve 56px üst bar ile düzeltildi. İki görsel iyileştirme turu, gerçek iki GLB ve Editor/Preview kontrolleri yapıldı. DESIGN.md ve sidecar güncel; ayrıntılı ölçüler, kayıtlar ve doğrulanmayan durumlar VISUAL_QUALITY_REPORT.md içinde. Kalıcı QA verisi oluşturulmadı. 25 CSS dışı kaynak/manifest hash'i aynı; kamera/storage/navigation/lifecycle ve Unity değiştirilmedi. Build/lint ve 23/23 test geçti; son kullanıcı görsel kabulü bekleniyor.
