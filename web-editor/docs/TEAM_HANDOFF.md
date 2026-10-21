@@ -8,11 +8,11 @@ Birincil kullanıcı eğitim hazırlayan eğitmen/uzman. Dashboard iki eşit ort
 
 Son UI çalışması Studio Neutral: koyu nötr yüzeyler, ölçülü mavi vurgu, 14–15px normal metin, 40–44px kontroller, 260px Explorer, 352px Inspector ve 56px üst bar. Eski zeytin/acid tema kullanıcı tarafından reddedildi. Ortam kartı görseline tıklama hatası düzeltildi; stretched button :active transform istisnası korunmalı.
 
-İki ortama girişte gerçek uygulamada 4 saniye “Breathe in”, 6 saniye “Slowly exhale” hazırlığı vardır. Sonra model yüklenir; Escape Dashboard’a döner. Hazırlık sırasında Babylon mount edilmez. Önizleme resmi yoksa arka plan görseli de yoktur; model ve görsel ayrı dosyalardır.
+21 Ekim 2026 kullanıcının isteğiyle 4 saniye “Breathe in”, 6 saniye “Slowly exhale” hazırlığı geçici olarak kapatıldı. App.tsx içindeki SIMULATION_PREPARATION_ENABLED=false nedeniyle iki ortam doğrudan editörü açar; gerçek model indirme göstergesi korunur. Hazırlık bileşeni daha sonra düzenlenmek üzere saklanır. Önizleme resmi ile model ayrı dosyalardır.
 
 ## Neler henüz yok?
 
-Proje CRUD yereldir; proje açılması placeholder gösterir, projeye ortam bağlama yoktur. Backend/auth, ekip senkronizasyonu, export/import UI, reconstruction/AI ve web→Unity aktarımı uygulanmadı. Web WISP entegrasyonu yoktur; Unity’de ayrı WISP çalışması olması bunu değiştirmez. Walking sabit düzlem prototipidir; duvar/ekipman collision ve gravity yoktur. Dünya ölçeği/kamera kalibrasyonu provisional, marker occlusion sınırlıdır.
+Proje CRUD yereldir; proje açılması placeholder gösterir, projeye ortam bağlama yoktur. Backend/auth, ekip senkronizasyonu, export/import UI, reconstruction/AI ve web→Unity aktarımı uygulanmadı. Piko web'de Idle döngüsüyle görünür; portre düğmesi tıklama/dokunma/Enter/Space ile Wave'i bir kez oynatıp Idle'a döndürür. Konuşan eğitim rehberi yoktur. Walking sabit düzlem prototipidir; duvar/ekipman collision ve gravity yoktur. Dünya ölçeği/kamera kalibrasyonu provisional, marker occlusion sınırlıdır.
 
 Ayrı Resq/Aurora animasyonlu landing denemesi bu ürünün parçası DEĞİLDİR. Kullanıcı uyarlama/entegrasyonu reddetti. Yeni açık görev olmadan Dashboard’a veya ürün girişine taşımayın. İngilizce nefes hazırlığı ise ayrıca onaylanıp gerçek uygulamaya eklendi.
 

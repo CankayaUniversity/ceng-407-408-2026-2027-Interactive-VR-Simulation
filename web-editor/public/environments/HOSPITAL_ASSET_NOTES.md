@@ -1,5 +1,11 @@
 # Charité ameliyathane modeli — yerel asset incelemesi
 
+22 Ekim 2026 ek not: kaynak Sketchfab sayfası bu kez doğrudan incelendi;
+Digital Surgery / CC-BY-NC-4.0 beyanı ve yayın atfı doğrulandı. Kaynağın
+10 açıklaması ayrı editör verisi olarak aktarıldı; GLB değişmedi. Önceki
+"kaynak sayfası doğrulanmadı" ifadesi aşağıdaki tarihsel incelemeye aittir.
+Tam atıf ve dönüşüm: `docs/HOSPITAL_ANNOTATIONS.md`.
+
 - Dosya: `charite_university_hospital_-_operating_room.glb` (bu klasörde).
 - Boyut: 46.555.672 bayt / 44,39895 MiB; GLB 2.0; tüm binary ve görseller gömülü. Harici dosya yok.
 - SHA-256: `951401d851d45c1390a585bdba7ad14b020417e119a7fcf959f3133f8a0168b0`.

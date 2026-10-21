@@ -1,4 +1,5 @@
 import type { SceneDefinition } from './types'
+import { hospitalStarterContent } from './hospitalAnnotations'
 
 export const environments = {
   cockpit: {
@@ -26,6 +27,7 @@ export const environments = {
     modelUrl: '/environments/charite_university_hospital_-_operating_room.glb',
     modelTransform: { position: [0, 0, 0], rotation: [0, 0, 0], scale: [1, 1, 1] },
     navigationMode: 'walking',
+    starterContent: hospitalStarterContent,
     camera: { position: [0, 1.65, 4.5], target: [0, 1.65, 0], fovDegrees: 70, near: 0.03, far: 100, calibration: 'provisional' },
     interaction: {
       look: { maxPitchDegrees: 85 },

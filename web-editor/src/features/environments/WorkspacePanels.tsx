@@ -45,6 +45,14 @@ export function SceneExplorer({ editor, ready, onZone, onHotspot, onSaveView, on
       {!hotspots.length && <div className="v2-list-empty"><p>{query ? 'No matching hotspots.' : 'Add training information to a real model surface.'}</p>{!query && editor.editable && <button disabled={!ready} onClick={onAddHotspot}>Add first hotspot</button>}</div>}
     </details>
     {(editor.selected || editor.draft) && <button className="v2-clear-selection" onClick={onClear}>Clear selection</button>}
+    {editor.canAddStarterContent && editor.editable && <div className="v2-list-empty">
+      <button disabled={!ready} onClick={editor.addSourceHotspots}>Add source annotations</button>
+      <p>Add missing original annotations while keeping your existing content.</p>
+    </div>}
+    {editor.sourceAttribution && <p className="v2-panel-note">
+      Annotations: {editor.sourceAttribution.author} · <a href={editor.sourceAttribution.sourceUrl} target="_blank" rel="noreferrer">Sketchfab source ↗</a><br />
+      <a href={editor.sourceAttribution.licenseUrl} target="_blank" rel="noreferrer">{editor.sourceAttribution.license}</a>
+    </p>}
     <p className="v2-panel-note">Saved in this browser · This environment only</p>
   </>
 }

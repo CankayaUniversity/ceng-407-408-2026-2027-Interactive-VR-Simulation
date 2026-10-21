@@ -1,6 +1,6 @@
 # AI ekip bağlamı
 
-Amaç: farklı işyerleri için eğitim hotspotları ve inspection view hazırlayan tekrar kullanılabilir web editörü. Fotoğraf/video reconstruction ayrı gelecek pipeline; Unity/OpenXR ayrı gelecek native VR hedefidir. WISP uygulanmadı.
+Amaç: farklı işyerleri için eğitim hotspotları ve inspection view hazırlayan tekrar kullanılabilir web editörü. Fotoğraf/video reconstruction ayrı gelecek pipeline; Unity/OpenXR ayrı gelecek native VR hedefidir. Piko (eski adı WISP) Idle bekleme animasyonu olan 3D köşe maskotudur; tıklama/dokunma/Enter/Space Wave oynatıp beklemeye döndürür. Konuşan eğitim rehberi uygulanmadı.
 
 ## Gerçek stack ve girişler
 

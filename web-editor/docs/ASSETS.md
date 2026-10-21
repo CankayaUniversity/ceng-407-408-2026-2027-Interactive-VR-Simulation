@@ -1,5 +1,21 @@
 # Asset kurulumu ve yayın sınırı
 
+22 Ekim 2026: kullanıcının kaynak hotspot aktarımı isteğiyle Charité sayfası
+incelendi. Digital Surgery / CC-BY-NC-4.0 ve yayın atfı sayfada doğrulandı.
+10 açıklama ile konum/kamera metaverisi `hospitalAnnotations.ts` içindedir;
+GLB değişmedi. Kaynak metinler korunur, koordinatlar dönüştürülür. Tam atıf
+ve kapsam: [HOSPITAL_ANNOTATIONS](HOSPITAL_ANNOTATIONS.md). Aşağıdaki önceki
+web doğrulaması yapılmadı ifadeleri bu yeni kaynak incelemesinden öncedir.
+
+## Kullanıcının Piko maskotu
+
+21 Ekim 2026 kullanıcının açık entegrasyon isteğiyle son maskotun değişmemiş
+GLB kopyası `public/guides/piko/piko.glb` altına alındı. Yalnız bu dosya için
+Git ignore istisnası eklendi; 2,1 MB dosya LFS ortam modeli kurallarına dahil
+değildir. Gerçek kaynak/hash/klip bilgisi yanındaki README'dedir. Eski WISP
+erişim engeli ve aşağıdaki gelecekteki teslim notları bu dosya için geçerli
+bir engel olarak yorumlanmamalıdır. Diğer modellerin teslim kuralları korunur.
+
 Modeller uygulamanın kaynak kodundan ayrı teslim edilir. Yerel public/ içeriği Vite build ile dist/ içine kopyalanır; **Git ignore, deployment paketinden dışlama değildir**. Yerel dist/ klasörünü yetkisiz olarak dağıtmayın.
 
 ## Beklenen yerel dosyalar
@@ -29,7 +45,7 @@ Eksik GLB, loader catch yolunda “The environment could not load…” ve Retry
 ## Yayına otomatik dahil edilmeyenler
 
 - Yukarıdaki GLB'ler ve gelecekteki FBX/Blend/glTF/bin kaynakları.
-- WISP model/animasyon/doku kaynakları; henüz mevcut değil ve doğrulanmadı.
+- Diğer WISP/mascot kaynakları; yalnız yukarıda belirtilen doğrulanmış Piko GLB'si istisnadır.
 - `public/previews/environments/*.jpg`: gerçek GLB ekran görüntüleri de kaynak hakları/atıf yönünden incelenmelidir. Yerelde kalır; ilk kaynak PR listesi bunları dışarıda bırakır. Kartlar fallback ile kullanılabilir.
 - Üçüncü taraf Unity asset'leri veya yeni kaynak arşivleri; Unity kökünden web'e kopyalanmaz.
 

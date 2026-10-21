@@ -1,5 +1,77 @@
 # Proje durumu
 
+22 Ekim 2026 GitHub teslim hazırlığı: kullanıcı son sürümü ayrı bir dalda
+paylaşmayı istedi. Teslim dalı `codex/hospital-source-hotspots`; mevcut web
+ekip dalı `5a4ad42` taban alınmıştır. Kapsam: Piko modeli ve Idle/Wave,
+hastane kaynak hotspotları, hazırlık ekranını geçici kapatma ve ilgili
+belgeler/testler. Son kaynak doğrulaması build/lint ve 27/27 testtir;
+tarayıcı sonuçları aşağıdadır. Yayın sonrası branch/PR bağlantısı GitHub'dan
+kontrol edilir; main'e merge veya deployment bu teslimin kapsamında değildir.
+
+22 Ekim 2026 hastane kaynak açıklamaları: Digital Surgery'nin aynı Sketchfab
+modelindeki gerçek 10 hotspot, İngilizce açıklamaları ve 10 kamera bakışı
+aktarılmıştır. Z-up → Y-up konum dönüşümü uygulanır; GLB değişmez. Yeni
+tarayıcı kaydı hazır içerikle başlar; mevcut kayıtlar korunur. Editor içindeki
+Add source annotations yalnız eksik ID'leri ekler. Şema/anahtar değişmedi.
+Kaynak ve lisans Scene Explorer'da gösterilir. Ayrıntılar
+[HOSPITAL_ANNOTATIONS](HOSPITAL_ANNOTATIONS.md) içindedir.
+
+Bu aktarımda build/lint ve 27/27 Node testi geçti (4 yeni başlangıç içerik ve
+kayıt koruma testi). Tarayıcıda 10 noktanın yüzey konumu/açıklaması incelendi;
+kaynak kamera bakışları doğrulandı. Bazı düz kamera yolları ekipmana takılır;
+özellikle Main PC ve bazı uzak noktalar arası geçişte açıklama mevcut bakışta
+açılır. Kaynak Main PC ve malzeme dolabı bakışları geçici kalibrasyon
+alanlarından da incelendi; testteki kamera değerleri kalıcı kayda yazılmadı.
+390×844 görünümünde sayfa ve bilgi kartı genişliği 390 px, yatay taşma yok.
+Enter ile liste seçimi ve kart kapatma kontrol edildi. Mevcut kayıtların
+üzerine yazmama, silinenleri açılışta geri getirmeme, tekrar importta kopya
+üretmeme ve limit aşımında veriyi koruma Node testleriyle doğrulandı.
+Değişiklikler yereldir; commit/push/merge yapılmadı.
+
+21 Ekim 2026 Piko animasyon güncellemesi: statik portre yerine gerçek GLB'deki
+Idle döngüsü etkin. Portre düğmesi tıklama/dokunma/Enter/Space ile Wave'i bir
+kez oynatır; gerçek klip tamamlanınca Idle'a döner. Tekrarlanan tıklama devam
+eden Wave'i kesmez. Kadraj kaldırılan eli de içerir. En fazla 30 fps; gizlenen
+sekmede duraklama, reduced motion altında sabit Idle ve kullanıcı isteğiyle
+Wave uygulanır. Küçültme kaynakları serbest bırakır. Model dosyası değişmedi.
+Build/lint ve mevcut 23 test geçti. Tarayıcıda Dashboard ve gerçek hastane
+ortamında Idle → tıklama → Wave → Idle dönüşü, Enter/Space, devam eden
+Wave sırasında tekrar tetikleme ve küçültüp yeniden gösterme doğrulandı.
+390×844 görünümünde sayfa genişliği 390 px; portre ve kontroller kadrajda.
+Inspector açıkken gizlenip kapanınca yeniden görünür. İncelenen tarayıcı
+hata/uyarı günlüğü boştu. Reduced motion ve sekme gizleme için otomatik
+tarayıcı tercihi testi yapılmadı; kod yolları incelendi. Tam GPU/cihaz
+performans profili çıkarılmadı. Değişiklikler yereldir, GitHub'a gönderilmedi.
+
+Önceki statik portre teslimi (aynı gün, animasyon güncellemesi öncesi):
+
+21 Ekim 2026 Piko entegrasyonu: kullanıcının son GLB maskotu, Dashboard ve
+ortam çalışma alanlarında sağ alt köşede sabit 3D portre olarak eklendi.
+Idle'ın ilk karesi uygulanıp duraklatılır; hareket/konuşma/rehber davranışı
+eklenmedi. Portre yalnız yükleme ve boyut değişiminde çizilir. Küçült/Göster
+kontrolü oturumluk React state kullanır; kayıt şeması değişmez. Inspector,
+eğitim bilgi kartı veya proje diyaloğu açıkken portre alanı boş bırakılır.
+Kaynak/boyut/hash: `public/guides/piko/README.md`. Önceki WISP erişim engeli
+bu yerel teslim için tarihsel durumdur.
+
+Piko kontrolünde build/lint ve mevcut 23 test geçti. Tarayıcıda gerçek modelin
+yüklenmesi, küçült/yeniden göster, yükleme sırasında kapatıp tekrar açma,
+proje diyaloğu ve Inspector sırasında gizlenme ve Dashboard → hastane geçişi
+doğrulandı. 390×844 görünümünde yatay taşma yok; portre sahne tıklamalarını
+engellemiyor. İncelenen tarayıcı hata/uyarı günlüğü boştu. Tam cihaz/GPU
+performans profili çıkarılmadı; hareketli rehber davranışı test kapsamı değil.
+
+21 Ekim 2026 yerel kullanım düzenlemesi: kullanıcının isteğiyle ortam öncesindeki
+10 saniyelik nefes/hazırlık ekranı geçici olarak devreden çıkarıldı. Dashboard
+kartları ve Cockpit Explorer doğrudan mevcut ortam editörünü açar; gerçek model
+indirme/hata göstergeleri korunur. `App.tsx` içindeki
+`SIMULATION_PREPARATION_ENABLED = false` değişkeniyle kontrol edilir; hazırlık
+bileşeni daha sonra düzenlenmek üzere korunmuştur.
+
+Bu düzenlemede build/lint ve mevcut 23 test başarılı. Yerel tarayıcıda kokpit
+ve hastane kartlarının hazırlık ekranını atlayıp doğrudan görüntüleyiciyi
+açtığı doğrulandı; model indirme ilerlemesi görünmeye devam ediyor.
+
 21 Ekim 2026 ekip eşitlemesi: hedef web-editor içinde npm ci/build/lint ve 23 test başarılı. Kaynak commit 7c3bdb2 uzak feature branch ve PR #2 head üzerinde doğrulandı. GLB dağıtımı lisans/LFS kota doğrulaması bekliyor; hedef browser kontrolü güvenlik politikasıyla engellendi. Ayrıntılar GITHUB_LATEST_SYNC_REPORT.md ve docs/TEAM_HANDOFF.md içinde.
 
 Son UI kaynak/test denetimi: 20 Ekim 2026. Çekirdek özelliklerin önceki kapsamlı denetimi: 18 Ekim 2026. Bu belge ürünün tamamlandığını iddia etmez.
@@ -38,7 +110,7 @@ Bu maddeler kaynakta mevcuttur; “tüm cihaz/koşullarda doğrulanmış üretim
 
 ## Engelli
 
-- WISP: entegre değil. Önceki varlık incelemesinde PR #1/branch bağlantısı 404; model, skeleton, klipler/lisans ve GLB dönüşümü doğrulanamadı. [Hazırlık](WISP_ASSET_PREPARATION.md).
+- Hareketli/konuşan Piko eğitim rehberi henüz uygulanmadı. Sabit Piko portresi ve gerçek GLB teslimi yukarıda doğrulandı; önceki WISP erişim engeli tarihsel kayıttır. [Hazırlık](WISP_ASSET_PREPARATION.md).
 - İlk yayın erişim engeli tarihsel kayıttır. 21 Ekim 2026 mevcut feature branch ve PR #2 Git referansları doğrulandı. Güncel eşitleme sonucu GITHUB_LATEST_SYNC_REPORT.md içindedir; connector API erişimi ayrıca 404 döndü.
 - Docker runtime: compose config başarılı, Docker Desktop Linux engine pipe bulunamadı. Container/HTTP doğrulaması yapılmadı.
 

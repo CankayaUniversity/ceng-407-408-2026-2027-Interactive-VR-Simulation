@@ -28,7 +28,7 @@ Kayıtlar tarayıcı ve origin kapsamındaki localStorage üzerinde tutulur. Ba�
 - Hotspot yerleştirme, düzenleme, silme; gerçek kamera pozundan Inspection Zone kaydetme; bölgeye bağlı hotspot açma ve salt okunur Preview mevcuttur.
 - Editor Spectator oturumluk serbest kamera aracıdır. Hastane Preview Walking deneysel düz zemin hareketidir; tam fizik veya ekipman/duvar çarpışması sağlamaz. Dünya ölçeği ve başlangıç kameraları kesinleşmemiştir.
 - Mevcut storage anahtarları ve şemaları korunur. Migration ayrı açık onay gerektirir. Kamera, navigation cancellation ve sahne yaşam döngüsü ilgisiz tasarım değişikliklerinde değiştirilmez.
-- Fotoğraf/video reconstruction, AI recognition, backend, auth, çok kullanıcılı düzenleme, WISP ve Unity/OpenXR veri aktarımı uygulanmış özellikler değildir.
+- Fotoğraf/video reconstruction, AI recognition, backend, auth, çok kullanıcılı düzenleme, konuşan Piko eğitim rehberi ve Unity/OpenXR veri aktarımı uygulanmış özellikler değildir. Piko 3D köşe maskotu Idle oynatır; tıklama/dokunma/Enter/Space ile Wave oynayıp beklemeye döner.
 - Unity deposuna entegrasyonda web kapsamı web-editor/ ile sınırlıdır; Unity kökü korunur.
 - Sayısal kullanıcı başarı ölçütü ve kalıcı dil politikası açıktır. Güncel uygulama durumu için docs/PROJECT_STATUS.md ve gerçek kaynak/testler esas alınır.
 

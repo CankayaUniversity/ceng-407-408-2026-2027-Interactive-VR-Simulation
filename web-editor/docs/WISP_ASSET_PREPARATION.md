@@ -1,5 +1,15 @@
 # WISP varlık teslimi ve Blender dışa aktarımı
 
+## Güncel Piko teslimi
+
+21 Ekim 2026: kullanıcının doğrulanmış son GLB dosyası yerel kaynaklardan
+alındı ve Piko adıyla 3D köşe maskotu olarak entegre edildi. Gerçek boyut,
+SHA-256, nesne hiyerarşisi ve beş klip bilgisi
+`public/guides/piko/README.md` içinde bulunur. Humanoid skeleton kullanılmaz.
+Web görünümü Idle oynatır; portreye tıklama/dokunma/Enter/Space ile Wave bir
+kez oynar ve Idle'a döner. Konuşan eğitim rehberi henüz yoktur.
+Aşağıdaki erişim engeli ve önerilen teslim adları önceki incelemeyi anlatır.
+
 ## Mevcut engel
 
 GitHub bağlantısı `Cengaverler/interactive-vr-simulation` PR #1 ve `feat/wisp-mascot-assets` branch içeriği isteklerine 404 döndürdü. Özel depo izni, depo adı veya PR durumu bu yanıtla birbirinden ayırt edilemez. Gerçek dosya adları ve animasyonlar görülmedi. Aşağıdaki isimler **önerilen teslim adlarıdır**, depoda bulunduğu iddiası değildir.

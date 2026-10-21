@@ -35,9 +35,16 @@ React mode, draft, UI ve seri veriyi yönetir. Engine/Scene/camera/container/con
 
 LoadAssetContainerAsync ortamı yükler; tek engine render loop, ResizeObserver → engine.resize. Geç asset sonucunda disposed kontrol edilir. Çıkışta input/listener/controller/observer, pointer lock, loop, scene/engine temizlenir. Marker DOM projeksiyonu her kare React state yazmaz. Her marker için her kare occlusion ray yoktur. Kamera yolu beş ray ile sınırlı kontroldür; hacimsel collision değildir.
 
-WISP yoktur; [varlık hazırlık belgesi](WISP_ASSET_PREPARATION.md) uygulanmadan hayalî asset/klip eklenmez. Gelecek rehber yalnız kendi modelini yüklemeli, ortamı çoğaltmamalıdır; render yaklaşımı gerçek profiling sonrası seçilir.
+`features/mascot/PikoMascot` kullanıcının doğrulanmış GLB'sini ayrı küçük şeffaf sahnede gösterir. App içinde bağımsız lazy/Suspense sınırındadır; Dashboard veya ortam açılışını bekletmez ve mod/ortam değişiminde yeniden mount edilmez. Idle döngüdedir; semantik portre düğmesi tıklama/dokunma/Enter/Space ile Wave'i bir kez başlatır. Wave tamamlanma olayı Idle'a döndürür; aynı anda tek klip çalışır, art arda tıklama hareketi kesmez. Kamera Idle başlangıcı ve örneklenmiş Wave sınırlarını kapsar. Portre döngüsü en fazla 30 fps'dir; gizlenen belge duraklatılır. Reduced motion altında Idle başlangıcı sabittir, yalnız kullanıcı eylemiyle Wave oynar. ResizeObserver yalnız boyut/kadrajı günceller; her kare React state yazılmaz. Model sahnesi ortamı çoğaltmaz. Küçültme/unmount geç yüklemeyi geçersiz kılar; observer/listener/loop/scene/engine temizlenir. Konuşan eğitim rehberi yoktur. Kaynak teslimi için `public/guides/piko/README.md` esas alınır; önceki WISP erişim engeli tarihsel kayıttır.
 
 ## Kalıcılık
+
+`SceneDefinition.starterContent` isteğe bağlı, paketle gelen başlangıç
+hotspot/view içeriğidir. `loadEditor` yalnız kayıt yoksa doğrulayıp kopyalar;
+var olan kayıtları birleştirmez veya değiştirmez. Editor'deki açık kullanıcı
+eylemi `addStarterContent` ile yalnız eksik ID'leri ekler; mevcut içerik
+önceliklidir ve kaydetme mevcut şema v1 sınırlarını kullanır. Hastanenin
+10 kaynak açıklaması ve koordinat dönüşümü `hospitalAnnotations.ts` içindedir.
 
 - Proje anahtarı `workplace-studio.projects.v1`: id/name/description/createdAt/updatedAt doğrulanan dizi. Sürüm anahtar adındadır, nesnede schemaVersion yoktur. Ortam/proje ilişkisi yoktur; proje workspace'i placeholder.
 - Ortam anahtarı `workplace-studio.environment-editor.v1.${encodeURIComponent(environmentId)}`. SerializedEditorV1: schemaVersion=1, environmentId, modelUrl, modelTransform, zones, hotspots. En fazla 32 zone / 100 hotspot; id/koordinat/metin/model eşleşmesi kontrol edilir.
@@ -64,4 +71,6 @@ Unity/OpenXR ayrı standalone VR hedefidir. Ortak repository çalışan interope
 Büyük lazy bundle/modeller, provisional ölçü/kameralar, sade yol kontrolü, eksik marker occlusion ve yalnız localStorage başlıca sınırlardır. Tam fizik, çok kullanıcı, server persistence, browser E2E ve tüm cihazlarda profiling yoktur. Mutlak asset URL'leri alt yol hosting için ayrı çalışma gerektirir.
 
 ## Simülasyon öncesi hazırlık
-App ortam seçimini önce preparing state'ine alır. Ortak SimulationPreparation seçilen definition.id ile mevcut önizlemeyi kullanır; 4sn inhale / 6sn exhale sonrası exploring'e geçilir. Hazırlık sırasında Babylon mount edilmez. Escape iptalinde Dashboard odağı geri gelir. Timer ve pointer RAF/listener'ları unmount sırasında temizlenir; reduced-motion altında küre/parallax hareket etmez. Yeni kayıt/storage alanı yoktur.
+21 Ekim 2026 itibarıyla kullanıcının isteğiyle `App.tsx` içindeki `SIMULATION_PREPARATION_ENABLED` kapalıdır. Ortam seçimi doğrudan exploring state'ine geçer; preparing boş kalır ve yapay bekleme uygulanmaz. Gerçek model yükleme göstergesi BabylonViewport içinde korunur.
+
+Hazırlık ileride yeniden açılırsa App ortam seçimini önce preparing state'ine alır. Ortak SimulationPreparation seçilen definition.id ile mevcut önizlemeyi kullanır; 4sn inhale / 6sn exhale sonrası exploring'e geçilir. Hazırlık sırasında Babylon mount edilmez. Escape iptalinde Dashboard odağı geri gelir. Timer ve pointer RAF/listener'ları unmount sırasında temizlenir; reduced-motion altında küre/parallax hareket etmez. Yeni kayıt/storage alanı yoktur.

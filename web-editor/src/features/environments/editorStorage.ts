@@ -17,6 +17,17 @@ export function emptyEditor(definition: SceneDefinition): SerializedEditorV1 {
   return { schemaVersion: 1, environmentId: definition.id, modelUrl: definition.modelUrl, modelTransform: definition.modelTransform, zones: [], hotspots: [] }
 }
 
+/** Add only missing source IDs; keep user edits, ordering and zone links intact. */
+export function addStarterContent(data: SerializedEditorV1, definition: SceneDefinition): SerializedEditorV1 {
+  const starter = definition.starterContent
+  if (!starter) return parseEditor(JSON.stringify(data), definition)
+  return parseEditor(JSON.stringify({
+    ...data,
+    zones: [...data.zones, ...starter.zones.filter(zone => !data.zones.some(item => item.id === zone.id))],
+    hotspots: [...data.hotspots, ...starter.hotspots.filter(spot => !data.hotspots.some(item => item.id === spot.id))],
+  }), definition)
+}
+
 export function parseEditor(raw: string, definition: SceneDefinition): SerializedEditorV1 {
   const value: unknown = JSON.parse(raw)
   if (!record(value) || value.schemaVersion !== 1 || value.environmentId !== definition.id || value.modelUrl !== definition.modelUrl || !record(value.modelTransform) ||
@@ -31,7 +42,7 @@ export function parseEditor(raw: string, definition: SceneDefinition): Serialize
 export function loadEditor(storage: Pick<Storage, 'getItem'>, definition: SceneDefinition) {
   try {
     const raw = storage.getItem(editorKey(definition.id))
-    const data = raw === null ? emptyEditor(definition) : parseEditor(raw, definition)
+    const data = raw === null ? addStarterContent(emptyEditor(definition), definition) : parseEditor(raw, definition)
     const missingZone = data.hotspots.some(spot => spot.zoneId && !data.zones.some(zone => zone.id === spot.zoneId))
     return { data, writable: true, error: missingZone ? 'Some hotspots refer to missing inspection zones. Their information remains available without automatic camera navigation; saved references are preserved.' : '' }
   } catch {

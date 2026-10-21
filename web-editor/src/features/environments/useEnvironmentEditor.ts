@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, type RefObject } from 'react'
-import { emptyEditor, loadEditor, saveEditor } from './editorStorage'
+import { addStarterContent, emptyEditor, loadEditor, saveEditor } from './editorStorage'
 import type { CameraPose, Hotspot, SceneDefinition, SerializedEditorV1, Vector3Tuple } from './types'
 import type { CameraMoveResult, ViewerInteraction } from './viewerInteraction'
 import { navigateAndOpenHotspot } from './hotspotNavigation'
@@ -25,6 +25,8 @@ export function useEnvironmentEditor(definition: SceneDefinition, viewer: RefObj
   useEffect(() => () => { navigationRevision.current++; viewer.current?.cancelMove() }, [viewer])
   const selected = data.hotspots.find(spot => spot.id === selectedId) ?? null
   const editable = mode === 'editor' && initial.writable
+  const starter = definition.starterContent
+  const canAddStarterContent = !!starter && (starter.hotspots.some(spot => !data.hotspots.some(item => item.id === spot.id)) || starter.zones.some(zone => !data.zones.some(item => item.id === zone.id)))
   const focusTools = () => requestAnimationFrame(() => document.getElementById('environment-mode-preview')?.focus())
   function cancelNavigation(preserveOrigin = false) {
     navigationRevision.current++
@@ -132,6 +134,15 @@ export function useEnvironmentEditor(definition: SceneDefinition, viewer: RefObj
   }
   return {
     data, error, mode, placing, draft, selected, activeZone, message, editable,
+    canAddStarterContent,
+    sourceAttribution: starter ? definition.attribution : undefined,
+    addSourceHotspots() {
+      if (!editable || !canAddStarterContent) return
+      try {
+        const next = addStarterContent(data, definition)
+        if (commit(next)) { closePanel(); setMessage('Source annotations added. Your existing content has been preserved.') }
+      } catch { setError('Source annotations could not be added. Check the 32-view / 100-hotspot limits. Your existing content has been preserved.') }
+    },
     hasPrevious,
     setDraft, setMessage, changeMode, select, place, closePanel, saveHotspot, deleteHotspot, cancelNavigation,
     overview, previous, escape, saveZone, deleteZone,

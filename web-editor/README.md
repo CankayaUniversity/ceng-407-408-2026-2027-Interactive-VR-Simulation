@@ -1,8 +1,12 @@
 # Workplace Studio
 
+21 Ekim 2026: ortam öncesindeki 10 saniyelik nefes ekranı kullanıcının isteğiyle
+geçici olarak kapalıdır. Ortam kartları doğrudan editörü açar; gerçek model
+yükleme göstergesi korunur.
+
 Üniversite bitirme projesi: farklı işyerlerinde kullanılabilecek tarayıcı tabanlı eğitim ortamı editörü. React arayüzü ve Babylon.js görüntüleyicisiyle mevcut GLB ortamında eğitim hotspotları ve inceleme görünümleri hazırlanır.
 
-Hedef pipeline: fotoğraf/video → bağımsız 3D reconstruction → GLB → eğitim editörü. Reconstruction, AI recognition, backend ve Unity/OpenXR native VR bağlantısı bugün uygulanmış değildir. WISP de entegre değildir; kaynak erişimi/dönüştürme engellidir.
+Hedef pipeline: fotoğraf/video → bağımsız 3D reconstruction → GLB → eğitim editörü. Reconstruction, AI recognition, backend ve Unity/OpenXR native VR bağlantısı bugün uygulanmış değildir. Piko (önceki çalışma adı WISP), sağ altta Idle bekleme animasyonunu oynatır; üzerine tıklayınca veya klavyeyle Enter/Space basınca bir kez el sallayıp beklemeye döner. Konuşma/eğitim rehberliği yoktur. Küçültme düğmesiyle gizlenip Piko düğmesiyle yeniden gösterilebilir.
 
 ## Bugün neler var?
 
@@ -46,7 +50,7 @@ node --experimental-strip-types --test tests/*.test.ts
 npm run preview
 ```
 
-Build tsc -b + Vite ile dist/ üretir. Preview hazır build'i yerelde sunar; deployment değildir. 23 Node testi modeller olmadan çekirdek davranışları doğrular; tam browser/E2E kapsamı değildir.
+Build tsc -b + Vite ile dist/ üretir. Preview hazır build'i yerelde sunar; deployment değildir. 27 Node testi modeller olmadan çekirdek davranışları ve başlangıç hotspotlarının kayıt korumasını doğrular; tam browser/E2E kapsamı değildir.
 
 ## Ortam dosyaları
 
@@ -62,6 +66,12 @@ Dashboard → Your Environments → **Boeing 737-800 Cockpit** veya **Charité H
 Gerçek modellerden alınmış yerel ekran görüntüleri `public/previews/environments/` içindedir; [önizleme notları](public/previews/environments/README.md) adları açıklar. Lisans incelemesi tamamlanmadan önizlemeler de yayın paketine eklenmez. Eksik önizlemede yer tutucu kullanılır; açma eylemi korunur. Eski makineye özel ekran kanıtlarının yeni klonda bulunduğu varsayılmaz.
 
 ## Editör kullanımı
+
+Hastanede kaynak Sketchfab modelinden alınan 10 ekipman hotspotu ve kamera
+bakışı hazır gelir. İngilizce özgün metinler korunur. Önceden kaydedilmiş
+hastane içeriğiniz varsa Editor → Scene Explorer → **Add source annotations**
+ile yalnız eksik kaynak noktalarını ekleyebilirsiniz; mevcut notlar korunur.
+Kaynak/atıf ve aktarım ayrıntıları: [HOSPITAL_ANNOTATIONS](docs/HOSPITAL_ANNOTATIONS.md).
 
 Preview başlangıç modudur. Drag mevcut ters yönle bakar; wheel FOV değiştirir. Kokpit Preview'da WASD yoktur. Editor → Add hotspot → gerçek yüzeye tıklama → başlık/bilgi/isteğe bağlı zone → Save hotspot. Cancel taslağı bırakır. Save Current View gerçek kamera pozunu zone olarak kaydeder. Inspector → Advanced Camera Calibration sayısal ayar içindir; başlangıç kamera/ölçekleri provisional'dır.
 
@@ -108,7 +118,7 @@ Ekip akışı: [CONTRIBUTING](docs/CONTRIBUTING.md). Yayın planı: [PUBLISHING]
 
 ## Ekip ve AI devri
 
-Yapılanlar, son tasarım kararları, sınırlar ve sonraki öneriler: [TEAM_HANDOFF](docs/TEAM_HANDOFF.md). İki ortamdan önce 4sn Breathe in / 6sn Slowly exhale hazırlığı açılır; Escape iptal eder. Bağımsız Resq landing denemesi ürünün parçası değildir.
+Yapılanlar, son tasarım kararları, sınırlar ve sonraki öneriler: [TEAM_HANDOFF](docs/TEAM_HANDOFF.md). 4sn Breathe in / 6sn Slowly exhale hazırlığı şimdilik kapalıdır; iki ortam doğrudan editörde açılır. Bağımsız Resq landing denemesi ürünün parçası değildir.
 
 ## GLB modellerini indirme — son guncelleme
 

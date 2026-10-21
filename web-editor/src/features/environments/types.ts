@@ -26,6 +26,8 @@ export interface SceneDefinition {
   camera: CameraConfiguration
   interaction?: InteractionConfiguration
   attribution?: { author: string; sourceUrl: string; license: string; licenseUrl: string }
+  /** Shipped content for a new browser record; existing records are never replaced. */
+  starterContent?: { zones: readonly InspectionZone[]; hotspots: readonly Hotspot[] }
 }
 
 export interface CameraPose {

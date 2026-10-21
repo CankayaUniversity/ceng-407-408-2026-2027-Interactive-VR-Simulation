@@ -55,3 +55,6 @@ public/previews/environments/*.jpg
 # Kullanici talebiyle yalniz iki ortam modeli Git LFS ile paylasilir.
 !/public/environments/cockpit/boeing_737-800_cockpit.glb
 !/public/environments/charite_university_hospital_-_operating_room.glb
+
+# Kullanıcının kendi Piko maskotu; yalnız bu doğrulanmış model dahil edilir.
+!/public/guides/piko/piko.glb

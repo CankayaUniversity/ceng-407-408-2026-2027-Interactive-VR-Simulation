@@ -8,6 +8,10 @@ import { EnvironmentBoundary } from './EnvironmentBoundary'
 import { SimulationPreparation } from './SimulationPreparation'
 
 const EnvironmentWorkspace = lazy(() => import('../features/environments/EnvironmentWorkspace'))
+const PikoMascot = lazy(() => import('../features/mascot/PikoMascot'))
+
+// Şimdilik bekleme ekranını atla; hazırlık bileşeni daha sonra düzenlenebilir.
+const SIMULATION_PREPARATION_ENABLED = false
 
 type DialogState = { type: 'create' } | { type: 'rename' | 'delete'; project: Project }
 
@@ -33,8 +37,8 @@ function App() {
 
   function prepareEnvironment(environment: EnvironmentKey = 'cockpit') {
     setActiveId(null)
-    setExploring(null)
-    setPreparing(environment)
+    setExploring(SIMULATION_PREPARATION_ENABLED ? null : environment)
+    setPreparing(SIMULATION_PREPARATION_ENABLED ? environment : null)
   }
 
   function navigate(id: string | null) {
@@ -93,6 +97,7 @@ function App() {
         </main>
       </div>
       {dialog && <ProjectDialog key={dialog.type === 'create' ? 'create' : `${dialog.type}-${dialog.project.id}`} mode={dialog.type} project={'project' in dialog ? dialog.project : undefined} onSubmit={submit} onClose={() => setDialog(null)} />}
+      {!preparing && <Suspense fallback={null}><PikoMascot /></Suspense>}
     </>
   )
 }
