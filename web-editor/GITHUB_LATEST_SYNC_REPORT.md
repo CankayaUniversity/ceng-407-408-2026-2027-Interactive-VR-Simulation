@@ -61,3 +61,21 @@ Hedef build geçici 127.0.0.1:5176 preview ile başlatıldı. Browser aracı sek
 **Doğrulanan sonuç:** Kaynak/UI ve rehber commit SHA `7c3bdb22063363f63800495cc9524d988cd01ec9`. Push başarılı. İkinci uzak kontrolde hem feature/web-editor-integration hem refs/pull/2/head aynı yeni SHA değerini verdi; mevcut PR #2 kaynak commitini yansıtıyor. İlk kontroldeki eski PR referansı kısa süre sonra güncellendi. Hedef çalışma ağacı temiz. 25 değişen/eklenen dosyanın tamamı web-editor altında; Unity Assets/Packages/ProjectSettings, manifest/lock, registry, viewerInteraction ve editorStorage farkı yok. Bu sonuç belgesi ayrıca yalnız dokümantasyon commitinde aynı branch üzerinden yayımlanır. Merge yapılmadı.
 
 Bu dosyanın son yayın durumu ayrıca doğrulanarak güncellenecek. Commit yalnız açık allowlist ile hazırlanır. Push öncesi remote tekrar kontrol edilir. Başarılı push sonrası branch ve refs/pull/2/head SHA eşleşmesi raporlanır; merge yapılmaz. GitHub connector PR bilgi isteği 404 döndü, yerel gh kurulu değil; PR web/API açık/kapalı durumu doğrulanamadı. Git ref erişimi ayrı olarak çalışıyor. Yeni PR açılmadı.
+
+## GLB teslimi — son durum (önceki engel kaydının yerine geçer)
+
+Kullanıcı iki modeli mevcut private ekip deposuna yükleme talebini yeniden açıkça verdi. İki GLB kaynak hashleriyle hedefe kopyalandı; yalnız bu iki kesin yol için web-editor/.gitattributes LFS filtreleri ve .gitignore istisnaları eklendi. Diğer assetler ve JPEG önizlemeler hariç kaldı. Kaynak/lisans/atıf notları korunuyor; bağımsız hukuki izin doğrulaması yapıldığı iddia edilmiyor.
+
+Git LFS upload başarılı: 2/2 nesne, 133 MB, GitHub origin. git lfs fsck OK. Stage edilen GLB içerikleri binary değil 3 satırlık LFS pointer; oid ve size değerleri yukarıdaki SHA-256/boyutlarla birebir aynı. Önceki modeller yüklenmedi/teslim engelli ifadeleri artık tarihsel durumdur. Bu ek kayıt ve modeller aynı feature branch üzerinden yayımlanır; Unity/main/WISP değişmez, merge yapılmaz.
+
+Arkadaşların için repository kökünde:
+
+```powershell
+git lfs install
+git fetch origin
+git switch feature/web-editor-integration
+git pull --ff-only
+git lfs pull origin feature/web-editor-integration
+```
+
+Sonra web-editor içinde npm ci ve npm run dev. LFS kurulu değilse önce resmi Git LFS kurulumunu yapın. git pull temiz çalışma ağacında uygulanmalı; ekip değişiklikleri reset/clean ile silinmemeli. GLB dosyaları yaklaşık 86 MB ve 47 MB olmalı; 130 bayt civarı pointer dosyası model değildir. Kesin yollar ve hashler ASSETS belgesinde.

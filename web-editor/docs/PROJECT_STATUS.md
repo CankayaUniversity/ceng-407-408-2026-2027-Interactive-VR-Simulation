@@ -63,3 +63,5 @@ Fotoğraf/video reconstruction ve AI recognition; backend/API/auth/object storag
 - Collision/navmesh ve native VR veri sözleşmesi için tasarım önerileri; uygulama ayrı onay gerektirir.
 
 Ortak kamera/storage/viewport dosyalarını paralel değiştirmeden ekipte kapsam belirleyin. Her katkıda gerçek sonuçlar ve test edilmemiş kısımlar yazılmalı.
+
+21 Ekim 2026 son GLB teslimi: kullanici talebiyle iki model Git LFS uzerinden GitHub origin sunucusuna yuklendi (2/2, 133 MB); fsck OK. Yalniz iki model icin ignore istisnasi var. Onceki asset engeli kaydi tarihseldir; kaynak/lisans/atif notlari korunur. Kurulum icin git lfs pull gerekir.

@@ -51,3 +51,7 @@ public/**/*.blend
 public/**/*.bin
 public/guides/wisp/
 public/previews/environments/*.jpg
+
+# Kullanici talebiyle yalniz iki ortam modeli Git LFS ile paylasilir.
+!/public/environments/cockpit/boeing_737-800_cockpit.glb
+!/public/environments/charite_university_hospital_-_operating_room.glb

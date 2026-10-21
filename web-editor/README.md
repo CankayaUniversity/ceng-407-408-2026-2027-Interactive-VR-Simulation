@@ -109,3 +109,7 @@ Ekip akışı: [CONTRIBUTING](docs/CONTRIBUTING.md). Yayın planı: [PUBLISHING]
 ## Ekip ve AI devri
 
 Yapılanlar, son tasarım kararları, sınırlar ve sonraki öneriler: [TEAM_HANDOFF](docs/TEAM_HANDOFF.md). İki ortamdan önce 4sn Breathe in / 6sn Slowly exhale hazırlığı açılır; Escape iptal eder. Bağımsız Resq landing denemesi ürünün parçası değildir.
+
+## GLB modellerini indirme — son guncelleme
+
+Iki ortam modeli artik bu feature branch uzerinden Git LFS ile paylasilir. Onceki haric/ayri teslim ifadeleri bu iki GLB icin tarihseldir; diger asset ve JPEG onizlemeleri halen harictir. Git LFS kurulu olmali. Repository kokunde git lfs install, git pull --ff-only ve git lfs pull komutlarini calistirin. Iki GLB icin beklenen boyut/hash docs/ASSETS.md icindedir. 130 bayt civari dosya LFS pointeridir; model degildir. Lisans/kaynak/atif notlari korunur; kullanici ekip paylasimini istedi, bagimsiz hukuki dogrulama yapilmadi.

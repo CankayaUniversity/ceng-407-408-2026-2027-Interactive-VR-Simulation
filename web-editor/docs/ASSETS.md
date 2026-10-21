@@ -34,3 +34,7 @@ Eksik GLB, loader catch yolunda “The environment could not load…” ve Retry
 - Üçüncü taraf Unity asset'leri veya yeni kaynak arşivleri; Unity kökünden web'e kopyalanmaz.
 
 Plain-text asset notları, registry'deki atıf ve önizleme README'si yayın adayına dahildir. .gitignore ek korumadır; son staged liste yine manuel incelenir. Onay gelirse ilgili ignore kuralı review ile değiştirilir; körlemesine force-add yapılmaz.
+
+## 21 Ekim 2026 teslim guncellemesi
+
+Kullanici iki GLB modelinin mevcut private ekip deposuna yuklenmesini acikca istedi. Yalniz bu iki kesin yol icin Git LFS dagitimi hazirlaniyor; onceki yayindan haric ifadeleri bu iki dosya icin tarihseldir. Lisans metadata ve atif notlari aynen korunur; bagimsiz yeniden dagitim hak dogrulamasi yapildigi iddia edilmez. JPEG onizlemeler ve diger assetler haric kalir. Nihai upload sonucu GITHUB_LATEST_SYNC_REPORT.md icindedir.
