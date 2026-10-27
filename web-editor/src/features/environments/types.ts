@@ -23,11 +23,10 @@ export interface SceneDefinition {
   modelUrl: string
   modelTransform: ModelTransform
   navigationMode: NavigationMode
+  starterContent?: { zones: readonly InspectionZone[]; hotspots: readonly Hotspot[] }
   camera: CameraConfiguration
   interaction?: InteractionConfiguration
   attribution?: { author: string; sourceUrl: string; license: string; licenseUrl: string }
-  /** Shipped content for a new browser record; existing records are never replaced. */
-  starterContent?: { zones: readonly InspectionZone[]; hotspots: readonly Hotspot[] }
 }
 
 export interface CameraPose {
@@ -57,6 +56,9 @@ export interface InspectorConfiguration {
 
 export interface InspectionZone {
   id: string
+  /** Eğitim gruplaması; kamera pozu her zaman mutlak sahne koordinatıdır. */
+  parentZoneId?: string
+  order?: number
   title: string
   environmentId: string
   camera: CameraPose
@@ -77,6 +79,8 @@ export interface Hotspot {
 
 export interface SerializedEditorV1 {
   schemaVersion: 1
+  /** v1 ile uyumlu, isteğe bağlı hiyerarşi uzantısı. */
+  hierarchyVersion?: 1
   environmentId: string
   modelUrl: string
   modelTransform: ModelTransform

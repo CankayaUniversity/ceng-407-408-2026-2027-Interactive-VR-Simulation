@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { EnvironmentEditorState } from './useEnvironmentEditor'
 import { HotspotInfoCard } from './HotspotInfoCard'
+import { zonePath } from './zoneHierarchy'
 
 export function HotspotPanel({ editor }: { editor: EnvironmentEditorState }) {
   const heading = useRef<HTMLHeadingElement>(null)
@@ -8,7 +9,7 @@ export function HotspotPanel({ editor }: { editor: EnvironmentEditorState }) {
   const itemId = item?.id
   useEffect(() => { if (itemId) heading.current?.focus() }, [itemId])
   if (!item) return null
-  if (editor.mode === 'preview') return <HotspotInfoCard hotspot={item} zoneTitle={item.zoneId ? editor.data.zones.find(zone => zone.id === item.zoneId)?.title ?? 'Unavailable zone (saved reference)' : undefined} onClose={editor.closePanel} />
+  if (editor.mode === 'preview') return <HotspotInfoCard hotspot={item} zoneTitle={item.zoneId ? zonePath(editor.data.zones, item.zoneId).map(zone => zone.title).join(' / ') || 'Unavailable area (saved reference)' : undefined} onClose={editor.closePanel} />
   return <section className="hotspot-panel" aria-labelledby="hotspot-panel-title">
     <div className="hotspot-panel-heading">
       <h2 id="hotspot-panel-title" tabIndex={-1} ref={heading}>{editor.draft ? (editor.selected ? 'Edit hotspot' : 'New hotspot · draft') : item.title}</h2>
@@ -19,11 +20,12 @@ export function HotspotPanel({ editor }: { editor: EnvironmentEditorState }) {
       </label>
       <label>Training information<textarea maxLength={2000} rows={4} value={editor.draft.description} onChange={event => editor.setDraft({ ...editor.draft!, description: event.target.value })} />
       </label>
-      <label>Inspection view (optional)<select value={editor.draft.zoneId ?? ''} onChange={event => {
+      <p className="editor-help">Area: {zonePath(editor.data.zones, editor.draft.zoneId ?? null).map(zone => zone.title).join(' / ') || 'Unassigned · no camera navigation'}</p>
+      <label>Move to area<select value={editor.draft.zoneId ?? ''} onChange={event => {
         const { zoneId: _zoneId, ...rest } = editor.draft!
         editor.setDraft(event.target.value ? { ...rest, zoneId: event.target.value } : rest)
       }}>
-        <option value="">No inspection view</option>{editor.draft.zoneId && !editor.data.zones.some(zone => zone.id === editor.draft?.zoneId) && <option value={editor.draft.zoneId}>Unavailable view (saved reference)</option>}{editor.data.zones.map(zone => <option key={zone.id} value={zone.id}>{zone.title}</option>)}</select>
+        <option value="">Unassigned · keep current view</option>{editor.draft.zoneId && !editor.data.zones.some(zone => zone.id === editor.draft?.zoneId) && <option value={editor.draft.zoneId}>Unavailable view (saved reference)</option>}{editor.data.zones.map(zone => <option key={zone.id} value={zone.id}>{zonePath(editor.data.zones, zone.id).map(item => item.title).join(' / ')}</option>)}</select>
       </label>
       <p className="editor-help">Save keeps this hotspot and its surface position. Cancel discards your changes.</p>
       <div className="hotspot-panel-actions">
@@ -34,24 +36,22 @@ export function HotspotPanel({ editor }: { editor: EnvironmentEditorState }) {
   </section>
 }
 
-export function ZoneCalibration({ editor, ready, transitioning, expanded = false }: { editor: EnvironmentEditorState; ready: boolean; transitioning: boolean; expanded?: boolean }) {
+export function ZoneCalibration({ editor, ready, transitioning, expanded = false, parentId }: { editor: EnvironmentEditorState; ready: boolean; transitioning: boolean; expanded?: boolean; parentId?: string }) {
   const [title, setTitle] = useState('')
   const [reviewed, setReviewed] = useState(false)
+  const [parent, setParent] = useState(parentId ?? '')
   if (editor.mode !== 'editor') return null
   return <details className="zone-calibration" open={expanded || undefined}>
-    <summary>Save an inspection view</summary>
+    <summary>{parent ? 'Add sub-area' : 'Save an area'}</summary>
     <p>Frame the equipment with drag and zoom, or use Spectator to move. Save captures your current camera angle.</p>
-    <form onSubmit={event => { event.preventDefault(); if (editor.saveZone(title, reviewed)) { setTitle(''); setReviewed(false) } }}>
+    <form onSubmit={event => { event.preventDefault(); if (editor.saveZone(title, reviewed, parent || undefined)) { setTitle(''); setReviewed(false) } }}>
+      <label>Parent area<select value={parent} onChange={event => setParent(event.target.value)}><option value="">Environment · root area</option>{editor.data.zones.map(zone => <option value={zone.id} key={zone.id}>{zonePath(editor.data.zones, zone.id).map(item => item.title).join(' / ')}</option>)}</select></label>
       <label>View title<input maxLength={100} required value={title} onChange={event => setTitle(event.target.value)} placeholder="Name this camera view" />
       </label>
       <label className="checkbox-label">
         <input type="checkbox" checked={reviewed} onChange={event => setReviewed(event.target.checked)} />I visually reviewed this camera pose. I will test the full transition before training use.</label>
-      <button className="secondary-button" type="submit" disabled={!editor.editable || !ready || transitioning || !reviewed || !title.trim()}>Save current view</button>
+      <button className="secondary-button" type="submit" disabled={!editor.editable || !ready || transitioning || !reviewed || !title.trim()}>Save this view</button>
     </form>
     <details className="v2-review-note"><summary>Before training use</summary><p>Test the destination and the complete camera transition. Paths have limited geometry checks, not full collision protection. Camera scale is provisional.</p></details>
-    {editor.data.zones.length > 0 && <ul className="zone-management">{editor.data.zones.map(zone => <li key={zone.id}>
-      <span>{zone.title}</span>
-      <button className="text-button delete-action" disabled={!editor.editable || transitioning} onClick={() => editor.deleteZone(zone.id)} aria-label={`Delete zone ${zone.title}`}>Delete zone</button>
-    </li>)}</ul>}
   </details>
 }

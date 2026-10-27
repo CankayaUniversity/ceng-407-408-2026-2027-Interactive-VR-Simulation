@@ -1,3 +1,5 @@
+27 Ekim 2026 görev istisnası: kullanıcı iki sürümün birleştirilmesini ve doğrulama sonrası main’e gönderilmesini açıkça yetkilendirdi. Genel ekip akışı feature branch ve insan incelemeli PR olarak kalır. Bu görevde main güncellemesi force push veya Unity içeriği silme yetkisi vermez.
+
 # Mevcut ekip yayını
 
 22 Ekim 2026 yeni teslim: kullanıcı son yerel sürümün GitHub'a **yeni bir

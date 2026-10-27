@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { EnvironmentEditorState } from './useEnvironmentEditor'
 import type { InspectionZone, SceneDefinition } from './types'
+import { canParent, childrenOf, zonePath } from './zoneHierarchy'
+import { TrainingTree } from './TrainingTree'
 
 export function AuthoringHelp({ editing, disabled, onSaveView, onAddHotspot }: {
   editing: boolean; disabled: boolean; onSaveView: () => void; onAddHotspot: () => void
@@ -19,32 +21,7 @@ export function SceneExplorer({ editor, ready, onZone, onHotspot, onSaveView, on
   editor: EnvironmentEditorState; ready: boolean; onZone: (id: string) => void; onHotspot: (id: string) => void
   onSaveView: () => void; onAddHotspot: () => void; onClear: () => void
 }) {
-  const [query, setQuery] = useState('')
-  const matches = (title: string) => title.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
-  const zones = editor.data.zones.filter(zone => matches(zone.title))
-  const hotspots = editor.data.hotspots.filter(spot => matches(spot.title))
-  return <>
-    <label className="v2-search">Search scene<input type="search" value={query} placeholder="Find a view or hotspot…" onChange={event => setQuery(event.target.value)} />
-    </label>
-    <details className="v2-tree-section" open>
-      <summary>Inspection views <span>{zones.length}{query ? ` / ${editor.data.zones.length}` : ''}</span>
-      </summary>
-      <ul>{zones.map(zone => <li key={zone.id}>
-        <button disabled={!ready} aria-current={editor.activeZone === zone.id ? 'location' : undefined} onClick={() => onZone(zone.id)}>
-          <span className="v2-item-kind" aria-hidden="true">View</span><span>{zone.title}</span></button>
-      </li>)}</ul>
-      {!zones.length && <div className="v2-list-empty"><p>{query ? 'No matching views.' : 'Save a camera angle to revisit equipment.'}</p>{!query && editor.editable && <button disabled={!ready} onClick={onSaveView}>Save first view</button>}</div>}
-    </details>
-    <details className="v2-tree-section" open>
-      <summary>Equipment hotspots <span>{hotspots.length}{query ? ` / ${editor.data.hotspots.length}` : ''}</span>
-      </summary>
-      <ul>{hotspots.map(spot => <li key={spot.id}>
-        <button disabled={!ready} aria-current={editor.selected?.id === spot.id ? 'true' : undefined} onClick={() => onHotspot(spot.id)}>
-          <span className="v2-item-number" aria-hidden="true">{editor.data.hotspots.findIndex(item => item.id === spot.id) + 1}</span><span>{spot.title}</span></button>
-      </li>)}</ul>
-      {!hotspots.length && <div className="v2-list-empty"><p>{query ? 'No matching hotspots.' : 'Add training information to a real model surface.'}</p>{!query && editor.editable && <button disabled={!ready} onClick={onAddHotspot}>Add first hotspot</button>}</div>}
-    </details>
-    {(editor.selected || editor.draft) && <button className="v2-clear-selection" onClick={onClear}>Clear selection</button>}
+  return <><TrainingTree editor={editor} ready={ready} onZone={onZone} onHotspot={onHotspot} onSaveView={onSaveView} />{editor.editable && <div className="tree-actions"><button disabled={!ready} onClick={onSaveView}>Save an area</button><button disabled={!ready} onClick={onAddHotspot}>Add information point</button><button onClick={onClear}>Clear selection</button></div>}
     {editor.canAddStarterContent && editor.editable && <div className="v2-list-empty">
       <button disabled={!ready} onClick={editor.addSourceHotspots}>Add source annotations</button>
       <p>Add missing original annotations while keeping your existing content.</p>
@@ -53,14 +30,31 @@ export function SceneExplorer({ editor, ready, onZone, onHotspot, onSaveView, on
       Annotations: {editor.sourceAttribution.author} · <a href={editor.sourceAttribution.sourceUrl} target="_blank" rel="noreferrer">Sketchfab source ↗</a><br />
       <a href={editor.sourceAttribution.licenseUrl} target="_blank" rel="noreferrer">{editor.sourceAttribution.license}</a>
     </p>}
-    <p className="v2-panel-note">Saved in this browser · This environment only</p>
-  </>
+</>
 }
 
-export function ZoneInspector({ zone, editor, ready }: { zone: InspectionZone; editor: EnvironmentEditorState; ready: boolean }) {
+export function ZoneInspector({ zone, editor, ready, onAddChild }: { zone: InspectionZone; editor: EnvironmentEditorState; ready: boolean; onAddChild: () => void }) {
+  const [title, setTitle] = useState(zone.title)
+  const [parent, setParent] = useState(zone.parentZoneId ?? '')
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const siblings = childrenOf(editor.data.zones, zone.parentZoneId)
+  const index = siblings.findIndex(item => item.id === zone.id)
+  const childCount = childrenOf(editor.data.zones, zone.id).length
+  const pointCount = editor.data.hotspots.filter(spot => spot.zoneId === zone.id).length
   return <section className="v2-properties">
-    <p className="v2-selection-type">Saved inspection view</p>
     <h3>{zone.title}</h3>
+    <p className="v2-panel-note">{zonePath(editor.data.zones, zone.id).map(item => item.title).join(' / ')} · {childCount} sub-areas · {pointCount} points</p>
+    <button className="secondary-button" disabled={!ready} onClick={() => editor.goToZone(zone.id)}>Open saved view</button>
+    {editor.editable && <>
+      <form className="area-form" onSubmit={event => { event.preventDefault(); editor.updateZone(zone.id, title, parent || undefined) }}>
+        <label>Area name<input maxLength={100} required value={title} onChange={event => setTitle(event.target.value)} /></label>
+        <label>Move to area<select value={parent} onChange={event => setParent(event.target.value)}><option value="">Environment · root area</option>{editor.data.zones.filter(item => canParent(editor.data.zones, zone.id, item.id)).map(item => <option key={item.id} value={item.id}>{zonePath(editor.data.zones, item.id).map(area => area.title).join(' / ')}</option>)}</select></label>
+        <button type="submit" disabled={!title.trim()}>Save area details</button>
+      </form>
+      <div className="area-actions"><button disabled={!ready} onClick={onAddChild}>Add sub-area</button><button disabled={!ready} onClick={() => editor.updateZoneView(zone.id)}>Update saved view</button></div>
+      <p className="v2-panel-note">Update replaces this saved camera with the view currently on screen.</p>
+      <div className="area-actions" role="group" aria-label="Sibling order"><button disabled={index <= 0} onClick={() => editor.reorderZone(zone.id, -1)}>Move earlier</button><button disabled={index === siblings.length - 1} onClick={() => editor.reorderZone(zone.id, 1)}>Move later</button></div>
+    </>}
     <details className="v2-pose-details"><summary>Camera position &amp; field of view</summary><dl>
       <dt>Position · X / Y / Z</dt>
       <dd>{zone.camera.position.map(n => n.toFixed(3)).join(' / ')}</dd>
@@ -71,7 +65,7 @@ export function ZoneInspector({ zone, editor, ready }: { zone: InspectionZone; e
       <dt>Review status</dt>
       <dd>{zone.calibration}</dd>
     </dl></details>
-    <button className="secondary-button" disabled={!ready} onClick={() => editor.goToZone(zone.id)}>Open saved view</button>{editor.editable && <details className="v2-danger-section"><summary>Delete this view</summary><p>Hotspots stay saved, but their link to this view will be removed. This cannot be undone.</p><button className="danger-button" disabled={!ready} onClick={() => editor.deleteZone(zone.id)}>Delete view {zone.title}</button></details>}</section>
+    {editor.editable && <div className="v2-danger-section">{!confirmDelete ? <button onClick={() => setConfirmDelete(true)}>Remove area…</button> : <><p>Remove “{zone.title}”? {childCount} direct sub-areas and {pointCount} information points move to {editor.data.zones.find(item => item.id === zone.parentZoneId)?.title ?? 'the environment level'}. All deeper content is kept. Only this saved view is removed.</p><button className="danger-button" disabled={!ready} onClick={() => editor.deleteZone(zone.id)}>Confirm removal</button><button onClick={() => setConfirmDelete(false)}>Keep area</button></>}</div>}</section>
 }
 
 export function EnvironmentInfo({ definition }: { definition: SceneDefinition }) {

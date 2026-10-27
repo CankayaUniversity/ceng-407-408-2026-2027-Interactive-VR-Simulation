@@ -78,3 +78,20 @@ test('source import enforces existing limits and leaves unrelated environments e
   const cockpit = { ...other, id: 'cockpit', modelUrl: '/cockpit.glb' }
   assert.deepEqual(loadEditor({ getItem: () => null }, cockpit).data, emptyEditor(cockpit))
 })
+
+test('source import preserves hierarchy, camera edits and exact legacy backup on explicit save', () => {
+  const source = addStarterContent(emptyEditor(definition), definition)
+  const parent = { ...source.zones[0], id: 'custom-parent', title: 'Custom parent', order: 0 }
+  const child = { ...source.zones[1], parentZoneId: parent.id, order: 3 }
+  const legacy = JSON.stringify({ ...source, hotspots: source.hotspots.slice(0, 2) })
+  const data = { ...source, hierarchyVersion: 1 as const, zones: [parent, child], hotspots: source.hotspots.slice(0, 2) }
+  const merged = addStarterContent(data, definition)
+  assert.deepEqual(merged.zones[1], child)
+  assert.equal(merged.hierarchyVersion, 1)
+  assert.deepEqual(addStarterContent(merged, definition), merged)
+  const records = new Map<string, string>([['workplace-studio.environment-editor.v1.charite-operating-room', legacy]])
+  const storage = { getItem: (key: string) => records.get(key) ?? null, setItem: (key: string, value: string) => { records.set(key, value) } }
+  assert.equal(saveEditor(storage, definition, merged), '')
+  assert.equal(records.get('workplace-studio.environment-editor.v1.charite-operating-room.before-hierarchy.v1'), legacy)
+  assert.deepEqual(loadEditor(storage, definition).data, merged)
+})

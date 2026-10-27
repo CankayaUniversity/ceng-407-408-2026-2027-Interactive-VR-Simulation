@@ -1,4 +1,5 @@
 import type { CameraPose, Hotspot, InspectionZone, SceneDefinition, SerializedEditorV1, Vector3Tuple } from './types'
+import { validateHierarchy } from './zoneHierarchy.ts'
 
 export const editorKey = (environmentId: string) => `workplace-studio.environment-editor.v1.${encodeURIComponent(environmentId)}`
 type RecordValue = Record<string, unknown>
@@ -35,6 +36,8 @@ export function parseEditor(raw: string, definition: SceneDefinition): Serialize
     !Array.isArray(value.zones) || value.zones.length > 32 || !value.zones.every(zone => isZone(zone, definition.id)) ||
     !Array.isArray(value.hotspots) || value.hotspots.length > 100 || !value.hotspots.every(isHotspot)) throw new Error('Invalid or incompatible editor data')
   const data = value as unknown as SerializedEditorV1
+  if (data.hierarchyVersion !== undefined && data.hierarchyVersion !== 1) throw new Error('Unsupported hierarchy version')
+  validateHierarchy(data.zones)
   if (new Set(data.zones.map(zone => zone.id)).size !== data.zones.length || new Set(data.hotspots.map(spot => spot.id)).size !== data.hotspots.length) throw new Error('Invalid editor identifiers')
   return data
 }
@@ -50,10 +53,20 @@ export function loadEditor(storage: Pick<Storage, 'getItem'>, definition: SceneD
   }
 }
 
-export function saveEditor(storage: Pick<Storage, 'setItem'>, definition: SceneDefinition, data: SerializedEditorV1): string {
+export function saveEditor(storage: Pick<Storage, 'setItem'> & Partial<Pick<Storage, 'getItem'>>, definition: SceneDefinition, data: SerializedEditorV1): string {
   try {
     const serialized = JSON.stringify(data)
     parseEditor(serialized, definition)
+    // Okuma veya mount sırasında yazılmaz. İlk açık hiyerarşi düzenlemesinden önce ham kayıt korunur.
+    if (data.hierarchyVersion === 1) {
+      if (!storage.getItem) throw new Error('Storage backup requires read access')
+      const backupKey = `${editorKey(definition.id)}.before-hierarchy.v1`
+      const previous = storage.getItem(editorKey(definition.id))
+      if (previous !== null) {
+        const previousData = parseEditor(previous, definition)
+        if (previousData.hierarchyVersion !== 1 && storage.getItem(backupKey) === null) storage.setItem(backupKey, previous)
+      }
+    }
     storage.setItem(editorKey(definition.id), serialized)
     return ''
   } catch {

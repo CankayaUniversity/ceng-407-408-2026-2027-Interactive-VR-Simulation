@@ -1,3 +1,5 @@
+27 Ekim 2026 görev istisnası: kullanıcı iki sürümün birleştirilmesini ve doğrulama sonrası main’e gönderilmesini açıkça yetkilendirdi. Genel ekip akışı feature branch ve insan incelemeli PR olarak kalır. Bu görevde main güncellemesi force push veya Unity içeriği silme yetkisi vermez.
+
 # Ekip katkı rehberi
 
 README, ARCHITECTURE, PROJECT_STATUS ve AGENTS okuyun. Kod/testler gerçek kaynaktır. AI çıktısı dahil her değişiklik insan tarafından incelenir.

@@ -1,14 +1,14 @@
 # Workplace Studio
 
-21 Ekim 2026: ortam öncesindeki 10 saniyelik nefes ekranı kullanıcının isteğiyle
-geçici olarak kapalıdır. Ortam kartları doğrudan editörü açar; gerçek model
-yükleme göstergesi korunur.
+27 Ekim 2026: yerel Studio arayüzü ve hiyerarşik alanlar, hastanenin 10 kaynak açıklaması ve Piko ile birleştirildi. Ortam öncesinde 10 saniyelik hazırlık ekranı açıktır.
 
 Üniversite bitirme projesi: farklı işyerlerinde kullanılabilecek tarayıcı tabanlı eğitim ortamı editörü. React arayüzü ve Babylon.js görüntüleyicisiyle mevcut GLB ortamında eğitim hotspotları ve inceleme görünümleri hazırlanır.
 
 Hedef pipeline: fotoğraf/video → bağımsız 3D reconstruction → GLB → eğitim editörü. Reconstruction, AI recognition, backend ve Unity/OpenXR native VR bağlantısı bugün uygulanmış değildir. Piko (önceki çalışma adı WISP), sağ altta Idle bekleme animasyonunu oynatır; üzerine tıklayınca veya klavyeyle Enter/Space basınca bir kez el sallayıp beklemeye döner. Konuşma/eğitim rehberliği yoktur. Küçültme düğmesiyle gizlenip Piko düğmesiyle yeniden gösterilebilir.
 
 ## Bugün neler var?
+
+- Hiyerarşik eğitim alanları ve rehberli gezinme: [kullanım rehberi](docs/HIERARCHICAL_TRAINING_GUIDE.md).
 
 - Studio Neutral Dashboard: iki eşit ortam kartı, gerçek proje listesi, create/rename/delete diyalogları ve localStorage.
 - Boeing 737-800 kokpit ve Charité ameliyathane için ortak Editor Workspace V2; Editor/Preview, Explorer araması, Inspector ve responsive drawer'lar.
@@ -25,13 +25,13 @@ Durum ve test kapsamı: [PROJECT_STATUS](docs/PROJECT_STATUS.md). Mimari: [ARCHI
 
 Node.js **24** ve npm ekip standardıdır; Dockerfile da Node 24 kullanır. Denetlenen yerel sürümler: Node 24.18.0 / npm 11.16.0. package.json içinde engines/packageManager veya test script'i yoktur. Lock dosyasındaki Vite 8.3.4 ve React plugin'i Node `^20.19.0 || >=22.12.0` ister; TypeScript strip destekli test akışı için Node 24 kullanın. React 19, TypeScript 6, Babylon 9; kesin sürümler package-lock.json içindedir.
 
-Mevcut ekip branch kurulumu (PR #2; main ile birleştirilmiş kabul etmeyin):
+Güncel sürümün kurulumu:
 
 ```powershell
 git clone https://github.com/Cengaverler/interactive-vr-simulation.git
 cd interactive-vr-simulation
 git fetch origin
-git switch --track origin/feature/web-editor-integration
+git switch main
 cd web-editor
 npm ci
 npm run dev
@@ -123,3 +123,6 @@ Yapılanlar, son tasarım kararları, sınırlar ve sonraki öneriler: [TEAM_HAN
 ## GLB modellerini indirme — son guncelleme
 
 Iki ortam modeli artik bu feature branch uzerinden Git LFS ile paylasilir. Onceki haric/ayri teslim ifadeleri bu iki GLB icin tarihseldir; diger asset ve JPEG onizlemeleri halen harictir. Git LFS kurulu olmali. Repository kokunde git lfs install, git pull --ff-only ve git lfs pull komutlarini calistirin. Iki GLB icin beklenen boyut/hash docs/ASSETS.md icindedir. 130 bayt civari dosya LFS pointeridir; model degildir. Lisans/kaynak/atif notlari korunur; kullanici ekip paylasimini istedi, bagimsiz hukuki dogrulama yapilmadi.
+
+
+27 Ekim 2026 birleştirme: yerel Studio arayüzü, hazırlık ekranı ve hiyerarşik eğitim alanları; codex/hospital-source-hotspots üzerindeki 10 kaynak hastane açıklaması ve Piko ile birleştirildi. Ortak Babylon editörü, v1 anahtarları ve hiyerarşi yedeği korunur. Kaynak noktalar mevcut kaydı değiştirmeden yüklenir; eksikleri ekleme açık kullanıcı eylemidir.

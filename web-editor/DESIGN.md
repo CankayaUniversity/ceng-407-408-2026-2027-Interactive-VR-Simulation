@@ -131,6 +131,8 @@ Kontroller ve mode switch 6px, proje kartları 8px, ortam ve Preview kartları 1
 
 ## Components
 
+22 Ekim 2026 eğitim ağacı: ayrı düz view/hotspot listelerinin yerine açılır alan/alt alan/nokta ağacı geldi. 14px normal satır metni, en az 40px satır; mobil 44px. Seçim nötr-mavi yüzey/border, gerçek kamera bağlamı ayrıca Current area metni/aria-current ile belirtilir. Search ataları görünür tutar; klavyede arrow/Home/End/Enter/Space desteklenir. Preview breadcrumb ve yatay kaydırılabilir ilgili içerik şeridi canvas dışında sınırlı yüksekliğe sahiptir. Inspector alan ilişkisi, açık taşıma/sıralama ve inline silme onayı gösterir. Studio Neutral palet/panel genişlikleri korunur.
+
 **Düğmeler:** normal kontroller en az 40px, sık authoring araçları en az 42px, form eylemleri en az 44px yüksekliğindedir. Mod düğmeleri masaüstünde 36px, mobilde 40px'tir. Add hotspot mavi ana eylemdir; Save view yükseltilmiş nötr yüzeydir. Hover, focus, pressed, disabled ve placing durumları ayrıdır. Yerleştirme sırasında gerçek araç metni “Placing hotspot…” olur. 44px her yardımcı kontrolde evrensel değildir; fiziksel cihaz erişilebilirliği bütünüyle doğrulanmış sayılmaz.
 
 **Explorer:** arama, ayrı Inspection views / Equipment hotspots disclosure listeleri, sayımlar ve boş durum eylemleri korunur. Satırlar en az 44px; tek satır gerçek ölçüm yaklaşık 44.5px'tir. Liste seçim metni yüksek kontrastlıdır, seçim ARIA ile de belirtilir. Mevcut 32 view / 100 hotspot sınırlarında sanallaştırma yoktur.

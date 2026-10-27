@@ -1,5 +1,17 @@
 # Mimari
 
+## 22 Ekim 2026: hiyerarşik eğitim gezinmesi
+
+InspectionZone isteğe bağlı parentZoneId ve order taşır. Pozlar mutlak sahne-space kalır; eğitim gruplaması GLB transform/mesh parenting değildir. `zoneHierarchy.ts` doğrulama, çocuk sırası, ancestor path, arama bağlamı, güvenli reparent/reorder/remove işlemlerini saf veri üzerinde uygular. Silme yalnız tek alanı kaldırır, doğrudan çocukları ve hotspot bağlantılarını bir üst seviyeye taşır.
+
+SerializedEditorV1/schemaVersion=1 ve mevcut key korunur; hierarchyVersion=1 isteğe bağlı uyumlu uzantıdır. Eski v1 okuyucu bu yeni uzantıyı koruyacağını garanti etmez; eski sürümle aynı origin üzerinde düzenleme önerilmez. Yeni compatible reader eski kayıtları değiştirmeden okur. İlk açık düzenlemeden önce ham eski v1 kaydı `.before-hierarchy.v1` yedeğine yazılır; var olan yedek üzerine yazılmaz. Geçersiz hiyerarşi/bilinmeyen sürüm read-only olur; eski hotspot missing-zone uyarılı fallback'i korunur. 32 alan/100 hotspot sınırları aynı.
+
+`TrainingTree.tsx` seçili alanı gerçek kamera bağlamından ayırır; Editor seçiminde Inspector açılır, kamera yalnız Open saved view eylemiyle hareket eder. `TrainingNavigation.tsx` tamamlanmış activeZone üzerinden breadcrumb, çocuk alanlar, ilgili noktalar ve kardeş gezinmesini sunar. Yeni selectedZoneId varsayılan placement bağlamıdır; pendingZone ve revision stale sonuçları engeller. Geçmiş yalnız tamamlanan kamera hareketlerini kaydeder; silinen alanın geçmiş girdileri kaldırılır. Mode/escape/unmount/new selection eski Promise sonucu üzerinden kart açmaz.
+
+Kamera interpolasyonu mevcut world-up/yaw-pitch/smoothstep çekirdeğini korur; `transitionTiming.ts` poz/angle/FOV mesafesiyle yapılandırılmış baz sürenin %65–100 aralığını seçer (650ms için 422.5–650ms). Reduced motion 1ms ve gerçek render completion semantiği kullanır. Sensitivity/drag/pitch/FOV/Walking/Spectator/lifecycle değişmedi; yalnız süre hesabı eklendi. Bu, geometri etrafından rota bulma değildir.
+
+Kullanım ve sınırlamalar: [HIERARCHICAL_TRAINING_GUIDE](HIERARCHICAL_TRAINING_GUIDE.md). Doğrulama: kökte HIERARCHICAL_ZONE_NAVIGATION_REPORT.md.
+
 18 Ekim 2026 çekirdek kaynak denetimi; 20 Ekim 2026 UI kompozisyonu güncellemesi. Ayrıntılar [ENVIRONMENT_CONTRACT](ENVIRONMENT_CONTRACT.md) içinde; raporlar yerine güncel kod/testler esas alınır.
 
 ## Yapı ve sorumluluklar
@@ -35,16 +47,9 @@ React mode, draft, UI ve seri veriyi yönetir. Engine/Scene/camera/container/con
 
 LoadAssetContainerAsync ortamı yükler; tek engine render loop, ResizeObserver → engine.resize. Geç asset sonucunda disposed kontrol edilir. Çıkışta input/listener/controller/observer, pointer lock, loop, scene/engine temizlenir. Marker DOM projeksiyonu her kare React state yazmaz. Her marker için her kare occlusion ray yoktur. Kamera yolu beş ray ile sınırlı kontroldür; hacimsel collision değildir.
 
-`features/mascot/PikoMascot` kullanıcının doğrulanmış GLB'sini ayrı küçük şeffaf sahnede gösterir. App içinde bağımsız lazy/Suspense sınırındadır; Dashboard veya ortam açılışını bekletmez ve mod/ortam değişiminde yeniden mount edilmez. Idle döngüdedir; semantik portre düğmesi tıklama/dokunma/Enter/Space ile Wave'i bir kez başlatır. Wave tamamlanma olayı Idle'a döndürür; aynı anda tek klip çalışır, art arda tıklama hareketi kesmez. Kamera Idle başlangıcı ve örneklenmiş Wave sınırlarını kapsar. Portre döngüsü en fazla 30 fps'dir; gizlenen belge duraklatılır. Reduced motion altında Idle başlangıcı sabittir, yalnız kullanıcı eylemiyle Wave oynar. ResizeObserver yalnız boyut/kadrajı günceller; her kare React state yazılmaz. Model sahnesi ortamı çoğaltmaz. Küçültme/unmount geç yüklemeyi geçersiz kılar; observer/listener/loop/scene/engine temizlenir. Konuşan eğitim rehberi yoktur. Kaynak teslimi için `public/guides/piko/README.md` esas alınır; önceki WISP erişim engeli tarihsel kayıttır.
+WISP yoktur; [varlık hazırlık belgesi](WISP_ASSET_PREPARATION.md) uygulanmadan hayalî asset/klip eklenmez. Gelecek rehber yalnız kendi modelini yüklemeli, ortamı çoğaltmamalıdır; render yaklaşımı gerçek profiling sonrası seçilir.
 
 ## Kalıcılık
-
-`SceneDefinition.starterContent` isteğe bağlı, paketle gelen başlangıç
-hotspot/view içeriğidir. `loadEditor` yalnız kayıt yoksa doğrulayıp kopyalar;
-var olan kayıtları birleştirmez veya değiştirmez. Editor'deki açık kullanıcı
-eylemi `addStarterContent` ile yalnız eksik ID'leri ekler; mevcut içerik
-önceliklidir ve kaydetme mevcut şema v1 sınırlarını kullanır. Hastanenin
-10 kaynak açıklaması ve koordinat dönüşümü `hospitalAnnotations.ts` içindedir.
 
 - Proje anahtarı `workplace-studio.projects.v1`: id/name/description/createdAt/updatedAt doğrulanan dizi. Sürüm anahtar adındadır, nesnede schemaVersion yoktur. Ortam/proje ilişkisi yoktur; proje workspace'i placeholder.
 - Ortam anahtarı `workplace-studio.environment-editor.v1.${encodeURIComponent(environmentId)}`. SerializedEditorV1: schemaVersion=1, environmentId, modelUrl, modelTransform, zones, hotspots. En fazla 32 zone / 100 hotspot; id/koordinat/metin/model eşleşmesi kontrol edilir.
@@ -71,6 +76,7 @@ Unity/OpenXR ayrı standalone VR hedefidir. Ortak repository çalışan interope
 Büyük lazy bundle/modeller, provisional ölçü/kameralar, sade yol kontrolü, eksik marker occlusion ve yalnız localStorage başlıca sınırlardır. Tam fizik, çok kullanıcı, server persistence, browser E2E ve tüm cihazlarda profiling yoktur. Mutlak asset URL'leri alt yol hosting için ayrı çalışma gerektirir.
 
 ## Simülasyon öncesi hazırlık
-21 Ekim 2026 itibarıyla kullanıcının isteğiyle `App.tsx` içindeki `SIMULATION_PREPARATION_ENABLED` kapalıdır. Ortam seçimi doğrudan exploring state'ine geçer; preparing boş kalır ve yapay bekleme uygulanmaz. Gerçek model yükleme göstergesi BabylonViewport içinde korunur.
+App ortam seçimini önce preparing state'ine alır. Ortak SimulationPreparation seçilen definition.id ile mevcut önizlemeyi kullanır; 4sn inhale / 6sn exhale sonrası exploring'e geçilir. Hazırlık sırasında Babylon mount edilmez. Escape iptalinde Dashboard odağı geri gelir. Timer ve pointer RAF/listener'ları unmount sırasında temizlenir; reduced-motion altında küre/parallax hareket etmez. Yeni kayıt/storage alanı yoktur.
 
-Hazırlık ileride yeniden açılırsa App ortam seçimini önce preparing state'ine alır. Ortak SimulationPreparation seçilen definition.id ile mevcut önizlemeyi kullanır; 4sn inhale / 6sn exhale sonrası exploring'e geçilir. Hazırlık sırasında Babylon mount edilmez. Escape iptalinde Dashboard odağı geri gelir. Timer ve pointer RAF/listener'ları unmount sırasında temizlenir; reduced-motion altında küre/parallax hareket etmez. Yeni kayıt/storage alanı yoktur.
+
+27 Ekim 2026 birleştirme: yerel Studio arayüzü, hazırlık ekranı ve hiyerarşik eğitim alanları; codex/hospital-source-hotspots üzerindeki 10 kaynak hastane açıklaması ve Piko ile birleştirildi. Ortak Babylon editörü, v1 anahtarları ve hiyerarşi yedeği korunur. Kaynak noktalar mevcut kaydı değiştirmeden yüklenir; eksikleri ekleme açık kullanıcı eylemidir.

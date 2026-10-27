@@ -7,6 +7,37 @@ import { TransformNode } from '@babylonjs/core/Meshes/transformNode.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { createViewerInteraction, defaultInteraction } from '../src/features/environments/viewerInteraction.ts'
 
+test('reduced motion controller still completes on a rendered frame with stable world-up', async () => {
+  const savedWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
+  const savedDocument = Object.getOwnPropertyDescriptor(globalThis, 'document')
+  const savedNow = Object.getOwnPropertyDescriptor(performance, 'now')
+  let time = 0
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: Object.assign(new EventTarget(), { matchMedia: () => ({ matches: true }) }) })
+  Object.defineProperty(globalThis, 'document', { configurable: true, value: Object.assign(new EventTarget(), { activeElement: null, hidden: false, hasFocus: () => true }) })
+  Object.defineProperty(performance, 'now', { configurable: true, value: () => time })
+  const engine = new NullEngine(), scene = new Scene(engine)
+  const camera = new FreeCamera('reduced-camera', new Vector3(0, 1, 0), scene)
+  camera.attachControl = () => {}; camera.detachControl = () => {}
+  const root = new TransformNode('root', scene)
+  const canvas = Object.assign(new EventTarget(), { focus() {} }) as HTMLCanvasElement
+  const viewer = createViewerInteraction(scene, camera, root, canvas, defaultInteraction, { place() {}, message() {}, transitioning() {}, markers: () => [] })
+  try {
+    let completed = false
+    const pending = viewer.move({ position: [0, 1, 0], target: [1, 1, -1], fovDegrees: 40 }).then(result => { completed = true; return result })
+    await Promise.resolve(); assert.equal(completed, false)
+    time = 1; scene.onBeforeRenderObservable.notifyObservers(scene)
+    assert.equal(await pending, 'completed')
+    assert.equal(camera.rotation.z, 0)
+    assert.ok(camera.upVector.equalsWithEpsilon(Vector3.UpReadOnly))
+  } finally {
+    viewer.dispose(); scene.dispose(); engine.dispose()
+    for (const [key, descriptor] of [['window', savedWindow], ['document', savedDocument]] as const) {
+      if (descriptor) Object.defineProperty(globalThis, key, descriptor); else Reflect.deleteProperty(globalThis, key)
+    }
+    if (savedNow) Object.defineProperty(performance, 'now', savedNow); else Reflect.deleteProperty(performance, 'now')
+  }
+})
+
 test('real controller resolves only on final frame and settles supersession, cancellation and dispose', async () => {
   const windowDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'window')
   const documentDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'document')

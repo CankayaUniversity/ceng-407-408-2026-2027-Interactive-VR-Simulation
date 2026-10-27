@@ -1,5 +1,8 @@
 # Proje durumu
 
+27 Ekim 2026 güncel birleştirme: codex/hospital-source-hotspots (478ca99) tabanı üzerine yerel Studio arayüzü, hazırlık ekranı ve hiyerarşik alan sistemi alındı. 10 hastane noktası ve Piko korunur. npm ci, build, lint başarılı; 38/38 Node testi geçti. Yeni bütünleşme testi, kaynak eklemenin hiyerarşiyi/kamera düzenlemelerini ve ilk açık kayıtta ham eski kayıt yedeğini koruduğunu doğrular. Aşağıdaki tarihli kayıtlar tarihçedir; güncel davranış için bu bölüm esas alınır.
+
+
 22 Ekim 2026 GitHub teslim hazırlığı: kullanıcı son sürümü ayrı bir dalda
 paylaşmayı istedi. Teslim dalı `codex/hospital-source-hotspots`; mevcut web
 ekip dalı `5a4ad42` taban alınmıştır. Kapsam: Piko modeli ve Idle/Wave,
@@ -137,3 +140,6 @@ Fotoğraf/video reconstruction ve AI recognition; backend/API/auth/object storag
 Ortak kamera/storage/viewport dosyalarını paralel değiştirmeden ekipte kapsam belirleyin. Her katkıda gerçek sonuçlar ve test edilmemiş kısımlar yazılmalı.
 
 21 Ekim 2026 son GLB teslimi: kullanici talebiyle iki model Git LFS uzerinden GitHub origin sunucusuna yuklendi (2/2, 133 MB); fsck OK. Yalniz iki model icin ignore istisnasi var. Onceki asset engeli kaydi tarihseldir; kaynak/lisans/atif notlari korunur. Kurulum icin git lfs pull gerekir.
+
+
+27 Ekim 2026 birleştirme: yerel Studio arayüzü, hazırlık ekranı ve hiyerarşik eğitim alanları; codex/hospital-source-hotspots üzerindeki 10 kaynak hastane açıklaması ve Piko ile birleştirildi. Ortak Babylon editörü, v1 anahtarları ve hiyerarşi yedeği korunur. Kaynak noktalar mevcut kaydı değiştirmeden yüklenir; eksikleri ekleme açık kullanıcı eylemidir.

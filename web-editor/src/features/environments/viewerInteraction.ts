@@ -2,6 +2,7 @@ import { Vector3, Matrix } from '@babylonjs/core/Maths/math.vector.js'
 import { pitchLimit, poseOrientation, setOrientation, stabilizeOrientation, shortestYawDelta, type YawPitch } from './cameraOrientation.ts'
 import { isCameraPathClear } from './cameraPath.ts'
 import { createInspectorNavigation, defaultInspector } from './inspectorNavigation.ts'
+import { transitionDuration } from './transitionTiming.ts'
 import type { FreeCamera } from '@babylonjs/core/Cameras/freeCamera'
 import type { Scene } from '@babylonjs/core/scene'
 import type { TransformNode } from '@babylonjs/core/Meshes/transformNode'
@@ -95,10 +96,11 @@ export function createViewerInteraction(
     const from = capture()
     const startRotation = { yaw: camera.rotation.y, pitch: camera.rotation.x }
     const endRotation = poseOrientation(camera, pose, limit)
+    const duration = transitionDuration(config.transition.durationMs, Vector3.Distance(camera.position, Vector3.FromArray(pose.position)), Math.hypot(shortestYawDelta(startRotation.yaw, endRotation.yaw), endRotation.pitch - startRotation.pitch), pose.fovDegrees - from.fovDegrees, reducedMotion)
     camera.detachControl()
     callbacks.transitioning(true)
     return new Promise(resolve => {
-      transition = { from, to: { ...pose, fovDegrees: Math.max(config.zoom.minDegrees, Math.min(config.zoom.maxDegrees, pose.fovDegrees)) }, start: performance.now(), duration: reducedMotion ? 1 : Math.max(100, Math.min(1500, config.transition.durationMs)), startRotation, endRotation, resolve }
+      transition = { from, to: { ...pose, fovDegrees: Math.max(config.zoom.minDegrees, Math.min(config.zoom.maxDegrees, pose.fovDegrees)) }, start: performance.now(), duration, startRotation, endRotation, resolve }
     })
   }
   const wheel = (event: WheelEvent) => {

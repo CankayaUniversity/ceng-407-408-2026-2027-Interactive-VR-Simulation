@@ -1,5 +1,7 @@
 # Ortam görüntüleyici sözleşmesi
 
+22 Ekim 2026 uzantısı: InspectionZone parentZoneId (tek isteğe bağlı üst alan) ve order (isteğe bağlı, negatif olmayan güvenli tamsayı) destekler. Kamera mutlak sahne koordinatıdır; üst alan değiştirmek pozları değiştirmez. SchemaVersion/key v1 korunur, hierarchyVersion=1 uyumlu uzantısı açık düzenlemede yazılır; eski ham kayıt önce tek seferlik before-hierarchy.v1 yedeğine alınır. Döngü/missing parent/mükerrer kimlik reddedilir; eski missing-hotspot-zone referansı uyarıyla korunur. Yeni sıralama order, eşitlik/eski veride dizi sırası kullanır. Başlangıçta otomatik migrate/save yoktur.
+
 `src/features/environments/types.ts` Babylon nesnelerinden bağımsız JSON veri tiplerini içerir. `registry.ts` ortam tanımlarını tutar; render bileşeni model adına göre koşul çalıştırmaz. Kokpit seated ve Charité ameliyathane walking kayıtları aynı viewport/loader/editor altyapısını kullanır. Walking için açık interaction.walking ayarları zorunludur; fiziksel collision içermeyen prototip olarak etiketlenir.
 
 ## Koordinatlar
@@ -94,3 +96,6 @@ Preview'da Start walking açık bir aktivasyon eylemidir ve canvas'a odak verir.
 Walking ve Editor Spectator ayrı etkinlik durumlarıdır; ortak createInspectorNavigation çekirdeğini kullanır. Spectator tam bakış doğrultusunda W/S ve dünya-Y Q/E ile serbest uçuşu korur. İkisi aynı anda etkin olamaz. Mevcut tek before-render döngüsü ikisini günceller; yeni RAF/engine loop veya her kare triangle picking yoktur. Odak başka UI'ya geçince tuşlar temizlenir; blur/hidden/lock exit kapatır. Mode, placement, numeric apply, zone/hotspot navigation, reset, cancelMove ve unmount hareketi kapatır.
 
 Güvenilir zemin takibi, basamak/eğim, gravity, duvar/ekipman çarpışması ve navmesh yoktur. Tarama modeli üzerinde hareket prototipidir. Klinik eğitim içeriği otomatik oluşturulmaz. Asset kaynağı/lisansı public/environments/HOSPITAL_ASSET_NOTES.md içindedir.
+
+
+27 Ekim 2026 birleştirme: yerel Studio arayüzü, hazırlık ekranı ve hiyerarşik eğitim alanları; codex/hospital-source-hotspots üzerindeki 10 kaynak hastane açıklaması ve Piko ile birleştirildi. Ortak Babylon editörü, v1 anahtarları ve hiyerarşi yedeği korunur. Kaynak noktalar mevcut kaydı değiştirmeden yüklenir; eksikleri ekleme açık kullanıcı eylemidir.

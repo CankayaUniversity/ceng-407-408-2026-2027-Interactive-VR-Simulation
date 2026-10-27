@@ -18,6 +18,7 @@ import { pitchLimit, poseOrientation, setOrientation } from './cameraOrientation
 import { defaultInspector } from './inspectorNavigation'
 import { AuthoringHelp, EnvironmentInfo, SceneExplorer, ZoneInspector } from './WorkspacePanels'
 import { WorkspaceIcon } from './WorkspaceIcon'
+import { TrainingNavigation } from './TrainingNavigation'
 
 interface ViewportProps {
   definition: SceneDefinition
@@ -32,7 +33,7 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
   const [explorerOpen, setExplorerOpen] = useState(() => !window.matchMedia('(max-width: 1200px)').matches)
   const [inspectorOpen, setInspectorOpen] = useState(false)
   const [inspectorTab, setInspectorTab] = useState<'environment' | 'zone' | 'save'>('environment')
-  const [zoneId, setZoneId] = useState<string | null>(null)
+  const [saveParent, setSaveParent] = useState<string | undefined>()
   const [fullscreen, setFullscreen] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const cameraRef = useRef<FreeCamera | null>(null)
@@ -224,8 +225,12 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
   }, [])
 
   function revealInspector(tab: 'environment' | 'zone' | 'save') {
+    if (tab === 'save') setSaveParent(undefined)
     setInspectorTab(tab); setInspectorOpen(true)
-    if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false)
+    if (window.matchMedia('(max-width: 1200px)').matches) {
+      setExplorerOpen(false)
+      requestAnimationFrame(() => document.getElementById('v2-inspector-heading')?.focus())
+    }
   }
   function selectHotspot(id: string) {
     setInspectorTab('environment')
@@ -233,7 +238,7 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
     else if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false)
     void editor.select(id)
   }
-  const selectedZone = editor.data.zones.find(zone => zone.id === zoneId)
+  const selectedZone = editor.data.zones.find(zone => zone.id === editor.selectedZoneId)
   const ready = load.phase === 'ready'
   const editing = editor.mode === 'editor'
   return <section ref={workspaceRef} className={`editor-v2 ${editing ? 'is-editing' : 'is-preview'}`} data-explorer={explorerOpen} data-inspector={inspectorOpen} aria-labelledby="environment-heading">
@@ -256,7 +261,7 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
     </header>
     <div className="v2-toolbar">
       <nav className="v2-toolrail" aria-label="Workspace tools">
-        <button title="Selection tool" aria-label="Selection tool" aria-pressed={!inspector && !walking && !editor.placing && !(inspectorTab === 'save' && inspectorOpen)} onClick={() => { editor.closePanel(); setZoneId(null); setInspectorOpen(false) }}><WorkspaceIcon name="select" />Select</button>
+        <button title="Selection tool" aria-label="Selection tool" aria-pressed={!inspector && !walking && !editor.placing && !(inspectorTab === 'save' && inspectorOpen)} onClick={() => { editor.inspectZone(null); setInspectorOpen(false) }}><WorkspaceIcon name="select" />Select</button>
         {editing && <>
           <button title="Spectator Mode" aria-label={inspector ? 'Exit Spectator' : 'Spectator Mode'} aria-pressed={inspector} disabled={!ready || transitioning || editor.placing} onClick={() => { const enabled = viewer.current?.isInspectorEnabled(); editor.cancelNavigation(); viewer.current?.setInspector(!enabled) }}><WorkspaceIcon name="move" />{inspector ? 'Exit Spectator' : 'Spectator'}</button>
           <button title="Add Hotspot" aria-label="Add hotspot" aria-pressed={editor.placing} disabled={!ready || transitioning || !editor.editable || editor.data.hotspots.length >= 100} onClick={() => { editor.startPlacement(); setInspectorOpen(false); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }}><WorkspaceIcon name="hotspot" />{editor.placing ? 'Placing hotspot…' : 'Add hotspot'}</button>
@@ -279,15 +284,19 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
           <button aria-label="Close Scene Explorer" onClick={() => { setExplorerOpen(false); document.getElementById('v2-explorer-toggle')?.focus() }}><WorkspaceIcon name="close" /></button>
         </div>
         <div className="v2-panel-scroll">
-          <SceneExplorer editor={editor} ready={ready} onSaveView={() => revealInspector('save')} onAddHotspot={() => { editor.startPlacement(); setInspectorOpen(false); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }} onClear={() => { editor.closePanel(); setZoneId(null); setInspectorOpen(false) }} onZone={id => { setZoneId(id); revealInspector('zone'); void editor.goToZone(id) }} onHotspot={selectHotspot} />
+          <SceneExplorer editor={editor} ready={ready} onSaveView={() => revealInspector('save')} onAddHotspot={() => { editor.startPlacement(); setInspectorOpen(false); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }} onClear={() => { editor.inspectZone(null); setInspectorOpen(false) }} onZone={id => {
+            if (editing) { editor.inspectZone(id); revealInspector('zone') }
+            else { void editor.goToZone(id); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }
+          }} onHotspot={selectHotspot} />
         </div>
       </aside>
       <section className="v2-stage" aria-label="Environment viewport">
+        <TrainingNavigation editor={editor} name={definition.displayName} ready={ready} />
         <div className="v2-canvas-wrap">
           <div className={`environment-viewport${editor.placing ? ' is-placing' : ''}`} aria-busy={load.phase === 'loading'}>
             <canvas ref={canvasRef} tabIndex={0} aria-label={`${definition.displayName} — drag to look around; wheel to zoom; Escape closes information or returns to overview`} />
             <div className="hotspot-markers" aria-label="3D hotspot markers">
-              {load.phase === 'ready' && [...editor.data.hotspots.filter(spot => spot.id !== editor.draft?.id), ...(editor.draft ? [editor.draft] : [])].map((spot, index) => editor.draft?.id === spot.id && !editor.selected ?
+              {load.phase === 'ready' && [...editor.data.hotspots.filter(spot => spot.id !== editor.draft?.id && (editing || (editor.activeZone ? spot.zoneId === editor.activeZone : !spot.zoneId || !editor.data.zones.some(zone => zone.id === spot.zoneId)))), ...(editor.draft ? [editor.draft] : [])].map((spot, index) => editor.draft?.id === spot.id && !editor.selected ?
                 <span className="hotspot-marker is-draft" key={spot.id} ref={element => { if (element) markerElements.current.set(spot.id, element); else markerElements.current.delete(spot.id) }} aria-label="Draft hotspot location">＋</span> :
                 <button type="button" key={spot.id} className={`hotspot-marker${editor.selected?.id === spot.id ? ' is-selected' : ''}`} ref={element => { if (element) markerElements.current.set(spot.id, element); else markerElements.current.delete(spot.id) }} aria-label={`Hotspot: ${spot.title}`} title={spot.title} onClick={() => selectHotspot(spot.id)}>{index + 1}</button>)}
             </div>
@@ -319,15 +328,15 @@ export function BabylonViewport({ definition, headingRef, onBack }: ViewportProp
       </section>
       <aside className="v2-inspector v2-panel" id="v2-inspector" aria-label="Contextual Inspector">
         <div className="v2-panel-heading">
-          <h2>Inspector</h2>
+          <h2 id="v2-inspector-heading" tabIndex={-1}>Inspector</h2>
           <button aria-label="Close Inspector" onClick={() => { setInspectorOpen(false); document.getElementById('v2-inspector-toggle')?.focus() }}><WorkspaceIcon name="close" /></button>
         </div>
         <div className="v2-panel-scroll">
           {editing && (editor.draft || editor.selected) ? <HotspotPanel editor={editor} /> : <>
-            {inspectorTab === 'zone' && selectedZone ? <ZoneInspector zone={selectedZone} editor={editor} ready={ready && !transitioning} /> : inspectorTab !== 'save' || !editing ? <AuthoringHelp editing={editing} disabled={!ready || !editor.editable} onSaveView={() => revealInspector('save')} onAddHotspot={() => { editor.startPlacement(); setInspectorOpen(false); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }} /> : null}
+            {inspectorTab === 'zone' && selectedZone ? <ZoneInspector key={`${selectedZone.id}:${selectedZone.parentZoneId ?? ''}`} zone={selectedZone} editor={editor} ready={ready && !transitioning} onAddChild={() => { revealInspector('save'); setSaveParent(selectedZone.id) }} /> : inspectorTab !== 'save' || !editing ? <AuthoringHelp editing={editing} disabled={!ready || !editor.editable} onSaveView={() => revealInspector('save')} onAddHotspot={() => { editor.startPlacement(); setInspectorOpen(false); if (window.matchMedia('(max-width: 1200px)').matches) setExplorerOpen(false) }} /> : null}
 
             {editing && <>
-              {inspectorTab === 'save' && <ZoneCalibration editor={editor} ready={ready} transitioning={transitioning} expanded />}
+              {inspectorTab === 'save' && <ZoneCalibration key={saveParent ?? 'root'} parentId={saveParent} editor={editor} ready={ready} transitioning={transitioning} expanded />}
 
               <details className="camera-calibration">
                 <summary>Advanced Camera Calibration · {definition.camera.calibration === 'provisional' ? 'Review required' : 'Reviewed viewpoint'}</summary>
