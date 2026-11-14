@@ -54,3 +54,14 @@ Plain-text asset notları, registry'deki atıf ve önizleme README'si yayın ada
 ## 21 Ekim 2026 teslim guncellemesi
 
 Kullanici iki GLB modelinin mevcut private ekip deposuna yuklenmesini acikca istedi. Yalniz bu iki kesin yol icin Git LFS dagitimi hazirlaniyor; onceki yayindan haric ifadeleri bu iki dosya icin tarihseldir. Lisans metadata ve atif notlari aynen korunur; bagimsiz yeniden dagitim hak dogrulamasi yapildigi iddia edilmez. JPEG onizlemeler ve diger assetler haric kalir. Nihai upload sonucu GITHUB_LATEST_SYNC_REPORT.md icindedir.
+
+## 14 Kasım 2026: üniversite deposu model dağıtımı
+
+Üniversite deposunun main dalında kokpit (86.081.540 bayt) ve hastane
+(46.555.672 bayt) GLB dosyaları normal Git bloblarıdır; temiz klon için
+Git LFS kurulumu gerekmez. Önceki LFS kurulum notları tarihsel dallar içindir.
+Altı özgün kaynak dalın uçları ve commit SHA değerleri değiştirilmedi.
+Bu tarihsel dallarda LFS pointer dosyaları bulunabilir; hedefte LFS kapalı
+olduğundan bu dallar tek başına modelleri geri yükleyemeyebilir.
+Main üzerindeki gerçek GLB dosyalarını kullanın. Mevcut atıflar ve kokpitin
+CC BY 4.0 / hastanenin CC BY-NC 4.0 koşulları aynen geçerlidir.

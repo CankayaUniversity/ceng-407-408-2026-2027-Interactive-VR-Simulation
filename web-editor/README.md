@@ -126,3 +126,14 @@ Iki ortam modeli artik bu feature branch uzerinden Git LFS ile paylasilir. Oncek
 
 
 27 Ekim 2026 birleştirme: yerel Studio arayüzü, hazırlık ekranı ve hiyerarşik eğitim alanları; codex/hospital-source-hotspots üzerindeki 10 kaynak hastane açıklaması ve Piko ile birleştirildi. Ortak Babylon editörü, v1 anahtarları ve hiyerarşi yedeği korunur. Kaynak noktalar mevcut kaydı değiştirmeden yüklenir; eksikleri ekleme açık kullanıcı eylemidir.
+
+## 14 Kasım 2026: üniversite deposu model dağıtımı
+
+Üniversite deposunun main dalında kokpit (86.081.540 bayt) ve hastane
+(46.555.672 bayt) GLB dosyaları normal Git bloblarıdır; temiz klon için
+Git LFS kurulumu gerekmez. Önceki LFS kurulum notları tarihsel dallar içindir.
+Altı özgün kaynak dalın uçları ve commit SHA değerleri değiştirilmedi.
+Bu tarihsel dallarda LFS pointer dosyaları bulunabilir; hedefte LFS kapalı
+olduğundan bu dallar tek başına modelleri geri yükleyemeyebilir.
+Main üzerindeki gerçek GLB dosyalarını kullanın. Mevcut atıflar ve kokpitin
+CC BY 4.0 / hastanenin CC BY-NC 4.0 koşulları aynen geçerlidir.

@@ -1,2 +1,2 @@
-public/environments/cockpit/boeing_737-800_cockpit.glb filter=lfs diff=lfs merge=lfs -text
-public/environments/charite_university_hospital_-_operating_room.glb filter=lfs diff=lfs merge=lfs -text
+# Destination main stores environment GLBs as ordinary Git blobs.
+# Historical branches retain their original LFS rules and pointers.
