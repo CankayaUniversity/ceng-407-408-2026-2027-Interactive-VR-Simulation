@@ -1,0 +1,43 @@
+{
+  "rest_pose_mirror_error": {
+    "Shoulder": 0.0,
+    "Elbow": 0.0,
+    "Wrist": 0.0,
+    "HandRest": 0.0
+  },
+  "left_cuff_and_wrist_aligned": true,
+  "clips": {
+    "Idle": {
+      "motion": true,
+      "hover": true,
+      "fingers": true,
+      "returns_to_final_pose": true
+    },
+    "Wave": {
+      "motion": true,
+      "hover": true,
+      "fingers": true,
+      "returns_to_final_pose": true
+    },
+    "Point": {
+      "motion": true,
+      "hover": true,
+      "fingers": true,
+      "returns_to_final_pose": true
+    },
+    "Talk": {
+      "motion": true,
+      "hover": true,
+      "fingers": true,
+      "returns_to_final_pose": true
+    },
+    "Success": {
+      "motion": true,
+      "hover": true,
+      "fingers": true,
+      "returns_to_final_pose": true
+    }
+  },
+  "three_energy_morph_targets": true,
+  "all_five_demo_segments": true
+}

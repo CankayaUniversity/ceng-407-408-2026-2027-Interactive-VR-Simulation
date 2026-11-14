@@ -1,0 +1,29 @@
+{
+  "fbx_max_world_matrix_error": 1.2852251529693604e-07,
+  "three_animated_energy_morphs": true,
+  "sampled_frames": [
+    0,
+    12,
+    32,
+    120,
+    121,
+    153,
+    211,
+    212,
+    244,
+    332,
+    333,
+    365,
+    453,
+    454,
+    486,
+    538
+  ],
+  "action_names": [
+    "Arm L | cyan forearm strip|Wisp_AllAnimations",
+    "Arm L | elbow ball|Wisp_AllAnimations",
+    "Arm L | elbow pin|Wisp_AllAnimations",
+    "Arm L | forearm core|Wisp_AllAnimations",
+    "Arm L | forearm shell|Wisp_AllAnimations"
+  ]
+}
