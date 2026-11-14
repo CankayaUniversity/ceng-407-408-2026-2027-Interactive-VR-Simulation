@@ -1,5 +1,12 @@
 # İnteraktif İş Yeri Eğitim Simülasyonu - Mimari ve Tasarım Kılavuzu
 
+> 2 Kasım 2026 güncellemesi: Kullanıcının yeni hedefi birinci dönemde
+> Windows masaüstü/WASD, ikinci dönemde VR adaptörüdür. Güncel native
+> uygulama sınırları `docs/DESKTOP_ARCHITECTURE.md` içindedir.
+> Aşağıdaki WebGL-öncelikli kurallar eski uygulama hedefini anlatır;
+> yeni desktop sahnesi yerel dosya ve Windows build kullanır. WebGL
+> köprüsü ve eski sahneler tarihsel/reference olarak korunur.
+
 Bu doküman, 9 aylık Bilgisayar Mühendisliği bitirme projesinin temel mimari kurallarını, WebGL ve VR ayrıştırma (decoupling) prensiplerini ve WebGL <-> Web iletişim sözleşmesini tanımlar.
 
 ---

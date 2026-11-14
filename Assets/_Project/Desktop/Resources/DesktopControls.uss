@@ -1,0 +1,70 @@
+#studio { flex-grow: 1; background-color: rgb(16, 18, 23); color: rgb(231, 235, 242); font-size: 14px; }
+Label { white-space: normal; }
+Button { min-height: 32px; margin: 3px; padding: 6px 10px; border-radius: 6px; border-width: 1px; border-color: rgb(57, 64, 77); background-color: rgb(31, 36, 46); color: rgb(225, 232, 243); font-size: 13px; }
+Button:hover { background-color: rgb(45, 53, 68); border-color: rgb(99, 136, 202); }
+Button:focus { border-color: rgb(126, 170, 255); border-width: 2px; }
+Button:disabled { opacity: 0.4; }
+Button.primary, Button.selected { background-color: rgb(83, 128, 221); color: white; border-color: rgb(119, 159, 241); }
+Button.danger { color: rgb(255, 153, 153); margin-top: 20px; }
+.header { height: 48px; flex-direction: row; align-items: center; padding: 0 18px; background-color: rgb(26, 30, 39); border-bottom-width: 1px; border-bottom-color: rgb(53, 59, 72); }
+.brand-mark { font-size: 24px; color: rgb(118, 160, 255); -unity-font-style: bold; margin-right: 8px; }
+.brand { font-size: 16px; -unity-font-style: bold; margin-right: 20px; }
+.header-note { flex-grow: 1; color: rgb(147, 158, 178); margin-left: 18px; }
+.offline { color: rgb(161, 208, 181); font-size: 12px; -unity-font-style: bold; }
+.quiet { background-color: rgba(0, 0, 0, 0); border-width: 0; }
+.dashboard { flex-grow: 1; padding: 38px 44px; }
+.hero-title { font-size: 32px; -unity-font-style: bold; margin-bottom: 10px; }
+.hero-description { color: rgb(165, 176, 196); margin-bottom: 30px; }
+.cards { flex-direction: row; margin-bottom: 22px; }
+.environment-card { flex-grow: 1; flex-basis: 0; padding: 26px; margin-right: 18px; background-color: rgb(27, 32, 43); border-radius: 12px; border-width: 1px; border-color: rgb(55, 64, 81); min-height: 220px; }
+.card-title { font-size: 23px; -unity-font-style: bold; flex-grow: 1; margin-top: 14px; margin-bottom: 16px; }
+.eyebrow { color: rgb(148, 169, 211); font-size: 12px; margin-bottom: 14px; }
+.muted { color: rgb(155, 167, 188); font-size: 13px; margin: 8px 0; }
+.actions { flex-direction: row; margin-bottom: 20px; }
+.section-title { margin-top: 16px; margin-bottom: 10px; font-size: 16px; -unity-font-style: bold; }
+.project-row { -unity-text-align: middle-left; }
+.workspace { flex-grow: 1; min-height: 0; }
+.toolbar { flex-direction: row; flex-wrap: wrap; min-height: 44px; align-items: center; padding: 3px 8px; background-color: rgb(24, 28, 36); }
+.workspace-title { flex-grow: 1; flex-shrink: 1; min-width: 120px; max-width: 280px; font-size: 14px; -unity-font-style: bold; margin: 0 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.workspace-body { flex-direction: row; flex-grow: 1; min-height: 0; }
+.sidebar { width: 230px; min-width: 190px; flex-shrink: 0; padding: 14px 8px; background-color: rgb(24, 28, 36); border-right-width: 1px; border-right-color: rgb(52, 59, 73); }
+.panel-title { font-size: 16px; -unity-font-style: bold; margin: 4px 6px 12px 6px; }
+.tree { flex-grow: 1; margin-top: 12px; }
+.tree-item, .point-item { -unity-text-align: middle-left; white-space: normal; background-color: rgba(0, 0, 0, 0); border-width: 0; margin: 2px 0; }
+.point-item { color: rgb(174, 187, 210); font-size: 13px; }
+.area-branch { margin-left: 0; }
+.area-branch .unity-foldout__content { margin-left: 10px; }
+.tree-action { -unity-text-align: middle-left; color: rgb(153, 185, 245); }
+.attribution { color: rgb(142, 153, 174); font-size: 11px; margin: 24px 5px 12px 5px; }
+.stage { flex-grow: 1; min-width: 240px; position: relative; background-color: rgba(0, 0, 0, 0); }
+.marker-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.pin { position: absolute; width: 34px; height: 34px; min-height: 34px; padding: 0; margin: 0; border-radius: 18px; background-color: rgba(20, 30, 47, 0.9); color: rgb(159, 193, 255); border-color: rgb(119, 159, 241); }
+.pin:hover { background-color: rgb(91, 139, 232); color: white; }
+.stage-help { position: absolute; top: 12px; left: 12px; right: 12px; color: rgb(226, 233, 246); background-color: rgba(20, 25, 34, 0.85); padding: 8px; border-radius: 6px; font-size: 11px; }
+.inspector { width: 280px; min-width: 240px; flex-shrink: 0; padding: 16px 12px; background-color: rgb(26, 31, 41); border-left-width: 1px; border-left-color: rgb(52, 59, 73); }
+.description { margin: 10px 6px 16px 6px; color: rgb(198, 207, 223); font-size: 14px; }
+.description-input { min-height: 160px; }
+TextField, DropdownField { margin: 8px 4px; }
+TextField { flex-direction: column; }
+TextField .unity-base-field__label { margin-bottom: 7px; color: rgb(170, 184, 208); }
+TextField .unity-base-text-field__input { background-color: rgb(16, 20, 28); color: rgb(234, 239, 248); padding: 9px; border-width: 1px; border-color: rgb(69, 82, 105); border-radius: 5px; }
+.statusbar { min-height: 28px; flex-direction: row; align-items: center; padding: 5px 12px; background-color: rgb(19, 23, 30); }
+.status { flex-grow: 1; font-size: 12px; color: rgb(164, 179, 203); }
+.context { color: rgb(157, 184, 237); font-size: 12px; margin-left: 10px; }
+.mode-note { color: rgb(150, 163, 186); font-size: 11px; margin-left: 14px; }
+.modal-overlay { position: absolute; left: 0; right: 0; top: 0; bottom: 0; justify-content: center; align-items: center; background-color: rgba(0, 0, 0, 0.65); }
+.modal-card { width: 480px; padding: 28px; background-color: rgb(30, 37, 50); border-radius: 12px; border-width: 1px; border-color: rgb(75, 96, 132); }
+.piko { position: absolute; right: 16px; bottom: 24px; width: 128px; }
+.piko-button { width: 128px; height: 156px; padding: 0; margin: 0; border-width: 0; background-color: rgba(0, 0, 0, 0); }
+.piko-button:hover { background-color: rgba(38, 50, 70, 0.25); }
+.piko-image { width: 128px; height: 156px; }
+.piko-controls { flex-direction: row; justify-content: center; align-items: center; }
+.piko-controls Label { font-size: 12px; margin-right: 8px; }
+.piko-controls Button { min-height: 26px; padding: 4px 8px; font-size: 11px; }
+/* Keep navigation visible when the window has less vertical space. */
+.header, .toolbar, .statusbar { flex-shrink: 0; }
+.sidebar, .tree, .inspector { min-height: 0; }
+/* Moving the camera must not paint keyboard-focus or pointer-hover rings. */
+.input-captured Button:focus, .input-captured Button:hover { border-width: 1px; border-color: rgb(57, 64, 77); background-color: rgb(31, 36, 46); }
+.input-captured Button.primary, .input-captured Button.selected { background-color: rgb(83, 128, 221); border-color: rgb(119, 159, 241); }
+.input-captured Button.quiet, .input-captured .piko-button { border-width: 0; background-color: rgba(0, 0, 0, 0); }

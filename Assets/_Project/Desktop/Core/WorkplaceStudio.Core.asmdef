@@ -1,0 +1,8 @@
+{
+  "name": "WorkplaceStudio.Core",
+  "rootNamespace": "WorkplaceStudio.Core",
+  "references": [],
+  "overrideReferences": true,
+  "precompiledReferences": ["Newtonsoft.Json.dll"],
+  "noEngineReferences": true
+}

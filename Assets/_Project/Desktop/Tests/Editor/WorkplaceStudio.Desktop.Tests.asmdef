@@ -1,0 +1,7 @@
+{
+  "name": "WorkplaceStudio.Desktop.Tests",
+  "references": ["WorkplaceStudio.Core", "WorkplaceStudio.Desktop"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

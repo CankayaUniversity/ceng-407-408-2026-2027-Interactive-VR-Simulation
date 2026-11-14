@@ -1,0 +1,5 @@
+{
+  "name": "WorkplaceStudio.Desktop.Editor",
+  "references": ["WorkplaceStudio.Core", "WorkplaceStudio.Desktop"],
+  "includePlatforms": ["Editor"]
+}

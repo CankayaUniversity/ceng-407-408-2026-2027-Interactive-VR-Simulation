@@ -12,6 +12,7 @@
 .idea/
 .vscode/
 *.csproj
+!desktop-tests/DesktopCoreTests.csproj
 *.sln
 *.suo
 *.tmp
@@ -33,5 +34,12 @@ sysinfo.txt
 *.apk
 *.aab
 *.unitypackage
+
+# Generated desktop content is copied from the canonical web GLB sources before build.
+Assets/StreamingAssets/WorkplaceStudio/
+Assets/StreamingAssets/WorkplaceStudio.meta
+desktop-tests/bin/
+desktop-tests/obj/
+desktop-tools/.cache/
 *.app
 crashlytics-build.properties

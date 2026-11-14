@@ -1,0 +1,6 @@
+{
+  "name": "WorkplaceStudio.Desktop",
+  "rootNamespace": "WorkplaceStudio.Desktop",
+  "references": ["WorkplaceStudio.Core", "glTFast", "Unity.InputSystem"],
+  "includePlatforms": ["Editor", "WindowsStandalone64", "WindowsStandalone32"]
+}
