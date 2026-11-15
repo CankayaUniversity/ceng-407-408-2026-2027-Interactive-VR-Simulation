@@ -26,7 +26,7 @@ assert.ok(read('Resources/DesktopPipeline.asset').includes('guid: ' + guid('Reso
 const catalogue = JSON.parse(read('Resources/DesktopCatalogue.json'))
 assert.equal(catalogue.sourceCommit, '8f1c2d68193d802edfafd7663a6f105f1ea33731')
 for (const scene of catalogue.environments) {
-  const source = path.join(root, 'web-editor/public', scene.editor.modelUrl)
+  const source = scene.editor.modelUrl.startsWith('desktop-content/') ? path.join(root, scene.editor.modelUrl) : path.join(root, 'web-editor/public', scene.editor.modelUrl)
   const generated = path.join(root, 'Assets/StreamingAssets/WorkplaceStudio', scene.modelFile)
   for (const file of [source, generated]) {
     const bytes = fs.readFileSync(file)

@@ -77,6 +77,8 @@ namespace WorkplaceStudio.Core
             {
                 if (spot == null) throw new InvalidDataException("Hotspot is missing.");
                 Text(spot.id, 100, "Hotspot ID"); Text(spot.title, 100, "Hotspot title"); Text(spot.description, 2000, "Training information", false); Vector(spot.position, "Hotspot position");
+                Text(spot.targetNode, 200, "Target node", false);
+                if (spot.targetPosition != null) { Vector(spot.targetPosition, "Node-local hotspot position"); Text(spot.targetNode, 200, "Target node"); }
                 if (!ids.Add(spot.id)) throw new InvalidDataException("Duplicate hotspot ID.");
                 if (spot.zoneId != null) Text(spot.zoneId, 100, "Move to area");
             }
@@ -85,6 +87,17 @@ namespace WorkplaceStudio.Core
         {
             if (project == null || project.formatVersion != 1) throw new InvalidDataException("Unsupported project version.");
             Text(project.id, 100, "Project ID"); Text(project.title, 100, "Project name"); Camera(project.overview); Editor(project.editor);
+            if (project.equipment == null || project.equipment.Count > 64) throw new InvalidDataException("Equipment list is invalid.");
+            var equipmentIds = new HashSet<string>(StringComparer.Ordinal);
+            var equipmentNodes = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var item in project.equipment)
+            {
+                if (item == null) throw new InvalidDataException("Equipment definition is missing.");
+                Text(item.id, 100, "Equipment ID"); Text(item.title, 100, "Equipment title"); Text(item.nodeName, 200, "Equipment node");
+                foreach (var node in new[] { item.screenNode, item.motionNode, item.auxiliaryNode }) Text(node, 200, "Equipment part", false);
+                if (!equipmentIds.Add(item.id) || !equipmentNodes.Add(item.nodeName) || !new[] { "monitor", "pump", "bed", "call" }.Contains(item.kind))
+                    throw new InvalidDataException("Equipment ID, node or kind is invalid.");
+            }
             if (project.environmentId != project.editor.environmentId ||
                 (project.navigationMode != "walking" && project.navigationMode != "seated" && project.navigationMode != "spectator"))
                 throw new InvalidDataException("Project environment or navigation mode is invalid.");

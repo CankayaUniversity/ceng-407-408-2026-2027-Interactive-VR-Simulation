@@ -68,3 +68,8 @@ TextField .unity-base-text-field__input { background-color: rgb(16, 20, 28); col
 .input-captured Button:focus, .input-captured Button:hover { border-width: 1px; border-color: rgb(57, 64, 77); background-color: rgb(31, 36, 46); }
 .input-captured Button.primary, .input-captured Button.selected { background-color: rgb(83, 128, 221); border-color: rgb(119, 159, 241); }
 .input-captured Button.quiet, .input-captured .piko-button { border-width: 0; background-color: rgba(0, 0, 0, 0); }
+.equipment-item { -unity-text-align: middle-left; background-color: rgb(29, 48, 56); color: rgb(151, 221, 218); margin: 3px 0; }
+.equipment-state { background-color: rgb(26, 54, 61); color: rgb(158, 231, 210); padding: 10px; margin: 8px 4px; border-radius: 5px; -unity-font-style: bold; }
+.equipment-badge { position: absolute; bottom: 16px; left: 16px; padding: 9px 12px; border-radius: 6px; background-color: rgba(15, 39, 46, .9); color: rgb(171, 228, 218); font-size: 11px; }
+.equipment-crosshair { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin-left: -2px; margin-top: -2px; border-radius: 3px; background-color: rgba(255,255,255,.85); }
+.practice-history { font-size: 11px; color: rgb(155, 174, 189); margin: 3px 6px; }

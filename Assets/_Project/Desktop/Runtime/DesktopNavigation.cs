@@ -47,7 +47,7 @@ namespace WorkplaceStudio.Desktop
             var eye = View.transform.position;
             bool hospital = environmentId == "charite-operating-room";
             EyeHeight = hospital ? 2.4f : 1.65f;
-            MovementSpeed = hospital ? 2.4f : .8f;
+            MovementSpeed = hospital ? 2.4f : environmentId == "nursing-skills-room" ? 1.5f : .8f;
             body.enabled = false;
             body.height = EyeHeight + .05f;
             body.center = Vector3.up * (body.height * .5f);

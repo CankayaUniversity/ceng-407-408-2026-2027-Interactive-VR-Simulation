@@ -47,6 +47,8 @@ const catalogue = {
   }),
 }
 const output = path.join(root, 'Assets/_Project/Desktop/Resources/DesktopCatalogue.json')
+// Native scenes are authored independently from the historical web catalogue.
+if (fs.existsSync(output)) catalogue.environments.unshift(...JSON.parse(fs.readFileSync(output, 'utf8')).environments.filter(p => p.editor.modelUrl.startsWith('desktop-content/')))
 fs.mkdirSync(path.dirname(output), { recursive: true })
 fs.writeFileSync(output, JSON.stringify(catalogue, null, 2) + '\n')
 console.log('Exported combined-final data: ' + catalogue.environments.map(p => `${p.title}: ${p.editor.zones.length} areas / ${p.editor.hotspots.length} points`).join('; '))

@@ -1,0 +1,6 @@
+# Preserve published documents and authored models as binary Git assets.
+*.pdf binary
+*.png binary
+*.glb binary
+*.blend binary
+*.fbx binary

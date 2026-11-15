@@ -28,8 +28,25 @@ köküne göre, alan kamera bakışları mutlak sağ el/Y-up uzayında kalır.
 glTFast, sağ el glTF'yi Unity'ye aktarırken X'i yansıtır. Runtime'ın
 Coordinates adaptörü kamera/hedef/noktalara aynı dönüşümü uygular. Kaydetme
 ters dönüşümle kaynak uzayına döner; GLB'ye ikinci ölçek/eksen dönüşümü yazılmaz.
-Katalog yalnız tanımlı 10 kaynak alan/noktayı içerir; kullanıcının tarayıcıya
-kaydettiği diğer içeriklere erişildiği varsayılmaz.
+Katalog eski hastanenin 10 kaynak alan/noktasına ek olarak yeni hemşire
+odasının dört cihaz bakışı/noktasını içerir; kullanıcının tarayıcıya kaydettiği
+diğer içeriklere erişildiği varsayılmaz.
+
+## Cihaz etkileşimleri
+
+Hemşire odasında `TrainingProject.equipment`, kararlı cihaz kimliklerini ve
+model parça adlarını taşır. `EquipmentSession` cihaz durumunu ve komut
+kurallarını UnityEngine bağımlılığı olmadan yönetir. Başarılı eylemlerin
+`Performed` olayları, önce/sonra durum görüntüsü ve sıralı olay numarası içerir.
+Gelecekteki eğitim adımları bu olaylara bağlanabilir. Runtime `EquipmentRig`
+geometriyi, `EquipmentDisplay` yerel ekranları, `DesktopEquipmentUI` kullanıcı
+girdisini yönetir. Pratik durumu oturumluk, cihaz tanımları taşınabilir kaydın
+parçasıdır. İsteğe bağlı node-local hotspot konumları hareketli parçayı takip eder.
+
+Yeni odanın canonical kaynağı `desktop-content/nursing-room` altındadır.
+Build bu yerel GLB'yi hash doğrulamasıyla StreamingAssets'e hazırlar; web
+katalog dışa aktarımı native katalog girdisini korur. Kaynak/lisans bilgileri
+aynı klasördeki `SOURCES.md` dosyasındadır.
 
 ## Dosya akışı
 

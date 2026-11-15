@@ -1,5 +1,10 @@
 # Workplace Studio
 
+Bu klasör projenin tarayıcı prototipidir. Güncel okul deposu
+[CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation](https://github.com/CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation);
+Unity uygulaması ve güncel proje kapsamı için [kök README](../README.md) ve
+[literatür raporu](../docs/LITERATURE_AND_TECHNOLOGY_REVIEW.pdf) kullanılmalıdır.
+
 27 Ekim 2026: yerel Studio arayüzü ve hiyerarşik alanlar, hastanenin 10 kaynak açıklaması ve Piko ile birleştirildi. Ortam öncesinde 10 saniyelik hazırlık ekranı açıktır.
 
 Üniversite bitirme projesi: farklı işyerlerinde kullanılabilecek tarayıcı tabanlı eğitim ortamı editörü. React arayüzü ve Babylon.js görüntüleyicisiyle mevcut GLB ortamında eğitim hotspotları ve inceleme görünümleri hazırlanır.
@@ -28,8 +33,8 @@ Node.js **24** ve npm ekip standardıdır; Dockerfile da Node 24 kullanır. Dene
 Güncel sürümün kurulumu:
 
 ```powershell
-git clone https://github.com/Cengaverler/interactive-vr-simulation.git
-cd interactive-vr-simulation
+git clone https://github.com/CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation.git
+cd ceng-407-408-2026-2027-Interactive-VR-Simulation
 git fetch origin
 git switch main
 cd web-editor

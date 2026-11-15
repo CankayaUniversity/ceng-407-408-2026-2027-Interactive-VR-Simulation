@@ -127,13 +127,53 @@ static class Program
         var catalogueFile = Path.Combine(root, "Assets", "_Project", "Desktop", "Resources", "DesktopCatalogue.json");
         Test("combined-final catalogue validates with ten hospital areas and source points", () =>
         {
-            var catalogue = TrainingJson.Read<Catalogue>(File.ReadAllText(catalogueFile)); Check(catalogue.environments.Count == 2);
+            var catalogue = TrainingJson.Read<Catalogue>(File.ReadAllText(catalogueFile)); Check(catalogue.environments.Count == 3);
             foreach (var project in catalogue.environments) TrainingValidation.Project(project);
             var hospital = catalogue.environments.Find(p => p.environmentId == "charite-operating-room");
             Check(hospital.editor.zones.Count == 10 && hospital.editor.hotspots.Count == 10); Check(hospital.editor.hotspots[0].title == "Patient bed socket");
             Check(hospital.editor.hotspots[0].position[1] > 1); Check(hospital.editor.hotspots.All(s => hospital.editor.zones.Any(a => a.id == s.zoneId)));
         });
-        foreach (var relative in new[] { "web-editor/public/environments/charite_university_hospital_-_operating_room.glb", "web-editor/public/environments/cockpit/boeing_737-800_cockpit.glb", "web-editor/public/guides/piko/piko.glb" })
+        var nursing = TrainingJson.Read<Catalogue>(File.ReadAllText(catalogueFile)).environments.Find(p => p.environmentId == "nursing-skills-room");
+        Test("nursing room preserves equipment bindings and moving hotspot anchors on save/reopen", () =>
+        {
+            TrainingValidation.Project(nursing); Check(nursing.equipment.Count == 4); Check(nursing.editor.hotspots.Count == 4);
+            var folder = Path.Combine(temporary, "nursing"); ProjectStore.Save(folder, nursing, Path.Combine(root, nursing.editor.modelUrl));
+            var reopened = ProjectStore.Open(folder);
+            Check(reopened.equipment.Select(e => e.id).SequenceEqual(nursing.equipment.Select(e => e.id)));
+            Check(reopened.editor.hotspots.All(p => p.targetPosition != null && p.targetNode != null));
+        });
+        Test("equipment metadata rejects duplicate IDs and malformed moving anchors", () =>
+        {
+            var p = TrainingJson.Clone(nursing); p.equipment[1].id = p.equipment[0].id; Reject(() => TrainingValidation.Project(p));
+            p = TrainingJson.Clone(nursing); p.editor.hotspots[0].targetPosition = new[] { float.NaN, 0, 0 }; Reject(() => TrainingValidation.Project(p));
+        });
+        Test("pump guards reject impossible actions without emitting lesson events", () =>
+        {
+            var session = new EquipmentSession(nursing.equipment); var events = new List<EquipmentEvent>(); session.Performed += events.Add;
+            Check(!session.Execute("pump-01", EquipmentAction.ToggleRun, out _)); Check(events.Count == 0);
+            Check(session.Execute("pump-01", EquipmentAction.TogglePower, out _));
+            Check(session.Execute("pump-01", EquipmentAction.ToggleDoor, out _));
+            Check(!session.Execute("pump-01", EquipmentAction.ToggleRun, out _));
+            Check(session.Execute("pump-01", EquipmentAction.ToggleDoor, out _)); Check(session.Execute("pump-01", EquipmentAction.ToggleRun, out _));
+            Check(!session.Execute("pump-01", EquipmentAction.ToggleDoor, out _));
+            Check(session.Execute("pump-01", EquipmentAction.TogglePower, out _)); Check(!session.Read("pump-01").Running);
+            Check(events.Select(e => e.Sequence).SequenceEqual(new long[] { 1,2,3,4,5 }));
+            Check(!events[0].Before.Powered && events[0].After.Powered && events[3].After.Running);
+        });
+        Test("bed limits, call acknowledge and reset remain isolated between equipment", () =>
+        {
+            var session = new EquipmentSession(nursing.equipment);
+            for (int i = 0; i < 8; i++) session.Execute("bed-01", EquipmentAction.RaiseBackrest, out _);
+            Check(session.Read("bed-01").BackrestDegrees == 60);
+            Check(!session.Execute("bed-01", EquipmentAction.ToggleRun, out _));
+            Check(!session.Execute("unknown", EquipmentAction.Reset, out _));
+            Check(session.Execute("call-01", EquipmentAction.Call, out _)); Check(session.Read("call-01").CallActive);
+            Check(session.Execute("call-01", EquipmentAction.Acknowledge, out _)); Check(!session.Read("call-01").CallActive);
+            Check(session.Execute("bed-01", EquipmentAction.ToggleRail, out _)); Check(session.Read("bed-01").RailLowered);
+            Check(session.Execute("bed-01", EquipmentAction.Reset, out _)); Check(session.Read("bed-01").BackrestDegrees == 15 && !session.Read("bed-01").RailLowered);
+            Check(session.Read("monitor-01").Powered && !session.Read("pump-01").Powered);
+        });
+        foreach (var relative in new[] { "web-editor/public/environments/charite_university_hospital_-_operating_room.glb", "web-editor/public/environments/cockpit/boeing_737-800_cockpit.glb", "web-editor/public/guides/piko/piko.glb", "desktop-content/nursing-room/nursing-room.glb" })
         {
             var path = Path.Combine(root, relative.Replace('/', Path.DirectorySeparatorChar));
             if (File.Exists(path)) Test("real bundled asset validates: " + Path.GetFileName(path), () => GlbFiles.Validate(path));

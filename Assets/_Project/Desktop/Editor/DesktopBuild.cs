@@ -36,19 +36,21 @@ namespace WorkplaceStudio.Desktop.Editor
             foreach (var project in catalogue.environments)
             {
                 TrainingValidation.Project(project);
-                var source = Path.Combine(root, "web-editor", "public", project.editor.modelUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                bool native = project.editor.modelUrl.StartsWith("desktop-content/", StringComparison.Ordinal);
+                var source = native ? LocalPaths.Resolve(root, project.editor.modelUrl) : LocalPaths.Resolve(Path.Combine(root, "web-editor", "public"), project.editor.modelUrl.TrimStart('/'));
                 var target = LocalPaths.Resolve(contentRoot, project.modelFile);
-                CopyVerified(source, target, project.modelSha256);
+                CopyVerified(source, target, project.modelSha256, native);
             }
             CopyVerified(Path.Combine(root, "web-editor", "public", "guides", "piko", "piko.glb"),
                 Path.Combine(contentRoot, "guides", "piko.glb"), "fd2338c12af77d767f769fdf0c06beba1b3279df78ceb6c36dbda2c5f82383ac");
             AssetDatabase.Refresh();
         }
-        static void CopyVerified(string source, string target, string expected)
+        static void CopyVerified(string source, string target, string expected, bool refreshGenerated = false)
         {
             GlbFiles.Verify(source, expected);
             Directory.CreateDirectory(Path.GetDirectoryName(target));
-            if (File.Exists(target)) GlbFiles.Verify(target, expected);
+            if (File.Exists(target) && refreshGenerated) File.Copy(source, target, true);
+            else if (File.Exists(target)) GlbFiles.Verify(target, expected);
             else File.Copy(source, target);
         }
 
@@ -82,6 +84,12 @@ namespace WorkplaceStudio.Desktop.Editor
                 PlayerSettings.fullScreenMode = FullScreenMode.Windowed; PlayerSettings.resizableWindow = true;
                 PlayerSettings.defaultIsNativeResolution = false; PlayerSettings.defaultScreenWidth = 1440; PlayerSettings.defaultScreenHeight = 900;
                 // Keep glTF runtime shader variants in the standalone player. Editor play alone cannot verify stripping.
+                var displayShader = Shader.Find("Universal Render Pipeline/Unlit");
+                if (displayShader == null) throw new InvalidOperationException("Equipment display shader is unavailable.");
+                if (!previousShaders.Contains(displayShader))
+                {
+                    shaders.InsertArrayElementAtIndex(shaders.arraySize); shaders.GetArrayElementAtIndex(shaders.arraySize - 1).objectReferenceValue = displayShader;
+                }
                 foreach (string guid in AssetDatabase.FindAssets("t:Shader", new[] { "Packages/com.unity.cloud.gltfast/Runtime/Shader" }))
                 {
                     string path = AssetDatabase.GUIDToAssetPath(guid);

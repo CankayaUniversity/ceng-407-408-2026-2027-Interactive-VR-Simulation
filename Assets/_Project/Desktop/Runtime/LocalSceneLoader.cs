@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -30,8 +31,14 @@ namespace WorkplaceStudio.Desktop
     {
         public GameObject Root { get; }
         public Bounds Bounds { get; }
+        public IReadOnlyDictionary<string, Transform> Nodes { get; }
+        public EquipmentRig Equipment { get; internal set; }
         readonly GltfImport importer;
-        public LoadedScene(GameObject root, GltfImport importer, Bounds bounds) { Root = root; this.importer = importer; Bounds = bounds; }
+        public LoadedScene(GameObject root, GltfImport importer, Bounds bounds)
+        {
+            Root = root; this.importer = importer; Bounds = bounds;
+            Nodes = root.GetComponentsInChildren<Transform>(true).GroupBy(t => t.name).Where(g => g.Count() == 1).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+        }
         public void Dispose() { if (Root != null) UnityEngine.Object.Destroy(Root); importer.Dispose(); }
     }
 
@@ -72,7 +79,9 @@ namespace WorkplaceStudio.Desktop
                     if (++count % 32 == 0) await Task.Yield();
                 }
                 cancellation.ThrowIfCancellationRequested();
-                return new LoadedScene(root, importer, bounds);
+                var loaded = new LoadedScene(root, importer, bounds);
+                if (project.equipment.Count > 0) loaded.Equipment = EquipmentRig.Create(root, project.equipment, loaded.Nodes);
+                return loaded;
             }
             catch { UnityEngine.Object.Destroy(root); importer.Dispose(); throw; }
         }

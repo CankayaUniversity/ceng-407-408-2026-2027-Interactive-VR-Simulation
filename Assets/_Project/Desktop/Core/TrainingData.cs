@@ -28,6 +28,7 @@ namespace WorkplaceStudio.Core
     {
         public string id, title, description = "", zoneId, targetNode;
         public float[] position = { 0, 0, 0 };
+        public float[] targetPosition;
     }
     [Serializable] public sealed class EditorDocument
     {
@@ -50,6 +51,7 @@ namespace WorkplaceStudio.Core
         public Pose overview = new Pose();
         public EditorDocument editor = new EditorDocument();
         public Attribution attribution;
+        public List<EquipmentDefinition> equipment = new List<EquipmentDefinition>();
     }
     [Serializable] public sealed class Catalogue
     {

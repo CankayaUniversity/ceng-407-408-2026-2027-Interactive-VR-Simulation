@@ -1,0 +1,23 @@
+{
+  "university": "ÇANKAYA UNIVERSITY",
+  "faculty": "FACULTY OF ENGINEERING",
+  "department": "COMPUTER ENGINEERING DEPARTMENT",
+  "course": "CENG 407 - Innovative System Design and Development I",
+  "academicYear": "2026-2027 Fall",
+  "project": "Interactive VR Simulation",
+  "product": "Workplace Studio",
+  "report": "Literature and Technology Review",
+  "subtitle": "A 3D Training Authoring Platform with Local and Online AI Processing",
+  "date": "15 November 2026",
+  "repository": "CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation",
+  "repositoryUrl": "https://github.com/CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation",
+  "supervisor": "Gül Tokdemir",
+  "members": [
+    {"number": "202111052", "name": "Hasan DURMUŞOĞLU"},
+    {"number": "201911032", "name": "Alperen KAHVECİ"},
+    {"number": "202111054", "name": "Erdinç Bartu GÖKER"},
+    {"number": "202011027", "name": "Arif Kaan YILMAZ"},
+    {"number": "202211016", "name": "Yusuf ÇAĞLAYAN"},
+    {"number": "202111067", "name": "Mehmet Yiğit İNCİ"}
+  ]
+}

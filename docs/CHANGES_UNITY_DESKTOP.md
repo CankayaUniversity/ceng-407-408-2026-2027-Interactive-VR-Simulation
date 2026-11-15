@@ -1,5 +1,10 @@
 # Unity masaüstü sürümü — 14 Kasım 2026
 
+Bu belge 14 Kasım'daki eski ekip deposu tesliminin tarihsel kaydıdır.
+15 Kasım okul deposu hazırlığı için [güncel değişiklik notuna](CHANGES_UNIVERSITY_NURSING_2026_11_15.md)
+bakın. Güncel okul dalı normal Git model dosyalarını kullanır; aşağıdaki
+LFS talimatları eski teslim dalına aittir.
+
 Branch: `codex/unity-desktop-2026-11-14`.
 Taban: `codex/combined-final`, commit `8f1c2d68193d802edfafd7663a6f105f1ea33731`.
 

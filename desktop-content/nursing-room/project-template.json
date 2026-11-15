@@ -1,0 +1,233 @@
+{
+  "formatVersion": 1,
+  "id": "nursing-skills-room",
+  "title": "Nursing Skills Room",
+  "environmentId": "nursing-skills-room",
+  "modelFile": "environments/nursing-skills-room/environment.glb",
+  "modelSha256": "21027884293933c245fd8ca1d0ba8554f6059772747c206753f4f847aff2e83f",
+  "navigationMode": "walking",
+  "overview": {
+    "position": [
+      2.45,
+      1.65,
+      3.1
+    ],
+    "target": [
+      -0.1,
+      1.25,
+      -1.6
+    ],
+    "fovDegrees": 68
+  },
+  "attribution": {
+    "author": "Cengaverler \u00b7 Innerscene equipment",
+    "license": "Original room; equipment CC0 1.0",
+    "sourceUrl": "See desktop-content/nursing-room/SOURCES.md"
+  },
+  "equipment": [
+    {
+      "id": "bed-01",
+      "title": "Adjustable patient bed",
+      "kind": "bed",
+      "nodeName": "NR_Bed",
+      "motionNode": "NR_Bed_Backrest",
+      "auxiliaryNode": "NR_Bed_Rail"
+    },
+    {
+      "id": "monitor-01",
+      "title": "Patient monitor",
+      "kind": "monitor",
+      "nodeName": "NR_Monitor",
+      "screenNode": "NR_Monitor_Display"
+    },
+    {
+      "id": "pump-01",
+      "title": "Infusion pump",
+      "kind": "pump",
+      "nodeName": "NR_Pump",
+      "screenNode": "NR_Pump_Display",
+      "motionNode": "NR_Pump_Door"
+    },
+    {
+      "id": "call-01",
+      "title": "Nurse call",
+      "kind": "call",
+      "nodeName": "NR_NurseCall",
+      "auxiliaryNode": "NR_Call_Light"
+    }
+  ],
+  "editor": {
+    "schemaVersion": 1,
+    "environmentId": "nursing-skills-room",
+    "modelUrl": "desktop-content/nursing-room/nursing-room.glb",
+    "modelTransform": {
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "zones": [
+      {
+        "id": "nursing-bed",
+        "title": "Bed controls",
+        "environmentId": "nursing-skills-room",
+        "order": 0,
+        "calibration": "reviewed",
+        "camera": {
+          "position": [
+            1.35,
+            1.65,
+            0.6
+          ],
+          "target": [
+            0,
+            1.0,
+            -1.55
+          ],
+          "fovDegrees": 65
+        }
+      },
+      {
+        "id": "nursing-monitor",
+        "title": "Patient monitor",
+        "environmentId": "nursing-skills-room",
+        "order": 1,
+        "calibration": "reviewed",
+        "camera": {
+          "position": [
+            -1.23,
+            1.55,
+            -0.85
+          ],
+          "target": [
+            -1.25,
+            1.47,
+            -1.7
+          ],
+          "fovDegrees": 40
+        }
+      },
+      {
+        "id": "nursing-pump",
+        "title": "Infusion pump",
+        "environmentId": "nursing-skills-room",
+        "order": 2,
+        "calibration": "reviewed",
+        "camera": {
+          "position": [
+            1.25,
+            1.42,
+            -0.9
+          ],
+          "target": [
+            1.26,
+            1.3,
+            -1.65
+          ],
+          "fovDegrees": 40
+        }
+      },
+      {
+        "id": "nursing-call",
+        "title": "Nurse call",
+        "environmentId": "nursing-skills-room",
+        "order": 3,
+        "calibration": "reviewed",
+        "camera": {
+          "position": [
+            2.1,
+            1.6,
+            -2.15
+          ],
+          "target": [
+            1.36,
+            1.42,
+            -3.51
+          ],
+          "fovDegrees": 65
+        }
+      }
+    ],
+    "hotspots": [
+      {
+        "id": "nursing-bed-point",
+        "title": "Bed controls",
+        "description": "Explore the equipment, then use the practice controls. This room uses generic equipment for introductory skills practice.",
+        "zoneId": "nursing-bed",
+        "targetNode": "NR_Bed_Controls",
+        "targetPosition": [
+          0,
+          0,
+          0
+        ],
+        "position": [
+          0.6100000143051147,
+          1.2000000476837158,
+          -1.600000023841858
+        ]
+      },
+      {
+        "id": "nursing-monitor-point",
+        "title": "Patient monitor",
+        "description": "Explore the equipment, then use the practice controls. This room uses generic equipment for introductory skills practice.",
+        "zoneId": "nursing-monitor",
+        "targetNode": "NR_Monitor_Display",
+        "targetPosition": [
+          0,
+          0,
+          0.004
+        ],
+        "position": [
+          -1.2680000066757202,
+          1.4709999561309814,
+          -1.621000051498413
+        ]
+      },
+      {
+        "id": "nursing-pump-point",
+        "title": "Infusion pump",
+        "description": "Explore the equipment, then use the practice controls. This room uses generic equipment for introductory skills practice.",
+        "zoneId": "nursing-pump",
+        "targetNode": "NR_Pump_Display",
+        "targetPosition": [
+          0,
+          0,
+          0.004
+        ],
+        "position": [
+          1.2795000076293945,
+          1.309000015258789,
+          -1.5609999895095825
+        ]
+      },
+      {
+        "id": "nursing-call-point",
+        "title": "Nurse call",
+        "description": "Explore the equipment, then use the practice controls. This room uses generic equipment for introductory skills practice.",
+        "zoneId": "nursing-call",
+        "targetNode": "NR_Call_Button",
+        "targetPosition": [
+          0,
+          0,
+          0
+        ],
+        "position": [
+          1.3600000143051147,
+          1.4199999570846558,
+          -3.48799991607666
+        ]
+      }
+    ]
+  }
+}

@@ -1,12 +1,14 @@
 # Workplace Studio — Unity masaüstü uygulamasına geçiş
 
-2 Kasım 2026. Taban: GitHub `codex/combined-final`, commit
-`8f1c2d68193d802edfafd7663a6f105f1ea33731`. Çalışma dalı:
-`codex/unity-desktop-2026-11-14` (14 Kasım paylaşımı).
+15 Kasım 2026 güncellemesi. Güncel okul deposu:
+[CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation](https://github.com/CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation).
+Hazırlık dalı: `codex/nursing-room-literature-2026-11-15`; tabanı okulun
+`main` dalındaki `50a5a2f` commit'idir. İlk Unity geçişi 2 Kasım'da
+`codex/combined-final` (`8f1c2d6`) üzerinden başlatılmıştır.
 
 **Durum:** İlk Unity masaüstü kaynakları ve derleme araçları hazırlandı.
 Unity Editor 6000.6.7f1 kuruldu; paket çözümlemesi ve gerçek Unity C# derlemesi
-tamamlandı. 16 Unity testi geçti; gerçek hastane zemin testi Play Mode'a girer.
+tamamlandı. 17 Unity testi geçti; gerçek hastane ve hemşire odası testleri Play Mode'a girer.
 Windows executable oluşturuldu;
 bu bilgisayarda hastane/kokpit, Piko ve kaydet/yeniden aç akışı denendi.
 Kontroller [doğrulama kaydında](DESKTOP_VALIDATION_2026_11_02.md) ayrılır.
@@ -14,6 +16,10 @@ Kontroller [doğrulama kaydında](DESKTOP_VALIDATION_2026_11_02.md) ayrılır.
 ## İlk sürümün kaynak kapsamı
 
 - Unity UI Toolkit ile yerel ortam seçimi, Editor/Preview ve eğitim ağacı.
+- Yeni **Nursing Skills Room**: Özel hazırlanmış tek yataklı hasta odası,
+  etkileşimli monitör, pompa, yatak ve hemşire çağrısı. Cihaz listesi yakın
+  görünüme geçer; doğrudan tıklama ve yürüyüşte E ile kontrol paneli açılır.
+  Ayrıntılar: [oda ve etkileşim altyapısı](NURSING_ROOM.md).
 - Hastane/kokpit GLB'lerini diskten açma; yeni, kendine yeterli yerel GLB seçme.
 - WASD/fare; yürüyüş ve çarpışmasız serbest kamera. Sağ tuş girdiyi yakalar,
   Esc bırakır. Serbest modda Shift yükseltir, Ctrl alçaltır; sağ ve sol
@@ -155,8 +161,10 @@ node desktop-tools/verify-desktop.mjs
 Katalog, `combined-final` registry ve kaynak annotation modülünden
 `desktop-tools/export-content.mjs` ile üretilmiştir. Bu geliştirici aracı
 mevcut web TypeScript bağımlılığını kullanır; son kullanıcıya Node gerekmez.
-Canonical GLB'ler Git LFS'de web-editor/public altındadır. StreamingAssets
-kopyaları üretilmiş dosyadır ve tekrar Git'e eklenmez.
+Okul deposunun güncel tabanında hastane/kokpit GLB'leri `web-editor/public`
+altında normal Git dosyalarıdır; bu dal için LFS ile ayrıca indirmek gerekmez.
+Hemşire odasının Blender/GLB kaynakları `desktop-content/nursing-room` içindedir.
+StreamingAssets kopyaları üretilmiş dosyadır ve tekrar Git'e eklenmez.
 
 ## Kaynak ve lisans
 

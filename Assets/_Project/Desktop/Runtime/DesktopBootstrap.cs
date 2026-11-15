@@ -13,7 +13,7 @@ using Pose = WorkplaceStudio.Core.Pose;
 
 namespace WorkplaceStudio.Desktop
 {
-    public sealed class DesktopBootstrap : MonoBehaviour, ITrainingActions
+    public sealed partial class DesktopBootstrap : MonoBehaviour, ITrainingActions
     {
         VisualElement root, stage, tree, inspector, markerLayer, modal, workspace, dashboard, sidebar;
         Label status, contextLabel, titleLabel, modeLabel, movementHelp;
@@ -33,6 +33,7 @@ namespace WorkplaceStudio.Desktop
         bool explorerOpen = true, inspectorOpen, focusView, explorerBeforeFocus, inspectorBeforeFocus;
         int navigationRevision;
         PikoPortrait piko;
+        Light environmentLight;
         RenderPipelineAsset previousPipeline, previousQualityPipeline;
         AmbientMode previousAmbientMode;
         Color previousAmbientLight;
@@ -49,8 +50,8 @@ namespace WorkplaceStudio.Desktop
             previousAmbientMode = RenderSettings.ambientMode; previousAmbientLight = RenderSettings.ambientLight;
             RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = new Color(.5f, .53f, .6f);
             var lightRoot = new GameObject("Environment key light"); lightRoot.transform.SetParent(transform);
-            var light = lightRoot.AddComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.6f;
-            light.cullingMask = ~(1 << 30); lightRoot.transform.rotation = Quaternion.Euler(45, -35, 0);
+            environmentLight = lightRoot.AddComponent<Light>(); environmentLight.type = LightType.Directional; environmentLight.intensity = 1.6f;
+            environmentLight.cullingMask = ~(1 << 30); lightRoot.transform.rotation = Quaternion.Euler(45, -35, 0);
             document = gameObject.AddComponent<UIDocument>();
             panel = ScriptableObject.CreateInstance<PanelSettings>();
             panel.scaleMode = PanelScaleMode.ConstantPixelSize; panel.scale = 1;
@@ -141,6 +142,7 @@ namespace WorkplaceStudio.Desktop
         {
             loading?.Cancel(); navigationRevision++; navigation.CancelMove(); navigation.Ready = false; navigation.ReleasePointer();
             environment?.Dispose(); environment = null; project = null; dirty = false; pins.Clear(); previousViews.Clear();
+            ClearEquipmentUI();
             workspace.style.display = DisplayStyle.None; dashboard.style.display = DisplayStyle.Flex; navigation.View.enabled = false;
             root.style.backgroundColor = new Color(.063f, .071f, .09f);
             piko?.Attach(root);
@@ -149,7 +151,7 @@ namespace WorkplaceStudio.Desktop
             var cards = Box("cards"); dashboard.Add(cards);
             foreach (var item in catalogue.environments)
             {
-                var card = Box("environment-card"); card.Add(Label(item.environmentId == "charite-operating-room" ? "OPERATING ROOM" : "COCKPIT", "eyebrow"));
+                var card = Box("environment-card"); card.Add(Label(item.environmentId == "nursing-skills-room" ? "NURSING SKILLS" : item.environmentId == "charite-operating-room" ? "OPERATING ROOM" : "COCKPIT", "eyebrow"));
                 card.Add(Label(item.title, "card-title"));
                 card.Add(Label(item.editor.hotspots.Count + " points · " + item.editor.zones.Count + " areas", "muted"));
                 card.Add(Button("Open environment  ↗", () => _ = Open(TrainingJson.Clone(item), LocalPaths.Resolve(Application.streamingAssetsPath, "WorkplaceStudio/" + item.modelFile), null), "primary"));
@@ -184,6 +186,7 @@ namespace WorkplaceStudio.Desktop
                 token.ThrowIfCancellationRequested(); if (destroyed) throw new OperationCanceledException();
                 environment?.Dispose(); environment = loaded; loaded = null;
                 project = next; sourceModel = model; projectDirectory = directory;
+                ConfigureEnvironmentLighting(next.environmentId);
                 activeArea = selectedArea = selectedHotspot = null; previousViews.Clear(); editing = false; dirty = fit;
                 if (fit)
                 {
@@ -193,6 +196,7 @@ namespace WorkplaceStudio.Desktop
                 navigation.View.enabled = true; navigation.Spectator = next.navigationMode != "walking";
                 navigation.ConfigureForEnvironment(next.environmentId);
                 navigation.Apply(project.overview); navigation.Ready = true; busy = false;
+                BindEquipmentUI();
                 root.style.backgroundColor = Color.clear;
                 piko?.Attach(stage);
                 SetMode(false); Message("Environment loaded · Original model materials"); UpdateViewport();
@@ -210,12 +214,14 @@ namespace WorkplaceStudio.Desktop
             if (project == null || busy) return;
             navigationRevision++; navigation.CancelMove(); navigation.ReleasePointer(); editing = edit; placing = false;
             selectedArea = selectedHotspot = null; previewButton.EnableInClassList("selected", !edit); editorButton.EnableInClassList("selected", edit);
+            selectedEquipment = null;
             inspectorOpen = edit; focusView = false; UpdatePanels();
             RenderTree(); RenderInspector(); RenderMarkers(); UpdateContext();
         }
         void RenderTree(string query = "")
         {
             tree.Clear(); if (project == null) return;
+            AddEquipmentTree();
             if (editing)
             {
                 tree.Add(Button("Save an area", () => AreaForm(null, null), "tree-action"));
@@ -237,7 +243,7 @@ namespace WorkplaceStudio.Desktop
                 {
                     if (term.Length > 0 && !visible.Contains(area.id)) continue;
                     var branch = new Foldout { text = "", value = true }; branch.AddToClassList("area-branch");
-                    branch.Add(Button(area.title, () => { if (editing) { selectedArea = area.id; selectedHotspot = null; RenderInspector(); } else OpenArea(area.id); }, "tree-item"));
+                    branch.Add(Button(area.title, () => { if (editing) { selectedArea = area.id; selectedHotspot = selectedEquipment = null; RenderInspector(); } else OpenArea(area.id); }, "tree-item"));
                     foreach (var spot in project.editor.hotspots.Where(s => s.zoneId == area.id))
                         if (term.Length == 0 || spot.title.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0 || area.title.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
                             branch.Add(Button("• " + spot.title, () => ActivateHotspot(spot.id), "point-item"));
@@ -271,7 +277,7 @@ namespace WorkplaceStudio.Desktop
                 if (result == DesktopMoveResult.Completed)
                 {
                     previousViews.Add(origin); if (previousViews.Count > 16) previousViews.RemoveAt(0);
-                    activeArea = area; selectedArea = selectedHotspot = null; RenderInspector(); RenderMarkers(); UpdateContext();
+                    activeArea = area; selectedArea = selectedHotspot = selectedEquipment = null; RenderInspector(); RenderMarkers(); UpdateContext();
                     Message("Saved view opened.");
                 }
                 else Message("Equipment blocks the camera path. Information can be shown in the current view.");
@@ -283,7 +289,7 @@ namespace WorkplaceStudio.Desktop
             if (project == null || busy) return;
             var spot = project.editor.hotspots.Find(s => s.id == id); if (spot == null) return;
             navigation.ReleasePointer();
-            Action show = () => { selectedHotspot = id; selectedArea = null; RenderInspector(); };
+            Action show = () => { selectedHotspot = id; selectedArea = selectedEquipment = null; RenderInspector(); };
             if (editing) { navigationRevision++; navigation.CancelMove(); show(); return; }
             var area = project.editor.zones.Find(a => a.id == spot.zoneId);
             if (area != null && activeArea != area.id) GoTo(area.camera, area.id, show);
@@ -299,6 +305,7 @@ namespace WorkplaceStudio.Desktop
         void RenderInspector()
         {
             inspector.Clear(); if (project == null) return;
+            if (RenderSelectedEquipment()) return;
             var spot = project.editor.hotspots.Find(s => s.id == selectedHotspot);
             var area = project.editor.zones.Find(a => a.id == selectedArea);
             if (editing || spot != null) RevealInspector();
@@ -308,6 +315,7 @@ namespace WorkplaceStudio.Desktop
                 inspector.Add(Label(editing ? "Edit hotspot" : "Training information", "eyebrow"));
                 if (editing) { HotspotForm(spot, false); return; }
                 inspector.Add(Label(spot.title, "panel-title")); inspector.Add(Label(spot.description, "description"));
+                AddHotspotEquipment(spot);
                 inspector.Add(Button("Close", () => { selectedHotspot = null; RenderInspector(); }));
             }
             else if (area != null && editing)
@@ -350,6 +358,7 @@ namespace WorkplaceStudio.Desktop
         static string PickedArea(DropdownField picker) => ((List<string>)picker.userData)[picker.index];
         void AreaForm(Area existing, string parent)
         {
+            selectedEquipment = null;
             if (!editing || busy) return; navigation.ReleasePointer();
             RevealInspector();
             inspector.Clear(); inspector.Add(Label(existing == null ? "Save an area" : "Edit area", "panel-title"));
@@ -372,6 +381,7 @@ namespace WorkplaceStudio.Desktop
         }
         void StartPlacing()
         {
+            selectedEquipment = null;
             if (!editing || busy || project.editor.hotspots.Count >= 100) return;
             navigationRevision++; navigation.CancelMove(); navigation.ReleasePointer(); placing = true;
             Message("Click a model surface to place a hotspot. Press Esc to cancel.");
@@ -380,11 +390,13 @@ namespace WorkplaceStudio.Desktop
         {
             if (evt.target != stage || !navigation.Ready || busy) return;
             if (evt.button == 1) { placing = false; stage.Focus(); navigation.CapturePointer(); inputGate.SyncCapture(); evt.StopPropagation(); return; }
-            if (evt.button != 0 || !placing || Mouse.current == null || environment == null) return;
+            if (evt.button != 0 || Mouse.current == null || environment == null) return;
             var ray = navigation.View.ScreenPointToRay(Mouse.current.position.ReadValue());
+            if (!placing) { if (!editing) InspectEquipment(ray); return; }
             if (!Physics.Raycast(ray, out var hit, 200, ~((1 << 30) | (1 << 31)), QueryTriggerInteraction.Ignore)) { Message("No model surface was selected."); return; }
             placing = false; inspector.Clear();
             HotspotForm(new Hotspot { id = Guid.NewGuid().ToString("N"), title = "", zoneId = selectedArea ?? activeArea, targetNode = hit.collider.name,
+                targetPosition = Coordinates.ToSource(hit.collider.transform.InverseTransformPoint(hit.point)),
                 position = Coordinates.ToSource(environment.Root.transform.InverseTransformPoint(hit.point)) }, true);
         }
         void HotspotForm(Hotspot spot, bool fresh)
@@ -430,10 +442,12 @@ namespace WorkplaceStudio.Desktop
                     ? "Mouse captured · WASD: move · Shift: faster · Esc: release cursor"
                     : "Right-click: capture mouse · WASD: move · Shift: faster · Esc: release cursor");
             if (movementHelp.text != hint) movementHelp.text = hint;
+            UpdateEquipmentInput();
             foreach (var pair in pins)
             {
-                var viewport = navigation.View.WorldToViewportPoint(environment.Root.transform.TransformPoint(Coordinates.ToUnity(pair.Key.position)));
-                bool visible = viewport.z > navigation.View.nearClipPlane && viewport.x >= 0 && viewport.x <= 1 && viewport.y >= 0 && viewport.y <= 1;
+                var viewport = navigation.View.WorldToViewportPoint(HotspotWorldPosition(pair.Key));
+                bool selectedDevice = selectedEquipment != null && EquipmentForHotspot(pair.Key) == selectedEquipment;
+                bool visible = (editing || (pair.Key.id != selectedHotspot && !selectedDevice)) && viewport.z > navigation.View.nearClipPlane && viewport.x >= 0 && viewport.x <= 1 && viewport.y >= 0 && viewport.y <= 1;
                 pair.Value.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
                 if (visible) { pair.Value.style.left = viewport.x * stage.resolvedStyle.width - 17; pair.Value.style.top = (1 - viewport.y) * stage.resolvedStyle.height - 17; }
             }
@@ -508,6 +522,7 @@ namespace WorkplaceStudio.Desktop
         {
             destroyed = true; navigationRevision++; loading?.Cancel(); loading?.Dispose();
             inputGate?.Dispose();
+            ClearEquipmentUI();
             Application.wantsToQuit -= WantsToQuit; environment?.Dispose();
             GraphicsSettings.defaultRenderPipeline = previousPipeline; QualitySettings.renderPipeline = previousQualityPipeline;
             RenderSettings.ambientMode = previousAmbientMode; RenderSettings.ambientLight = previousAmbientLight;
