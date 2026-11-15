@@ -7,7 +7,7 @@ Güncel depo: [CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulatio
 **CENG 407 academic deliverable:** Literature and Technology Review — 15 November 2026 · [PDF](docs/LITERATURE_AND_TECHNOLOGY_REVIEW.pdf) · [Markdown](docs/LITERATURE_AND_TECHNOLOGY_REVIEW.md) · [Documentation index](docs/README.md)
 
 Unity masaüstü uygulaması `Assets/_Project/Desktop` altındadır. Güncel hazırlık
-dalı `codex/nursing-room-literature-2026-11-15`; okul deposunun `main` dalı
+dalı `nursing-room-literature-2026-11-15`; okul deposunun `main` dalı
 üzerine hemşire odası ve literatür raporu eklenmiştir. İlk hedef Windows,
 WASD/fare, mesh/GLB, alan/bilgi noktası editörü ve yerel proje kaydıdır.
 

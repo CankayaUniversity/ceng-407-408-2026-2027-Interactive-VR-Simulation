@@ -1,11 +1,17 @@
 # Okul deposu için hemşire odası ve literatür raporu
 
-Tarih: 15 Kasım 2026. Hazırlık dalı: `codex/nursing-room-literature-2026-11-15`.
+Tarih: 15 Kasım 2026. Hazırlık dalı: `nursing-room-literature-2026-11-15`.
 Taban: okul deposunun `main` dalı, `50a5a2fbbb0648ab709c8f07e4193c684d97cbf0`.
 
 Güncel hedef: [CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation](https://github.com/CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation).
 Kullanıcı incelemesinden sonra 15 Kasım 2026'da bu yeni dalın okul deposuna
-yayınlanması onaylandı. `main` dalına doğrudan yazılmaz veya otomatik merge yapılmaz.
+yayınlanması onaylandı. Uygulama dalı `main` ile birleştirilmedi. Kullanıcının
+ayrı isteğiyle yalnız `docs/LITERATURE_AND_TECHNOLOGY_REVIEW.pdf`, `0864171`
+commit'i ile `main` dalına eklendi; başka uygulama/belge değişikliği taşınmadı.
+
+Okul reposundaki dört dalın `codex/` ön eki GitHub'ın yeniden adlandırma
+işlemiyle kaldırıldı; yeniden adlandırma sırasında tüm commit özetleri korundu.
+Yerel dal adları ve güncel kullanım belgeleri de yeni isimlerle eşleştirildi.
 
 ## Uygulama ve içerik
 

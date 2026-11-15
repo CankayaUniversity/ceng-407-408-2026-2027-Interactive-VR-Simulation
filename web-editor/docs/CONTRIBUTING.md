@@ -6,7 +6,7 @@ README, ARCHITECTURE, PROJECT_STATUS ve AGENTS okuyun. Kod/testler gerçek kayna
 
 ## Branch ve PR
 
-Unity kökünü koruyun; web işi web-editor/ altında. Göreve özel feature/fix branch kullanın; AI branch'lerinde aksi istenmedikçe codex/ öneki. İlk entegrasyon için istenen branch feature/web-editor-integration'dır.
+Unity kökünü koruyun; web işi web-editor/ altında. Göreve özel feature/fix/docs branch kullanın. Kullanıcının 15 Kasım 2026 tercihiyle dal adlarında codex/ öneki kullanılmaz. İlk entegrasyon için istenen branch feature/web-editor-integration'dır.
 
 Temiz ve onaylı çalışma durumunda repository kökünden:
 

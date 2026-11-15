@@ -2,7 +2,7 @@
 
 15 Kasım 2026 güncellemesi. Güncel okul deposu:
 [CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation](https://github.com/CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation).
-Hazırlık dalı: `codex/nursing-room-literature-2026-11-15`; tabanı okulun
+Hazırlık dalı: `nursing-room-literature-2026-11-15`; tabanı okulun
 `main` dalındaki `50a5a2f` commit'idir. İlk Unity geçişi 2 Kasım'da
 `codex/combined-final` (`8f1c2d6`) üzerinden başlatılmıştır.
 
