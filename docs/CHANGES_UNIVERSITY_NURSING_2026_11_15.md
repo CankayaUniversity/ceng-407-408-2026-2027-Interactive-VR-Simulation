@@ -4,7 +4,8 @@ Tarih: 15 Kasım 2026. Hazırlık dalı: `codex/nursing-room-literature-2026-11-
 Taban: okul deposunun `main` dalı, `50a5a2fbbb0648ab709c8f07e4193c684d97cbf0`.
 
 Güncel hedef: [CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation](https://github.com/CankayaUniversity/ceng-407-408-2026-2027-Interactive-VR-Simulation).
-Bu hazırlık kullanıcı incelemesi içindir; yayın/push ayrıca onaylanacaktır.
+Kullanıcı incelemesinden sonra 15 Kasım 2026'da bu yeni dalın okul deposuna
+yayınlanması onaylandı. `main` dalına doğrudan yazılmaz veya otomatik merge yapılmaz.
 
 ## Uygulama ve içerik
 
@@ -60,3 +61,18 @@ hazırlıkta uygulanmış özellik olarak sunulmaz; raporda proje hedefi olarak 
   önceki incelenmiş PDF ile piksel düzeyinde aynı.
 - Önceki runtime/arayüz kontrolleri ve fiziksel klavye sınırı:
   [hemşire odası doğrulaması](NURSING_ROOM_VALIDATION_2026_11_14.md).
+
+## Yayın öncesi son içerik incelemesi
+
+- İnceleme türü odaklı anlatısal literatür/teknoloji incelemesi olarak açık;
+  yapılmamış sistematik tarama, kullanıcı deneyi veya klinik başarı iddiası yok.
+- Yerel ve çevrimiçi AI seçenekleri, fotoğraf/video rekonstrüksiyonu ve VR,
+  iki dönemlik proje hedefleri olarak korunuyor; mevcut prototiple ayrılıyor.
+- Padilha, Liaw ve Li çalışmalarının örneklem/bulgu ifadeleri özgün yayınlarla
+  yeniden karşılaştırıldı. Hemşirelik öğrencilerinden yeni çalışan hemşirelere
+  genellemenin sınırı ve bilgi kazanımı/beceri farkı raporda açıklanıyor.
+- 31 kaynak numarası, atıf hedefleri, kapaktaki altı öğrenci/ad/numara,
+  danışman bilgisi, güncel depo adresi ve README gezinmesi yeniden kontrol edildi.
+- Raporun bilimsel içeriğinde bu son incelemede ek düzeltme gerektiren bir
+  uyumsuzluk bulunmadı; incelenmiş PDF korunuyor. Bu kontrol, paylaşılmamış
+  bir ders rubriğine veya notlandırma ölçütüne uygunluk garantisi değildir.
