@@ -218,6 +218,33 @@ static class Program
             if (File.Exists(path)) Test("real bundled asset validates: " + Path.GetFileName(path), () => GlbFiles.Validate(path));
             else Console.WriteLine("SKIP local model not installed: " + relative);
         }
+        Test("piko learning state unlocks quiz after five visited hotspots and builds Gemini payload", () =>
+        {
+            var catalogue = TrainingJson.Read<Catalogue>(File.ReadAllText(catalogueFile));
+            var hospital = catalogue.environments.Find(p => p.environmentId == "charite-operating-room");
+            var state = new PikoLearningState();
+            state.SetProject(hospital);
+            Check(!state.IsQuizUnlocked && state.RequiredHotspotsForQuiz == 5);
+            for (int i = 0; i < 4; i++) state.RecordHotspotVisit(hospital.editor.hotspots[i].id);
+            Check(state.VisitedHotspotCount == 4 && !state.IsQuizUnlocked);
+            Check(PikoGeminiPayload.IsQuizIntent("Piko bana quiz yap"));
+            var lockedInstruction = PikoGeminiPayload.BuildSystemInstruction(state);
+            Check(lockedInstruction.Contains("QUIZ KİLİTLİ"));
+            state.RecordHotspotVisit(hospital.editor.hotspots[4].id);
+            Check(state.VisitedHotspotCount == 5 && state.IsQuizUnlocked);
+            var unlockedInstruction = PikoGeminiPayload.BuildSystemInstruction(state);
+            Check(unlockedInstruction.Contains("QUIZ AÇIK"));
+            var history = new List<PikoChatMessage>
+            {
+                new PikoChatMessage { role = "user", text = "Bana quiz yap" }
+            };
+            var requestJson = PikoGeminiPayload.BuildRequestJson(state, history);
+            Check(requestJson.Contains("system_instruction") && requestJson.Contains("Bana quiz yap") && requestJson.Contains("2048"));
+            var parsed = PikoGeminiPayload.ParseResponseText("{\"candidates\":[{\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"Soru 1/3: Patient bed socket ne işe yarar?\"}]}}]}");
+            Check(parsed.StartsWith("Soru 1/3:"));
+            var cleanGoto = PikoGeminiPayload.ExtractGotoHotspot("Seni hasta yatağı soketine götürüyorum. [GOTO_HOTSPOT:" + hospital.editor.hotspots[0].id + "]", out var gotoId);
+            Check(cleanGoto == "Seni hasta yatağı soketine götürüyorum." && state.ResolveHotspotId(gotoId) == hospital.editor.hotspots[0].id);
+        });
         Test("all desktop Unity sources have valid C# 9 syntax (engine type-check requires Unity)", () =>
         {
             var options = new CSharpParseOptions(LanguageVersion.CSharp9, preprocessorSymbols: new[] { "UNITY_EDITOR", "UNITY_EDITOR_WIN", "UNITY_STANDALONE_WIN", "UNITY_6000_0_OR_NEWER" });
