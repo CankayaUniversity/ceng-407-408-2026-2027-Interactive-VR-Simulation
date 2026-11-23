@@ -103,6 +103,8 @@ namespace WorkplaceStudio.Desktop
             inspectorToggle = Button("Inspector", () => { inspectorOpen = !inspectorOpen; focusView = false; UpdatePanels(); });
             inspectorToggle.tooltip = "Show or hide Inspector"; toolbar.Add(inspectorToggle);
             focusToggle = Button("Focus view", ToggleFocusView); focusToggle.tooltip = "Use the full workspace for the 3D environment"; toolbar.Add(focusToggle);
+            trainingButton = Button("Training ▾", () => ShowLessonMenu(false)); toolbar.Add(trainingButton);
+            examButton = Button("Exam ▾", () => ShowLessonMenu(true)); toolbar.Add(examButton);
             workspace.Add(toolbar);
             var body = Box("workspace-body"); workspace.Add(body);
             sidebar = Box("sidebar"); sidebar.Add(Label("Scene Explorer", "panel-title"));
@@ -122,7 +124,7 @@ namespace WorkplaceStudio.Desktop
         }
         void UpdatePanels()
         {
-            sidebar.style.display = explorerOpen ? DisplayStyle.Flex : DisplayStyle.None;
+            sidebar.style.display = explorerOpen && activeExam == null ? DisplayStyle.Flex : DisplayStyle.None;
             inspector.style.display = inspectorOpen ? DisplayStyle.Flex : DisplayStyle.None;
             explorerToggle.EnableInClassList("selected", explorerOpen);
             inspectorToggle.EnableInClassList("selected", inspectorOpen);
@@ -212,6 +214,8 @@ namespace WorkplaceStudio.Desktop
         void SetMode(bool edit)
         {
             if (project == null || busy) return;
+            CloseLessonMenu();
+            CloseTraining();
             navigationRevision++; navigation.CancelMove(); navigation.ReleasePointer(); editing = edit; placing = false;
             selectedArea = selectedHotspot = null; previewButton.EnableInClassList("selected", !edit); editorButton.EnableInClassList("selected", edit);
             selectedEquipment = null;
@@ -220,7 +224,7 @@ namespace WorkplaceStudio.Desktop
         }
         void RenderTree(string query = "")
         {
-            tree.Clear(); if (project == null) return;
+            tree.Clear(); if (project == null || activeExam != null) return;
             AddEquipmentTree();
             if (editing)
             {
@@ -270,6 +274,7 @@ namespace WorkplaceStudio.Desktop
         }
         void GoTo(Pose pose, string area, Action after = null)
         {
+            if (activeExam != null) return;
             int request = ++navigationRevision; var origin = navigation.Capture();
             navigation.MoveTo(pose, result =>
             {
@@ -286,7 +291,7 @@ namespace WorkplaceStudio.Desktop
         }
         public void ActivateHotspot(string id)
         {
-            if (project == null || busy) return;
+            if (project == null || busy || activeExam != null) return;
             var spot = project.editor.hotspots.Find(s => s.id == id); if (spot == null) return;
             navigation.ReleasePointer();
             Action show = () => { selectedHotspot = id; selectedArea = selectedEquipment = null; RenderInspector(); };
@@ -298,9 +303,12 @@ namespace WorkplaceStudio.Desktop
         void UpdateContext()
         {
             if (project == null) return;
+            bool canAddBedLesson = editing && project.equipment.Any(d => d.kind == "bed");
+            trainingButton.style.display = canAddBedLesson || project.bedTrainings.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            examButton.style.display = canAddBedLesson || project.bedExams.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             titleLabel.text = project.title + (dirty ? "  •" : "");
             contextLabel.text = string.Join(" / ", AreaHierarchy.Path(project.editor, activeArea).Select(a => a.title));
-            modeLabel.text = (editing ? "Editor" : "Preview") + " · " + (navigation.Spectator ? "Spectator · WASD · Shift/Ctrl: up/down" : "Walking · WASD") + " · " + project.editor.zones.Count + " areas / " + project.editor.hotspots.Count + " points";
+            modeLabel.text = activeExam != null ? "Exam" : (editing ? "Editor" : "Preview") + " · " + (navigation.Spectator ? "Spectator · WASD · Shift/Ctrl: up/down" : "Walking · WASD") + " · " + project.editor.zones.Count + " areas / " + project.editor.hotspots.Count + " points";
         }
         void RenderInspector()
         {
@@ -392,7 +400,7 @@ namespace WorkplaceStudio.Desktop
             if (evt.button == 1) { placing = false; stage.Focus(); navigation.CapturePointer(); inputGate.SyncCapture(); evt.StopPropagation(); return; }
             if (evt.button != 0 || Mouse.current == null || environment == null) return;
             var ray = navigation.View.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (!placing) { if (!editing) InspectEquipment(ray); return; }
+            if (!placing) { if (!editing) InspectEquipment(ray, pressHandsetKey: true); return; }
             if (!Physics.Raycast(ray, out var hit, 200, ~((1 << 30) | (1 << 31)), QueryTriggerInteraction.Ignore)) { Message("No model surface was selected."); return; }
             placing = false; inspector.Clear();
             HotspotForm(new Hotspot { id = Guid.NewGuid().ToString("N"), title = "", zoneId = selectedArea ?? activeArea, targetNode = hit.collider.name,
@@ -422,7 +430,7 @@ namespace WorkplaceStudio.Desktop
         }
         void RenderMarkers()
         {
-            markerLayer.Clear(); pins.Clear(); if (project == null) return;
+            markerLayer.Clear(); pins.Clear(); if (project == null || activeExam != null) return;
             foreach (var spot in project.editor.hotspots)
             {
                 if (!editing && spot.zoneId != activeArea) continue;
@@ -443,13 +451,21 @@ namespace WorkplaceStudio.Desktop
                     : "Right-click: capture mouse · WASD: move · Shift: faster · Esc: release cursor");
             if (movementHelp.text != hint) movementHelp.text = hint;
             UpdateEquipmentInput();
+            UpdateTrainingGuide();
             foreach (var pair in pins)
             {
                 var viewport = navigation.View.WorldToViewportPoint(HotspotWorldPosition(pair.Key));
                 bool selectedDevice = selectedEquipment != null && EquipmentForHotspot(pair.Key) == selectedEquipment;
                 bool visible = (editing || (pair.Key.id != selectedHotspot && !selectedDevice)) && viewport.z > navigation.View.nearClipPlane && viewport.x >= 0 && viewport.x <= 1 && viewport.y >= 0 && viewport.y <= 1;
+                if (visible)
+                {
+                    var size = stage.contentRect.size;
+                    const float diameter = 34f;
+                    var rect = new Rect(viewport.x * size.x - diameter / 2, (1 - viewport.y) * size.y - diameter / 2, diameter, diameter);
+                    if (pair.Key.targetNode == "NR_Bed_Controls") visible = PlaceHandsetMarker(ref rect, size);
+                    pair.Value.style.left = rect.x; pair.Value.style.top = rect.y;
+                }
                 pair.Value.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-                if (visible) { pair.Value.style.left = viewport.x * stage.resolvedStyle.width - 17; pair.Value.style.top = (1 - viewport.y) * stage.resolvedStyle.height - 17; }
             }
             if (placing && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame) { placing = false; Message("Hotspot placement cancelled."); }
         }

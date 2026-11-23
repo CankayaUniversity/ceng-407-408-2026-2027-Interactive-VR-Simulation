@@ -22,11 +22,11 @@ demo displays and equipment behaviour. No remote service is used at runtime.
 
 ## Authoring
 
-- `nursing-room.blend`: editable Blender 5.2 source, packed source textures.
+- `nursing-room.blend`: editable Blender source, packed source textures.
 - `nursing-room.glb`: self-contained runtime model, metres / glTF Y up.
 - `project-template.json`: catalogue entry, stable equipment IDs and viewpoints.
 - `desktop-tools/create-nursing-room.py`: repeatable source generator. Requires
-  the two original files above and Blender 5.2; it does not download anything.
+  the two original files above. The handset revision was generated with Blender 5.1.2.
 
 Run from the repository root:
 

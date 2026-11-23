@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace WorkplaceStudio.Core
 {
@@ -43,6 +45,12 @@ namespace WorkplaceStudio.Core
     {
         public string author, sourceUrl, license, licenseUrl;
     }
+    [Serializable] public sealed class BedTraining
+    {
+        public string title, patientRequest, equipmentId;
+        public int targetDegrees;
+        public BedTraining Copy() => (BedTraining)MemberwiseClone();
+    }
     [Serializable] public sealed class TrainingProject
     {
         public int formatVersion = 1;
@@ -52,6 +60,14 @@ namespace WorkplaceStudio.Core
         public EditorDocument editor = new EditorDocument();
         public Attribution attribution;
         public List<EquipmentDefinition> equipment = new List<EquipmentDefinition>();
+        public List<BedTraining> bedTrainings = new List<BedTraining>();
+        public List<BedTraining> bedExams = new List<BedTraining>();
+
+        // Older projects used their training list for both menus. An explicit
+        // empty exam list in a newer save means the author deleted every exam.
+        [OnDeserializing] void BeforeRead(StreamingContext _) => bedExams = null;
+        [OnDeserialized] void AfterRead(StreamingContext _) =>
+            bedExams ??= bedTrainings.Select(lesson => lesson?.Copy()).ToList();
     }
     [Serializable] public sealed class Catalogue
     {

@@ -141,6 +141,45 @@ static class Program
             var reopened = ProjectStore.Open(folder);
             Check(reopened.equipment.Select(e => e.id).SequenceEqual(nursing.equipment.Select(e => e.id)));
             Check(reopened.editor.hotspots.All(p => p.targetPosition != null && p.targetNode != null));
+            var lesson = reopened.bedTrainings.Single();
+            Check(lesson.equipmentId == "bed-01" && lesson.targetDegrees == 30);
+            Check(lesson.patientRequest == nursing.bedTrainings.Single().patientRequest);
+            reopened.bedTrainings.Remove(lesson);
+            ProjectStore.Save(folder, reopened, LocalPaths.Resolve(folder, reopened.modelFile));
+            Check(ProjectStore.Open(folder).bedTrainings.Count == 0);
+            Check(ProjectStore.Open(folder).bedExams.Single().targetDegrees == 30);
+        });
+        Test("legacy shared scenarios become independent exams and deleted exams stay deleted after reopening", () =>
+        {
+            var old = Newtonsoft.Json.Linq.JObject.Parse(TrainingJson.Write(nursing));
+            old.Remove("bedExams");
+            var migrated = TrainingJson.Read<TrainingProject>(old.ToString());
+            var training = migrated.bedTrainings.Single();
+            var exam = migrated.bedExams.Single();
+            Check(training.title == exam.title && training.patientRequest == exam.patientRequest);
+            Check(training.equipmentId == exam.equipmentId && training.targetDegrees == exam.targetDegrees);
+            exam.targetDegrees = 45;
+            Check(training.targetDegrees == 30);
+            var folder = Path.Combine(temporary, "independent-exams");
+            ProjectStore.Save(folder, migrated, Path.Combine(root, nursing.editor.modelUrl));
+            var saved = ProjectStore.Open(folder);
+            Check(saved.bedTrainings.Single().targetDegrees == 30 && saved.bedExams.Single().targetDegrees == 45);
+            saved.bedExams.Clear();
+            ProjectStore.Save(folder, saved, LocalPaths.Resolve(folder, saved.modelFile));
+            var reopened = ProjectStore.Open(folder);
+            Check(reopened.bedExams.Count == 0 && reopened.bedTrainings.Count == 1);
+        });
+        Test("bed training requires a reachable target and starts without a learner action", () =>
+        {
+            var p = TrainingJson.Clone(nursing);
+            p.bedTrainings[0].targetDegrees = 20; Reject(() => TrainingValidation.Project(p));
+            p.bedTrainings[0].targetDegrees = 30; p.bedTrainings[0].equipmentId = "monitor-01";
+            Reject(() => TrainingValidation.Project(p));
+            var session = new EquipmentSession(nursing.equipment);
+            session.Execute("bed-01", EquipmentAction.ToggleRail, out _);
+            var events = new List<EquipmentEvent>(); session.Performed += events.Add;
+            session.StartBedTraining("bed-01");
+            Check(events.Count == 0 && session.Read("bed-01").BackrestDegrees == 0 && session.Read("bed-01").RailLowered);
         });
         Test("equipment metadata rejects duplicate IDs and malformed moving anchors", () =>
         {

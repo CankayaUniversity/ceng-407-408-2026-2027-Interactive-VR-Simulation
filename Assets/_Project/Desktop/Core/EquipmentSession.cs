@@ -44,6 +44,13 @@ namespace WorkplaceStudio.Core
         }
         static EquipmentState Initial(EquipmentDefinition d) => new EquipmentState { Powered = d.kind == "monitor", BackrestDegrees = d.kind == "bed" ? 15 : 0 };
         public EquipmentState Read(string id) => states.TryGetValue(id, out var state) ? state.Snapshot() : null;
+        public void StartBedTraining(string id)
+        {
+            if (!definitions.TryGetValue(id, out var bed) || bed.kind != "bed")
+                throw new ArgumentException("Training requires a patient bed.", nameof(id));
+            // Set the starting pose without recording it as a learner action.
+            states[id].BackrestDegrees = 0;
+        }
         public bool Execute(string id, EquipmentAction action, out string feedback)
         {
             feedback = "This control is not available.";

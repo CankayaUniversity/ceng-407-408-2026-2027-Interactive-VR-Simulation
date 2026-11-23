@@ -8,7 +8,7 @@
       "title": "Nursing Skills Room",
       "environmentId": "nursing-skills-room",
       "modelFile": "environments/nursing-skills-room/environment.glb",
-      "modelSha256": "21027884293933c245fd8ca1d0ba8554f6059772747c206753f4f847aff2e83f",
+      "modelSha256": "bfdd467043375225372b4aa6098ce672bfbf02f964901f3a8d40ea7238775941",
       "navigationMode": "walking",
       "overview": {
         "position": [
@@ -60,6 +60,22 @@
           "auxiliaryNode": "NR_Call_Light"
         }
       ],
+      "bedExams": [
+        {
+          "title": "Adjust the bed backrest",
+          "patientRequest": "I'd like to sit up a little. Could you raise the back of my bed?",
+          "equipmentId": "bed-01",
+          "targetDegrees": 30
+        }
+      ],
+      "bedTrainings": [
+        {
+          "title": "Adjust the bed backrest",
+          "patientRequest": "I'd like to sit up a little. Could you raise the back of my bed?",
+          "equipmentId": "bed-01",
+          "targetDegrees": 30
+        }
+      ],
       "editor": {
         "schemaVersion": 1,
         "environmentId": "nursing-skills-room",
@@ -90,16 +106,16 @@
             "calibration": "reviewed",
             "camera": {
               "position": [
-                1.35,
-                1.65,
-                0.6
+                0.72,
+                1.45,
+                0.38
               ],
               "target": [
-                0,
-                1.0,
-                -1.55
+                0.36,
+                1.1,
+                -0.315
               ],
-              "fovDegrees": 65
+              "fovDegrees": 40
             }
           },
           {
@@ -172,13 +188,13 @@
             "targetNode": "NR_Bed_Controls",
             "targetPosition": [
               0,
-              0,
+              0.19,
               0
             ],
             "position": [
-              0.6100000143051147,
-              1.2000000476837158,
-              -1.600000023841858
+              0.36000001430511475,
+              1.2843562364578247,
+              -0.3609651029109955
             ]
           },
           {

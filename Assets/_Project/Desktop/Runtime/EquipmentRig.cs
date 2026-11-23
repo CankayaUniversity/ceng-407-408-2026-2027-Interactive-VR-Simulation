@@ -8,6 +8,7 @@ using WorkplaceStudio.Core;
 namespace WorkplaceStudio.Desktop
 {
     public sealed class EquipmentTarget : MonoBehaviour { public string EquipmentId { get; internal set; } }
+    public sealed class BedHandsetKey : MonoBehaviour { public EquipmentAction Action { get; internal set; } }
     public sealed class EquipmentRig : MonoBehaviour
     {
         sealed class Binding
@@ -36,6 +37,12 @@ namespace WorkplaceStudio.Desktop
             foreach (var d in definitions)
             {
                 var target = Node(d.nodeName).gameObject.AddComponent<EquipmentTarget>(); target.EquipmentId = d.id;
+                if (d.kind == "bed")
+                {
+                    // Older and imported beds can still use the inspector without a handset.
+                    BindHandsetKey(target.transform.Find("NR_Bed_Controls/NR_Bed_Raise"), EquipmentAction.RaiseBackrest);
+                    BindHandsetKey(target.transform.Find("NR_Bed_Controls/NR_Bed_Lower"), EquipmentAction.LowerBackrest);
+                }
                 var motion = Node(d.motionNode); var auxiliary = Node(d.auxiliaryNode);
                 var b = new Binding { Definition = d, Motion = motion, Auxiliary = auxiliary,
                     Rotation = motion != null ? motion.localRotation : Quaternion.identity,
@@ -52,6 +59,10 @@ namespace WorkplaceStudio.Desktop
             rig.Session = new EquipmentSession(definitions);
             rig.StepVisuals(1);
             return rig;
+        }
+        static void BindHandsetKey(Transform key, EquipmentAction action)
+        {
+            if (key != null) key.gameObject.AddComponent<BedHandsetKey>().Action = action;
         }
         public string FindEquipment(Transform node)
         {

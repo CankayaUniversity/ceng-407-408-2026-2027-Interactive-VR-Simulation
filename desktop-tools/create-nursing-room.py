@@ -1,4 +1,4 @@
-"""Build the editable Nursing Skills Room with Blender 5.2; no online resources.
+"""Build the editable Nursing Skills Room with Blender 5.1 or 5.2; no online resources.
 Usage: blender --background --python desktop-tools/create-nursing-room.py
 Coordinates below are Blender metres (Z up); glTF export converts to Y up.
 """
@@ -119,7 +119,31 @@ for y in [-.48,0,.48]: box('Rail hand opening',(0,-.0+y,.34),(.098,.29,.07),TEAL
 other=group('Bed fixed side rail',(-.59,-.16,.85),bed)
 box('Fixed rail',(0,0,.33),(.09,1.54,.21),WHITE,other,.035)
 for y in [-.68,.68]: cylinder('Fixed rail post',(0,y,.1),.022,.44,METAL,other)
-box('NR_Bed_Controls',(.61,-.05,1.20),(.045,.24,.1),TEAL,bed,.012)
+# Dock the handset on the aisle-facing footboard, clear of the moving side rail.
+box('Handset cradle',(.36,-1.25,1.04),(.19,.09,.16),TEAL,bed,.018)
+remote=group('NR_Bed_Controls',(.36,-1.335,1.10),bed)
+remote.rotation_euler[0]=math.radians(-14)
+box('Handset shell',(0,0,0),(.17,.05,.31),WHITE,remote,.02)
+box('Handset face',(0,-.028,0),(.148,.015,.284),DARK,remote,.012)
+text('Handset legend','BED',(0,-.037,.096),.032,SHEET,remote)
+for node,z,direction in [('NR_Bed_Raise',.042,1),('NR_Bed_Lower',-.060,-1)]:
+    key=box(node,(0,-.042,z),(.112,.024,.08),TEAL,remote,.012)
+    for side in [-1,1]:
+        mark=box('Handset arrow',(side*.014,-.014,0),(.046,.006,.012),SHEET,key,.003)
+        mark.rotation_euler[1]=side*direction*math.radians(38)
+cord=bpy.data.curves.new('Handset cord','CURVE')
+cord.dimensions='3D'; cord.bevel_depth=.007; cord.bevel_resolution=3
+path=cord.splines.new('BEZIER')
+points=[(.36,-1.372,.955),(.35,-1.38,.77),(.27,-1.32,.70),(.20,-1.23,.81)]
+path.bezier_points.add(len(points)-1)
+for point,position in zip(path.bezier_points,points):
+    point.co=position
+    point.handle_left_type=point.handle_right_type='AUTO'
+cable=bpy.data.objects.new('Handset cord',cord)
+bpy.context.collection.objects.link(cable); cable.parent=bed; cord.materials.append(DARK)
+bpy.ops.object.select_all(action='DESELECT')
+cable.select_set(True); bpy.context.view_layer.objects.active=cable
+bpy.ops.object.convert(target='MESH')
 
 def import_device(filename,root_name,loc,rename):
     before=set(bpy.context.scene.objects)
@@ -208,7 +232,7 @@ bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'nursing-room.blend'))
 bpy.ops.export_scene.gltf(filepath=str(OUT/'nursing-room.glb'),export_format='GLB',export_apply=True,export_animations=False,export_cameras=False,export_lights=False,export_extras=False)
 sha=hashlib.sha256((OUT/'nursing-room.glb').read_bytes()).hexdigest()
 def pose(pos,target,fov=65): return {'position':pos,'target':target,'fovDegrees':fov}
-views=[('bed','Bed controls',[1.35,1.65,.6],[0,1.0,-1.55],'NR_Bed_Controls',[0,0,0]),
+views=[('bed','Bed controls',[.72,1.45,.38],[.36,1.10,-.315],'NR_Bed_Controls',[0,.19,0]),
        ('monitor','Patient monitor',[-1.23,1.55,-.85],[-1.25,1.47,-1.7],'NR_Monitor_Display',[0,0,.004]),
        ('pump','Infusion pump',[1.25,1.42,-.90],[1.26,1.30,-1.65],'NR_Pump_Display',[0,0,.004]),
        ('call','Nurse call',[2.10,1.6,-2.15],[1.36,1.42,-3.51],'NR_Call_Button',[0,0,0])]
@@ -217,17 +241,23 @@ zones=[]; hotspots=[]
 bpy.context.view_layer.update()
 for i,(key,title,eye,target,node,offset) in enumerate(views):
     o=bpy.data.objects[node]; point=o.matrix_world.translation
-    zones.append({'id':'nursing-'+key,'title':title,'environmentId':'nursing-skills-room','order':i,'calibration':'reviewed','camera':pose(eye,target,40 if key in ['monitor','pump'] else 65)})
+    zones.append({'id':'nursing-'+key,'title':title,'environmentId':'nursing-skills-room','order':i,'calibration':'reviewed','camera':pose(eye,target,40 if key in ['bed','monitor','pump'] else 65)})
+    if key=='bed':
+        point=o.matrix_world @ Vector((offset[0],-offset[2],offset[1]))
     hotspots.append({'id':'nursing-'+key+'-point','title':title,'description':'Explore the equipment, then use the practice controls. This room uses generic equipment for introductory skills practice.','zoneId':'nursing-'+key,'targetNode':node,'targetPosition':offset,'position':[point.x,point.z,-point.y]})
 equipment=[{'id':'bed-01','title':'Adjustable patient bed','kind':'bed','nodeName':'NR_Bed','motionNode':'NR_Bed_Backrest','auxiliaryNode':'NR_Bed_Rail'},
            {'id':'monitor-01','title':'Patient monitor','kind':'monitor','nodeName':'NR_Monitor','screenNode':'NR_Monitor_Display'},
            {'id':'pump-01','title':'Infusion pump','kind':'pump','nodeName':'NR_Pump','screenNode':'NR_Pump_Display','motionNode':'NR_Pump_Door'},
            {'id':'call-01','title':'Nurse call','kind':'call','nodeName':'NR_NurseCall','auxiliaryNode':'NR_Call_Light'}]
+backrest={'title':'Adjust the bed backrest','patientRequest':"I'd like to sit up a little. Could you raise the back of my bed?",'equipmentId':'bed-01','targetDegrees':30}
 project={'formatVersion':1,'id':'nursing-skills-room','title':'Nursing Skills Room','environmentId':'nursing-skills-room',
  'modelFile':'environments/nursing-skills-room/environment.glb','modelSha256':sha,'navigationMode':'walking',
  'overview':pose([2.45,1.65,3.1],[-.1,1.25,-1.6],68),
  'attribution':{'author':'Cengaverler · Innerscene equipment','license':'Original room; equipment CC0 1.0','sourceUrl':'See desktop-content/nursing-room/SOURCES.md'},
- 'equipment':equipment,'editor':{'schemaVersion':1,'environmentId':'nursing-skills-room','modelUrl':'desktop-content/nursing-room/nursing-room.glb','modelTransform':{'position':[0,0,0],'rotation':[0,0,0],'scale':[1,1,1]},'zones':zones,'hotspots':hotspots}}
+ 'equipment':equipment,
+ 'bedExams':[backrest],
+ 'bedTrainings':[backrest],
+ 'editor':{'schemaVersion':1,'environmentId':'nursing-skills-room','modelUrl':'desktop-content/nursing-room/nursing-room.glb','modelTransform':{'position':[0,0,0],'rotation':[0,0,0],'scale':[1,1,1]},'zones':zones,'hotspots':hotspots}}
 (OUT/'project-template.json').write_text(json.dumps(project,indent=2)+'\n',encoding='utf-8')
 catalogue_path=ROOT/'Assets/_Project/Desktop/Resources/DesktopCatalogue.json'
 catalogue=json.loads(catalogue_path.read_text(encoding='utf-8')); catalogue['environments']=[p for p in catalogue['environments'] if p['environmentId']!='nursing-skills-room']; catalogue['environments'].insert(0,project)

@@ -14,6 +14,7 @@ namespace WorkplaceStudio.Desktop
         VisualElement crosshair;
         readonly List<string> practiceHistory = new List<string>();
         EquipmentRig boundEquipment;
+        Bounds? handsetBounds;
         void ConfigureEnvironmentLighting(string environmentId)
         {
             bool nursing = environmentId == "nursing-skills-room";
@@ -22,16 +23,30 @@ namespace WorkplaceStudio.Desktop
         }
         void ClearEquipmentUI()
         {
+            CloseLessonMenu();
+            CloseExam();
+            CloseTraining();
             if (boundEquipment != null) boundEquipment.Session.Performed -= OnEquipmentPerformed;
-            boundEquipment = null; selectedEquipment = null; practiceHistory.Clear();
+            boundEquipment = null; handsetBounds = null; selectedEquipment = null; practiceHistory.Clear();
             equipmentBadge?.RemoveFromHierarchy(); crosshair?.RemoveFromHierarchy(); equipmentBadge = null; crosshair = null;
         }
         void BindEquipmentUI()
         {
             ClearEquipmentUI(); boundEquipment = environment.Equipment;
             if (boundEquipment == null) return;
+            if (environment.Nodes.TryGetValue("NR_Bed_Controls", out var handset))
+            {
+                // The handset is docked on the fixed footboard. Cache its full silhouette,
+                // including the raised arrow faces, after the room transform is applied.
+                foreach (var part in handset.GetComponentsInChildren<Renderer>())
+                {
+                    var bounds = handsetBounds ?? part.bounds;
+                    bounds.Encapsulate(part.bounds);
+                    handsetBounds = bounds;
+                }
+            }
             boundEquipment.Session.Performed += OnEquipmentPerformed;
-            equipmentBadge = Label("EQUIPMENT PRACTICE  ·  Click a device or aim and press E", "equipment-badge"); equipmentBadge.pickingMode = PickingMode.Ignore; stage.Add(equipmentBadge);
+            equipmentBadge = Label("EQUIPMENT PRACTICE  ·  Left-click to use  ·  E to inspect", "equipment-badge"); equipmentBadge.pickingMode = PickingMode.Ignore; stage.Add(equipmentBadge);
             crosshair = Box("equipment-crosshair"); crosshair.pickingMode = PickingMode.Ignore; stage.Add(crosshair);
         }
         void AddEquipmentTree()
@@ -57,21 +72,43 @@ namespace WorkplaceStudio.Desktop
         }
         string EquipmentForHotspot(Hotspot spot) => environment?.Equipment != null && spot.targetNode != null && environment.Nodes.TryGetValue(spot.targetNode, out var node)
             ? environment.Equipment.FindEquipment(node) : null;
-        void InspectEquipment(Ray ray)
+        void InspectEquipment(Ray ray, bool pressHandsetKey = false)
         {
             if (environment?.Equipment == null) return;
             if (Physics.Raycast(ray, out var hit, 8, ~((1 << 30) | (1 << 31)), QueryTriggerInteraction.Ignore))
             {
                 var id = environment.Equipment.FindEquipment(hit.transform);
-                if (id != null) { OpenEquipment(id); return; }
+                var key = hit.transform.GetComponentInParent<BedHandsetKey>();
+                if (pressHandsetKey && key != null && id != null)
+                {
+                    bool accepted = environment.Equipment.Session.Execute(id, key.Action, out var feedback);
+                    if (accepted && selectedEquipment == id) RenderInspector();
+                    Message(accepted ? "Backrest " + environment.Equipment.Session.Read(id).BackrestDegrees + "°" : feedback);
+                    return;
+                }
+                if (id != null)
+                {
+                    // Equipped beds reveal their panel at the physical handset during an exam.
+                    if (activeExam != null && id == activeExam.equipmentId)
+                    {
+                        var bed = hit.transform.GetComponentInParent<EquipmentTarget>().transform;
+                        var handset = bed.Find("NR_Bed_Controls");
+                        if (handset != null && !hit.transform.IsChildOf(handset)) return;
+                    }
+                    OpenEquipment(id); return;
+                }
             }
-            Message("Aim at a monitor, pump, bed or nurse-call button to inspect it.");
+            if (activeExam == null) Message("Aim at a monitor, pump, bed or nurse-call button to inspect it.");
         }
         void UpdateEquipmentInput()
         {
             if (crosshair != null) crosshair.style.display = navigation.Captured ? DisplayStyle.Flex : DisplayStyle.None;
-            if (environment.Equipment != null && !editing && navigation.Captured && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
-                InspectEquipment(navigation.View.ViewportPointToRay(new Vector3(.5f, .5f)));
+            if (environment.Equipment == null || editing || busy || modal != null || !navigation.Captured) return;
+
+            bool clicked = Mouse.current?.leftButton.wasPressedThisFrame == true;
+            bool inspect = Keyboard.current?.eKey.wasPressedThisFrame == true;
+            if (clicked || inspect)
+                InspectEquipment(navigation.View.ViewportPointToRay(new Vector3(.5f, .5f)), pressHandsetKey: clicked);
         }
         Vector3 HotspotWorldPosition(Hotspot spot)
         {
@@ -79,12 +116,43 @@ namespace WorkplaceStudio.Desktop
                 return node.TransformPoint(Coordinates.ToUnity(spot.targetPosition));
             return environment.Root.transform.TransformPoint(Coordinates.ToUnity(spot.position));
         }
+        bool PlaceHandsetMarker(ref Rect pin, Vector2 stageSize, bool preferSide = false)
+        {
+            if (!handsetBounds.HasValue) return true;
+            var bounds = handsetBounds.Value;
+            var min = bounds.min;
+            var max = bounds.max;
+            Vector2 topLeft = Vector2.positiveInfinity, bottomRight = Vector2.negativeInfinity;
+            for (int i = 0; i < 8; i++)
+            {
+                var corner = new Vector3((i & 1) == 0 ? min.x : max.x, (i & 2) == 0 ? min.y : max.y, (i & 4) == 0 ? min.z : max.z);
+                var point = navigation.View.WorldToViewportPoint(corner);
+                if (point.z <= navigation.View.nearClipPlane) return false;
+                var pixel = new Vector2(point.x * stageSize.x, (1 - point.y) * stageSize.y);
+                topLeft = Vector2.Min(topLeft, pixel); bottomRight = Vector2.Max(bottomRight, pixel);
+            }
+            if (stageSize.x < pin.width || stageSize.y < pin.height) return false;
+            pin.x = Mathf.Clamp(pin.x, 0, stageSize.x - pin.width);
+            pin.y = Mathf.Clamp(pin.y, 0, stageSize.y - pin.height);
+            const float gap = 8f;
+            var keepClear = Rect.MinMaxRect(topLeft.x - gap, topLeft.y - gap, bottomRight.x + gap, bottomRight.y + gap);
+            if (!pin.Overlaps(keepClear)) return true;
+            if (!preferSide && keepClear.yMin >= pin.height) pin.y = keepClear.yMin - pin.height;
+            else if (keepClear.xMax + pin.width <= stageSize.x) pin.x = keepClear.xMax;
+            else if (keepClear.xMin >= pin.width) pin.x = keepClear.xMin - pin.width;
+            else if (keepClear.yMin >= pin.height) pin.y = keepClear.yMin - pin.height;
+            else if (keepClear.yMax + pin.height <= stageSize.y) pin.y = keepClear.yMax;
+            else return false;
+            return true;
+        }
         bool RenderSelectedEquipment()
         {
             if (selectedEquipment == null || environment?.Equipment == null) return false;
             var d = environment.Equipment.Definitions.FirstOrDefault(e => e.id == selectedEquipment);
             if (d == null) { selectedEquipment = null; return false; }
-            RevealInspector(); inspector.Add(Label("EQUIPMENT PRACTICE", "eyebrow")); inspector.Add(Label(d.title, "panel-title"));
+            RevealInspector();
+            if (activeExam == null) inspector.Add(Label("EQUIPMENT PRACTICE", "eyebrow"));
+            inspector.Add(Label(d.title, "panel-title"));
             AddEquipmentControls(d);
             inspector.Add(Button("Close controls", () => { selectedEquipment = null; RenderInspector(); }));
             return true;
@@ -99,7 +167,7 @@ namespace WorkplaceStudio.Desktop
         void AddEquipmentControls(EquipmentDefinition d)
         {
             var s = environment.Equipment.Session.Read(d.id);
-            inspector.Add(Label("Generic equipment · introductory practice", "muted"));
+            if (activeExam == null) inspector.Add(Label("Generic equipment · introductory practice", "muted"));
             void Control(string label, EquipmentAction action, bool enabled = true)
             {
                 var button = Button(label, () =>
@@ -114,7 +182,7 @@ namespace WorkplaceStudio.Desktop
                 inspector.Add(Label(s.Powered ? "POWER  /  ON" : "POWER  /  STANDBY", "equipment-state"));
                 Control(s.Powered ? "Switch off" : "Switch on", EquipmentAction.TogglePower);
             }
-            if (d.kind == "monitor") inspector.Add(Label("The live display shows illustrative waveforms and values. Switch the monitor off and on to explore its basic controls.", "description"));
+            if (d.kind == "monitor" && activeExam == null) inspector.Add(Label("The live display shows illustrative waveforms and values. Switch the monitor off and on to explore its basic controls.", "description"));
             if (d.kind == "pump")
             {
                 inspector.Add(Label(s.DoorOpen ? "Door open" : s.Running ? "Demo running" : "Demo stopped", "equipment-state"));
@@ -134,6 +202,7 @@ namespace WorkplaceStudio.Desktop
                 inspector.Add(Label(s.CallActive ? "CALL ACTIVE" : "READY", "equipment-state"));
                 Control("Call nurse", EquipmentAction.Call, !s.CallActive); Control("Acknowledge call", EquipmentAction.Acknowledge, s.CallActive);
             }
+            if (activeExam != null) return;
             Control("Reset equipment", EquipmentAction.Reset);
             if (practiceHistory.Count > 0)
             {
@@ -143,6 +212,7 @@ namespace WorkplaceStudio.Desktop
         }
         void OnEquipmentPerformed(EquipmentEvent evt)
         {
+            TrackTrainingAction(evt);
             var d = environment.Equipment.Definitions.First(e => e.id == evt.EquipmentId);
             string action = evt.Action == EquipmentAction.TogglePower ? (evt.After.Powered ? "Power on" : "Power off")
                 : evt.Action == EquipmentAction.ToggleRun ? (evt.After.Running ? "Demo started" : "Demo paused")

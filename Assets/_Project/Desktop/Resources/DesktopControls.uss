@@ -73,3 +73,18 @@ TextField .unity-base-text-field__input { background-color: rgb(16, 20, 28); col
 .equipment-badge { position: absolute; bottom: 16px; left: 16px; padding: 9px 12px; border-radius: 6px; background-color: rgba(15, 39, 46, .9); color: rgb(171, 228, 218); font-size: 11px; }
 .equipment-crosshair { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin-left: -2px; margin-top: -2px; border-radius: 3px; background-color: rgba(255,255,255,.85); }
 .practice-history { font-size: 11px; color: rgb(155, 174, 189); margin: 3px 6px; }
+.training-card { position: absolute; top: 54px; left: 12px; width: 306px; max-width: 92%; padding: 12px 14px; border-radius: 7px; border-left-width: 3px; border-left-color: rgb(103, 206, 187); background-color: rgba(19, 30, 39, .96); }
+.training-heading { font-size: 16px; -unity-font-style: bold; color: rgb(237, 244, 246); }
+.training-request { margin-top: 8px; color: rgb(213, 222, 227); }
+.training-guidance { margin-top: 10px; color: rgb(165, 229, 216); }
+.training-angle { margin-top: 8px; -unity-font-style: bold; }
+.training-card Button { align-self: flex-start; margin: 10px 0 0 0; }
+.exam-running .toolbar, .exam-running .equipment-badge, .exam-running .piko { display: none; }
+.exam-card { border-left-color: rgb(143, 174, 237); }
+.lesson-menu-layer { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.lesson-menu { position: absolute; padding: 3px; background-color: rgb(31, 36, 46); border-width: 1px; border-color: rgb(73, 84, 105); border-radius: 6px; }
+.lesson-menu Button { margin: 0; border-width: 1px; border-color: transparent; -unity-text-align: middle-left; white-space: normal; }
+.lesson-menu Button:hover, .lesson-menu Button:focus { background-color: rgb(45, 55, 74); border-color: rgb(99, 136, 202); }
+.lesson-menu .add-default { padding-right: 24px; color: rgb(165, 198, 255); }
+.submenu-arrow { position: absolute; right: 8px; top: 5px; }
+.training-marker { position: absolute; left: 0; top: 0; white-space: nowrap; padding: 3px 8px; border-radius: 6px; background-color: rgb(22, 70, 72); color: white; border-width: 1px; border-color: rgb(147, 230, 209); font-size: 12px; }

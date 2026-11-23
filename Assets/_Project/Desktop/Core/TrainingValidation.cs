@@ -98,12 +98,29 @@ namespace WorkplaceStudio.Core
                 if (!equipmentIds.Add(item.id) || !equipmentNodes.Add(item.nodeName) || !new[] { "monitor", "pump", "bed", "call" }.Contains(item.kind))
                     throw new InvalidDataException("Equipment ID, node or kind is invalid.");
             }
+            ValidateBedLessons(project.bedTrainings, project.equipment);
+            ValidateBedLessons(project.bedExams, project.equipment);
             if (project.environmentId != project.editor.environmentId ||
                 (project.navigationMode != "walking" && project.navigationMode != "seated" && project.navigationMode != "spectator"))
                 throw new InvalidDataException("Project environment or navigation mode is invalid.");
             if (project.modelSha256 == null || project.modelSha256.Length != 64 || project.modelSha256.Any(c => !Uri.IsHexDigit(c)))
                 throw new InvalidDataException("The model integrity hash is missing.");
             LocalPaths.ValidateRelative(project.modelFile);
+        }
+
+        static void ValidateBedLessons(List<BedTraining> lessons, List<EquipmentDefinition> equipment)
+        {
+            if (lessons == null) throw new InvalidDataException("Scenario list is missing.");
+            var lessonTitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var lesson in lessons)
+            {
+                if (lesson == null) throw new InvalidDataException("Bed scenario is missing.");
+                Text(lesson.title, 100, "Scenario title"); Text(lesson.patientRequest, 300, "Patient request");
+                if (!lessonTitles.Add(lesson.title) || !equipment.Any(e => e.id == lesson.equipmentId && e.kind == "bed"))
+                    throw new InvalidDataException("A scenario requires a unique title and an existing bed.");
+                if (lesson.targetDegrees < 15 || lesson.targetDegrees > 60 || lesson.targetDegrees % 15 != 0)
+                    throw new InvalidDataException("Choose a backrest target of 15, 30, 45 or 60 degrees.");
+            }
         }
     }
 
