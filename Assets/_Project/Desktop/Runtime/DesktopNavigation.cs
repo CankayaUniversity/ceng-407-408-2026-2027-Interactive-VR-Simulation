@@ -76,13 +76,13 @@ namespace WorkplaceStudio.Desktop
         {
             Cursor.lockState = CursorLockMode.None; Cursor.visible = true; vertical = 0; Released?.Invoke();
         }
-        public void MoveTo(Pose pose, Action<DesktopMoveResult> completed)
+        public void MoveTo(Pose pose, Action<DesktopMoveResult> completed, bool ignoreObstacles = false)
         {
             CancelMove(); ReleasePointer();
             Vector3 to = Coordinates.ToUnity(pose.position), from = View.transform.position;
             Vector3 delta = to - from;
             // Preserve the existing editor's blocked-path behavior; no teleport through equipment.
-            if (delta.magnitude > .03f)
+            if (!ignoreObstacles && delta.magnitude > .03f)
                 foreach (var offset in new[] { Vector3.zero, Vector3.right * .08f, Vector3.left * .08f, Vector3.up * .08f, Vector3.down * .08f })
                     if (Physics.Raycast(from + offset, delta.normalized, delta.magnitude, ~((1 << 30) | (1 << 31)), QueryTriggerInteraction.Ignore)) { completed(DesktopMoveResult.Blocked); return; }
             startPosition = from; startRotation = View.transform.rotation; startFov = View.fieldOfView;

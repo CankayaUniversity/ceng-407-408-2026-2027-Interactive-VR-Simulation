@@ -66,7 +66,7 @@ namespace WorkplaceStudio.Desktop
                 foreach (var item in catalogue.environments) TrainingValidation.Project(item);
                 BuildShell(); ShowDashboard();
                 piko = gameObject.AddComponent<PikoPortrait>();
-                piko.Initialize(root, Message);
+                piko.Initialize(root, Message, () => navigation?.ReleasePointer(), FocusHotspot);
             }
             catch (Exception error) { root.Add(new Label("Could not start the application: " + error.Message)); }
             Application.wantsToQuit += WantsToQuit;
@@ -143,6 +143,7 @@ namespace WorkplaceStudio.Desktop
             environment?.Dispose(); environment = null; project = null; dirty = false; pins.Clear(); previousViews.Clear();
             workspace.style.display = DisplayStyle.None; dashboard.style.display = DisplayStyle.Flex; navigation.View.enabled = false;
             root.style.backgroundColor = new Color(.063f, .071f, .09f);
+            piko?.SetProject(null);
             piko?.Attach(root);
             dashboard.Clear(); dashboard.Add(Label("Training environments", "hero-title"));
             dashboard.Add(Label("Open a workplace to prepare views and equipment hotspots.", "hero-description"));
@@ -194,6 +195,7 @@ namespace WorkplaceStudio.Desktop
                 navigation.ConfigureForEnvironment(next.environmentId);
                 navigation.Apply(project.overview); navigation.Ready = true; busy = false;
                 root.style.backgroundColor = Color.clear;
+                piko?.SetProject(project);
                 piko?.Attach(stage);
                 SetMode(false); Message("Environment loaded · Original model materials"); UpdateViewport();
             }
@@ -271,7 +273,9 @@ namespace WorkplaceStudio.Desktop
                 if (result == DesktopMoveResult.Completed)
                 {
                     previousViews.Add(origin); if (previousViews.Count > 16) previousViews.RemoveAt(0);
-                    activeArea = area; selectedArea = selectedHotspot = null; RenderInspector(); RenderMarkers(); UpdateContext();
+                    activeArea = area; selectedArea = selectedHotspot = null;
+                    piko?.SetActiveArea(activeArea);
+                    RenderInspector(); RenderMarkers(); UpdateContext();
                     Message("Saved view opened.");
                 }
                 else Message("Equipment blocks the camera path. Information can be shown in the current view.");
@@ -283,11 +287,54 @@ namespace WorkplaceStudio.Desktop
             if (project == null || busy) return;
             var spot = project.editor.hotspots.Find(s => s.id == id); if (spot == null) return;
             navigation.ReleasePointer();
-            Action show = () => { selectedHotspot = id; selectedArea = null; RenderInspector(); };
+            Action show = () => { selectedHotspot = id; selectedArea = null; piko?.NotifyHotspotVisited(id); RenderInspector(); };
             if (editing) { navigationRevision++; navigation.CancelMove(); show(); return; }
             var area = project.editor.zones.Find(a => a.id == spot.zoneId);
             if (area != null && activeArea != area.id) GoTo(area.camera, area.id, show);
             else { navigationRevision++; navigation.CancelMove(); show(); }
+        }
+        void FocusHotspot(string id)
+        {
+            if (project == null || busy) return;
+            var spot = project.editor.hotspots.Find(s => s.id == id); if (spot == null) return;
+            navigation.ReleasePointer();
+            piko?.NotifyHotspotVisited(id);
+
+            var area = project.editor.zones.Find(a => a.id == spot.zoneId);
+            Vector3 spotUnity = environment != null
+                ? environment.Root.transform.TransformPoint(Coordinates.ToUnity(spot.position))
+                : Coordinates.ToUnity(spot.position);
+            Vector3 eyeUnity = area?.camera != null
+                ? Coordinates.ToUnity(area.camera.position)
+                : (navigation.View != null ? navigation.View.transform.position : spotUnity + new Vector3(0, 0.5f, 2f));
+            if ((spotUnity - eyeUnity).sqrMagnitude < 0.04f)
+            {
+                spotUnity = area?.camera != null
+                    ? Coordinates.ToUnity(area.camera.target)
+                    : eyeUnity + Vector3.forward;
+            }
+            var focusPose = new Pose
+            {
+                position = Coordinates.ToSource(eyeUnity),
+                target = Coordinates.ToSource(spotUnity),
+                fovDegrees = area?.camera != null ? area.camera.fovDegrees : 45f
+            };
+
+            activeArea = area?.id; selectedArea = null; selectedHotspot = id;
+            piko?.SetActiveArea(activeArea);
+            RenderInspector(); RenderMarkers(); UpdateContext();
+
+            int request = ++navigationRevision; var origin = navigation.Capture();
+            navigation.MoveTo(focusPose, result =>
+            {
+                if (destroyed || request != navigationRevision || result == DesktopMoveResult.Cancelled) return;
+                if (result != DesktopMoveResult.Completed) navigation.Apply(focusPose);
+                previousViews.Add(origin); if (previousViews.Count > 16) previousViews.RemoveAt(0);
+                activeArea = area?.id; selectedArea = null; selectedHotspot = id;
+                piko?.SetActiveArea(activeArea);
+                RenderInspector(); RenderMarkers(); UpdateContext();
+                Message("Focused hotspot: " + spot.title);
+            }, ignoreObstacles: true);
         }
         void UpdateContext()
         {
