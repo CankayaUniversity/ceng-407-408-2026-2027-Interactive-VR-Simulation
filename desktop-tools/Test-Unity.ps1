@@ -7,6 +7,7 @@ $log = Join-Path $repoRoot 'Logs\desktop-tests.log'
 New-Item -ItemType Directory -Path (Split-Path -Parent $results), (Split-Path -Parent $log) -Force | Out-Null
 # UI focus regression tests need a real panel and graphics device.
 $testArguments = @('-batchmode', '-projectPath', ('"' + $repoRoot + '"'), '-runTests', '-testPlatform', 'EditMode', '-testFilter', 'WorkplaceStudio.Tests', '-testResults', ('"' + $results + '"'), '-logFile', ('"' + $log + '"'))
+if ($env:PIKO_TEST_LIVE_CHAT -ne '1') { $testArguments += @('-testCategory', '!LiveGemini') }
 $testProcess = Start-Process -FilePath $UnityEditor -ArgumentList $testArguments -WindowStyle Hidden -Wait -PassThru
 if ($testProcess.ExitCode -ne 0 -or -not (Test-Path -LiteralPath $results)) { throw 'Unity testleri başarılı tamamlanmadı. Logs/desktop-tests.log dosyasını inceleyin.' }
 [xml]$report = Get-Content -LiteralPath $results -Raw

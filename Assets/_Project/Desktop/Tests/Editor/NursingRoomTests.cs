@@ -30,6 +30,45 @@ namespace WorkplaceStudio.Tests
             yield return new EnterPlayMode();
             yield return ExerciseBedTraining();
         }
+
+        [UnityTest, Category("LiveGemini")] public IEnumerator LivePikoChatDisplaysGeminiReply()
+        {
+            if (System.Environment.GetEnvironmentVariable("PIKO_TEST_LIVE_CHAT") != "1")
+                Assert.Ignore("Set PIKO_TEST_LIVE_CHAT=1 to send a sample question to Gemini.");
+            yield return new EnterPlayMode();
+            const string path = "Assets/_Project/Desktop/Scenes/WorkplaceDesktop.unity";
+            var load = EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Additive));
+            while (!load.isDone) yield return null;
+            player = SceneManager.GetSceneByPath(path).GetRootGameObjects().First(o => o.GetComponent<DesktopBootstrap>());
+            var ui = player.GetComponent<UIDocument>().rootVisualElement;
+            testWindow = ScriptableObject.CreateInstance<InputGateTestWindow>();
+            testWindow.ShowUtility();
+            testWindow.position = new Rect(50, 50, 1200, 700);
+            testWindow.rootVisualElement.Add(ui);
+            yield return null;
+            var catalogue = TrainingJson.Read<Catalogue>(Resources.Load<TextAsset>("DesktopCatalogue").text);
+            player.GetComponent<PikoPortrait>().SetProject(catalogue.environments.Single(p => p.id == "nursing-skills-room"));
+            void Submit(Button target)
+            {
+                target.Focus();
+                using (var evt = NavigationSubmitEvent.GetPooled()) target.SendEvent(evt);
+            }
+            Submit(ui.Query<Button>().ToList().Single(b => b.text == "Chat"));
+            yield return null;
+            ui.Q<TextField>(className: "piko-input").value = "Bu odadaki hasta monitörü ile infüzyon pompasının işlevleri nasıl farklı?";
+            var send = ui.Q<Button>(className: "piko-send");
+            Submit(send);
+            yield return null;
+            var bubbles = ui.Q<ScrollView>(className: "piko-messages").contentContainer;
+            Assert.That(bubbles.Query<Label>(className: "piko-msg-user").ToList(), Has.Count.EqualTo(1));
+            float deadline = Time.realtimeSinceStartup + 205f;
+            while (!send.enabledSelf && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(send.enabledSelf, Is.True, "The request did not finish.");
+            var last = bubbles.Children().OfType<Label>().Last();
+            Assert.That(last.ClassListContains("piko-msg-assistant"), Is.True, last.text);
+            Assert.That(last.text.Trim().Length, Is.GreaterThan(10));
+        }
+
         IEnumerator ExerciseBedTraining()
         {
             const string scenePath = "Assets/_Project/Desktop/Scenes/WorkplaceDesktop.unity";

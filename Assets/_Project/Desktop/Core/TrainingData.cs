@@ -539,6 +539,13 @@ namespace WorkplaceStudio.Core
             return payload.ToString(Formatting.None);
         }
 
+        public static string ReadErrorMessage(string body)
+        {
+            if (string.IsNullOrWhiteSpace(body)) return null;
+            try { return JObject.Parse(body)["error"]?["message"]?.Value<string>(); }
+            catch (JsonException) { return null; }
+        }
+
         public static string ParseResponseText(string responseJson)
         {
             if (string.IsNullOrWhiteSpace(responseJson)) throw new InvalidDataException("Gemini API boş yanıt döndürdü.");

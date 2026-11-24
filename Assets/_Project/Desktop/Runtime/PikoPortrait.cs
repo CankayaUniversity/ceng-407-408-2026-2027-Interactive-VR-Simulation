@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using GLTFast;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using WorkplaceStudio.Core;
 
@@ -16,6 +16,10 @@ namespace WorkplaceStudio.Desktop
     public sealed class PikoPortrait : MonoBehaviour
     {
         const string ExpectedHash = "fd2338c12af77d767f769fdf0c06beba1b3279df78ceb6c36dbda2c5f82383ac";
+        static readonly HttpClient GeminiClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false })
+        {
+            Timeout = TimeSpan.FromSeconds(90)
+        };
         VisualElement container, portrait, chatPanel;
         ScrollView messagesScroll;
         TextField inputField;
@@ -105,6 +109,7 @@ namespace WorkplaceStudio.Desktop
             inputField = new TextField { value = "" };
             inputField.AddToClassList("piko-input");
             inputField.tooltip = "Sorunuzu yazın veya 'bana quiz yap' diyerek kendinizi test edin";
+            ConfigureChatCaret(inputField);
             inputField.RegisterCallback<FocusInEvent>(_ => releasePointer?.Invoke());
             inputField.RegisterCallback<KeyDownEvent>(evt =>
             {
@@ -120,6 +125,41 @@ namespace WorkplaceStudio.Desktop
             chatPanel.Add(inputRow);
 
             AddWelcomeMessage();
+        }
+
+        static void ConfigureChatCaret(TextField field)
+        {
+            const long blinkInterval = 500;
+            var selection = field.textSelection;
+            Color visibleColor = new Color32(234, 239, 248, 255);
+            selection.selectAllOnFocus = false;
+            selection.selectAllOnMouseUp = false;
+
+            var blink = field.schedule.Execute(() =>
+                selection.cursorColor = selection.cursorColor.a > 0f ? Color.clear : visibleColor)
+                .Every(blinkInterval);
+            blink.Pause();
+
+            void RestartBlink()
+            {
+                selection.cursorColor = visibleColor;
+                blink.ExecuteLater(blinkInterval);
+            }
+
+            void RestartWhileFocused()
+            {
+                if (blink.isActive) RestartBlink();
+            }
+
+            field.RegisterCallback<FocusInEvent>(_ => RestartBlink());
+            field.RegisterCallback<FocusOutEvent>(_ =>
+            {
+                blink.Pause();
+                selection.cursorColor = Color.clear;
+            });
+            field.RegisterCallback<KeyDownEvent>(_ => RestartWhileFocused(), TrickleDown.TrickleDown);
+            field.RegisterCallback<PointerDownEvent>(_ => RestartWhileFocused(), TrickleDown.TrickleDown);
+            field.RegisterValueChangedCallback(_ => RestartWhileFocused());
         }
 
         void AddWelcomeMessage()
@@ -361,35 +401,33 @@ namespace WorkplaceStudio.Desktop
         async Task<string> PostGeminiRequestAsync(string modelName, string payloadJson, CancellationToken token)
         {
             string url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent";
-            using (var request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST))
+            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
             {
-                request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(payloadJson));
-                request.downloadHandler = new DownloadHandlerBuffer();
-                request.SetRequestHeader("Content-Type", "application/json");
-                request.SetRequestHeader("x-goog-api-key", config.apiKey.Trim());
-                request.timeout = 45;
-
-                var operation = request.SendWebRequest();
-                while (!operation.isDone)
+                request.Content = new StringContent(payloadJson, Encoding.UTF8, "application/json");
+                request.Headers.Add("x-goog-api-key", config.apiKey.Trim());
+                try
                 {
-                    if (token.IsCancellationRequested)
+                    using (var response = await GeminiClient.SendAsync(request, token))
                     {
-                        request.Abort();
+                        var body = await response.Content.ReadAsStringAsync();
                         token.ThrowIfCancellationRequested();
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            var status = (int)response.StatusCode;
+                            var detail = PikoGeminiPayload.ReadErrorMessage(body) ?? response.ReasonPhrase;
+                            throw new GeminiHttpException(status, $"Gemini HTTP {status}: {detail}");
+                        }
+                        return PikoGeminiPayload.ParseResponseText(body);
                     }
-                    await Task.Yield();
                 }
-
-                string responseText = request.downloadHandler?.text ?? "";
-                if (request.result != UnityWebRequest.Result.Success)
+                catch (OperationCanceledException) when (!token.IsCancellationRequested)
                 {
-                    string detail = request.error;
-                    try { PikoGeminiPayload.ParseResponseText(responseText); }
-                    catch (Exception parsedError) { if (!string.IsNullOrWhiteSpace(parsedError.Message)) detail = parsedError.Message; }
-                    throw new GeminiHttpException(request.responseCode, detail);
+                    throw new TimeoutException("Gemini 90 saniye içinde yanıt vermedi. Tekrar deneyebilirsin.");
                 }
-
-                return PikoGeminiPayload.ParseResponseText(responseText);
+                catch (HttpRequestException error)
+                {
+                    throw new IOException("Gemini bağlantısı kurulamadı: " + error.GetBaseException().Message, error);
+                }
             }
         }
 
