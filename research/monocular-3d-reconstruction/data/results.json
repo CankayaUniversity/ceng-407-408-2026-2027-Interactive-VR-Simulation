@@ -1,0 +1,130 @@
+{
+  "lingbot32": {
+    "processed_frame_count": 32,
+    "inference_seconds": 9.384245380000038,
+    "total_seconds": 84.93145677700005,
+    "peak_allocated_bytes": 9263651840,
+    "peak_reserved_bytes": 9284091904,
+    "ply_point_count": 487259
+  },
+  "lingbot128": {
+    "processed_frame_count": 128,
+    "inference_seconds": 36.09612444199979,
+    "total_seconds": 158.76686205700003,
+    "peak_allocated_bytes": 9263651840,
+    "peak_reserved_bytes": 9328132096,
+    "ply_point_count": 1938221
+  },
+  "lingbot_v2": {
+    "processed_frame_count": 128,
+    "inference_seconds": 38.31743965999976,
+    "total_seconds": 213.86270293899906,
+    "peak_allocated_bytes": 9263651840,
+    "peak_reserved_bytes": 9328132096,
+    "ply_point_count": 1947065
+  },
+  "v1": {
+    "A": {
+      "training_seconds": 41.05240519200015,
+      "total_seconds": 45.85231367899996,
+      "test_psnr": 15.59829263734513,
+      "test_ssim": 0.5805011022624995,
+      "registered_available": 38,
+      "gaussians": 134350,
+      "peak_gpu_allocated_bytes": 200874496,
+      "peak_gpu_reserved_bytes": 232783872,
+      "peak_process_rss_bytes": 1640038400,
+      "render_fps_gpu_only": 934.9777514013985,
+      "training_views": 33,
+      "heldout_views": 5
+    },
+    "B": {
+      "training_seconds": 39.908270625000114,
+      "total_seconds": 44.43794495899965,
+      "test_psnr": 18.17967383213152,
+      "test_ssim": 0.6896117798275346,
+      "registered_available": 38,
+      "gaussians": 145295,
+      "peak_gpu_allocated_bytes": 211776000,
+      "peak_gpu_reserved_bytes": 257949696,
+      "peak_process_rss_bytes": 1644797952,
+      "render_fps_gpu_only": 796.1517421647469,
+      "training_views": 33,
+      "heldout_views": 5
+    }
+  },
+  "v2": {
+    "A": {
+      "training_seconds": 39.3632635519989,
+      "total_seconds": 43.669272443999944,
+      "test_psnr": 12.904230450108104,
+      "test_ssim": 0.5423507677422187,
+      "registered_available": 38,
+      "gaussians": 131638,
+      "peak_gpu_allocated_bytes": 200510976,
+      "peak_gpu_reserved_bytes": 236978176,
+      "peak_process_rss_bytes": 1645531136,
+      "render_fps_gpu_only": 946.8326034930105,
+      "training_views": 32,
+      "heldout_views": 6
+    },
+    "B": {
+      "training_seconds": 38.81661616999918,
+      "total_seconds": 43.089620137001475,
+      "test_psnr": 14.670049578729769,
+      "test_ssim": 0.6052549947730741,
+      "registered_available": 38,
+      "gaussians": 131672,
+      "peak_gpu_allocated_bytes": 201007104,
+      "peak_gpu_reserved_bytes": 236978176,
+      "peak_process_rss_bytes": 1655750656,
+      "render_fps_gpu_only": 936.1470042902497,
+      "training_views": 32,
+      "heldout_views": 6
+    }
+  },
+  "baseline128": {
+    "registered": 38,
+    "requested": 128,
+    "total_seconds": 59.61149053700137,
+    "mean_reprojection_error_pixels": 0.678179765359237,
+    "points3D": 1536
+  },
+  "dense_sequential": {
+    "registered": 127,
+    "requested": 364,
+    "total_seconds": 91.1274512910004,
+    "mean_reprojection_error_pixels": 0.6468691689967061,
+    "points3D": 7882
+  },
+  "dense_exhaustive": {
+    "registered": 235,
+    "requested": 364,
+    "total_seconds": 441.4921051500005,
+    "mean_reprojection_error_pixels": 0.7315548064552845,
+    "points3D": 18008
+  },
+  "blur_sequential": {
+    "registered": 115,
+    "requested": 364,
+    "total_seconds": 98.29428277499937,
+    "mean_reprojection_error_pixels": 0.5867695035131401,
+    "points3D": 8959
+  },
+  "dense_analysis": {
+    "same128_registered": 82,
+    "largest_registered_time_range_seconds": [
+      15.246489648413574,
+      90.74497121156438
+    ],
+    "max_registered_gap_seconds": 10.609154722528487,
+    "preparation_seconds": 56.44988219100014,
+    "sparse128_sequential_seconds": 26.544525653000164,
+    "dense_max_sample_gap_seconds": 0.3669833394585324,
+    "baseline_max_sample_gap_seconds": 0.7339666789170648,
+    "blur_aware_max_sample_gap_seconds": 0.5337939483033198,
+    "baseline_adjacent_verified_percent": 66.14173228346458,
+    "dense_adjacent_verified_percent": 85.12396694214877,
+    "blur_adjacent_verified_percent": 84.57300275482093
+  }
+}

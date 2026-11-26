@@ -1,0 +1,167 @@
+{
+  "status": "Equipment crops plus two specifically user-approved viewer screenshots",
+  "date": "2026-11-26",
+  "excluded": "Original raw-photo frames, videos, arrays and checkpoints remain excluded. S01 is permitted only with the specified thumbnail blur; S02 is individually authorized as provided.",
+  "files": [
+    {
+      "id": "C02",
+      "file": "pc-cloud32.png",
+      "sha256": "ac239368cadc5851bba7cbed05e594d9bdeb066261221cc55878e1ba0783d823",
+      "dimensions": [
+        320,
+        270
+      ],
+      "source_record": "results/room-20261125-145906-fa9206/compare32-first.png",
+      "source_sha256": "e0bf5d056aa3e3886a1605fc1b96d5c9b18c20ffb8da89ad135639d0b0d46b9b",
+      "source_dimensions": [
+        1920,
+        1080
+      ],
+      "crop_box": [
+        600,
+        530,
+        920,
+        800
+      ],
+      "caption": "LingBot32 first-camera computer-region crop",
+      "operation": "Exact pixel crop; no resampling, retouching, generative editing or source metadata",
+      "authorization_scope": "User authorized computer/equipment-only crops; no bed or wide-room views",
+      "review": "Derivative checked against the user's publication boundary; full source images excluded"
+    },
+    {
+      "id": "C03",
+      "file": "pc-cloud128.png",
+      "sha256": "417920128eeeb95fc7c0386f009612cae38f59dfb45bc3aaf5f5327ac732988e",
+      "dimensions": [
+        320,
+        270
+      ],
+      "source_record": "results/room-20261125-145906-fa9206/compare128-first.png",
+      "source_sha256": "aaf7e037a7dc2f0d08737ca9cb5bcb096df74776b5368f3d1f570f76b7322eb3",
+      "source_dimensions": [
+        1920,
+        1080
+      ],
+      "crop_box": [
+        600,
+        530,
+        920,
+        800
+      ],
+      "caption": "LingBot128 same-camera, same-pixel-region crop",
+      "operation": "Exact pixel crop; no resampling, retouching, generative editing or source metadata",
+      "authorization_scope": "User authorized computer/equipment-only crops; no bed or wide-room views",
+      "review": "Derivative checked against the user's publication boundary; full source images excluded"
+    },
+    {
+      "id": "C04",
+      "file": "equipment-rgb-v1.png",
+      "sha256": "c34fd1afe71771cf8926419e4566aae9d2784772258f583c390b6f6bfedb9846",
+      "dimensions": [
+        125,
+        94
+      ],
+      "source_record": "benchmark/data/images/000125.png",
+      "source_sha256": "c15d3a7f657c715d2bcccc8948bfc08e0130b94d69c609c8ca8d0064c13dab86",
+      "source_dimensions": [
+        768,
+        432
+      ],
+      "crop_box": [
+        145,
+        82,
+        270,
+        176
+      ],
+      "caption": "V1 training-view125 keyboard/desk RGB detail",
+      "operation": "Exact pixel crop; no resampling, retouching, generative editing or source metadata",
+      "authorization_scope": "User authorized computer/equipment-only crops; no bed or wide-room views",
+      "review": "Derivative checked against the user's publication boundary; full source images excluded"
+    },
+    {
+      "id": "C05",
+      "file": "equipment-A-v1.png",
+      "sha256": "309a4592e3952b8a932daf1e8169893c23101c5e1392d7b798cb6fa7c4f369dc",
+      "dimensions": [
+        125,
+        94
+      ],
+      "source_record": "benchmark/outputs/matched-038/A/renders/000125.png",
+      "source_sha256": "62b64da7836f2512f32fa64f447d493712b528194bce096af0ae98345e4b2bcb",
+      "source_dimensions": [
+        768,
+        432
+      ],
+      "crop_box": [
+        145,
+        82,
+        270,
+        176
+      ],
+      "caption": "V1 A: same training-view equipment detail",
+      "operation": "Exact pixel crop; no resampling, retouching, generative editing or source metadata",
+      "authorization_scope": "User authorized computer/equipment-only crops; no bed or wide-room views",
+      "review": "Derivative checked against the user's publication boundary; full source images excluded"
+    },
+    {
+      "id": "C06",
+      "file": "equipment-B-v1.png",
+      "sha256": "9ac9590f30c0d4acb867e5c9b52a285a26cd828706350986464ab8538faae679",
+      "dimensions": [
+        125,
+        94
+      ],
+      "source_record": "benchmark/outputs/matched-038/B/renders/000125.png",
+      "source_sha256": "11604c41298e6565973f4fd6e0212e5e78b84aae8aed06b411a05e97e88ab1aa",
+      "source_dimensions": [
+        768,
+        432
+      ],
+      "crop_box": [
+        145,
+        82,
+        270,
+        176
+      ],
+      "caption": "V1 B: same training-view equipment detail",
+      "operation": "Exact pixel crop; no resampling, retouching, generative editing or source metadata",
+      "authorization_scope": "User authorized computer/equipment-only crops; no bed or wide-room views",
+      "review": "Derivative checked against the user's publication boundary; full source images excluded"
+    },
+    {
+      "id": "S01",
+      "file": "lingbot-overview-blurred.png",
+      "sha256": "a14c9ae517cd413c285053986cfb7f3b6d79adbc4373886cce5a5ca1bf31c6cd",
+      "dimensions": [
+        1339,
+        1059
+      ],
+      "source_record": "User-provided screenshot S01",
+      "source_sha256": "91edd98b46dd9474a1c353b325aec16743001d2eb7f654c3cba4e5bf5006ae80",
+      "operation": "Gaussian blur radius48 applied twice inside the raw reference thumbnail only; all other RGB pixels identical",
+      "redaction_box_left_top_right_bottom": [
+        1084,
+        150,
+        1327,
+        289
+      ],
+      "authorization_scope": "User explicitly approved these two reconstructed-overview screenshots; S01 only after blurring the top-right real-photo thumbnail",
+      "review": "Reconstructed geometry intentionally unchanged; raw first screenshot is not committed"
+    },
+    {
+      "id": "S02",
+      "file": "lingbot-viewer-second.png",
+      "sha256": "50d0fe6dbfea220bbf6775c26155ed5c0224db13cadd62dea150d3f16017cf7b",
+      "dimensions": [
+        1394,
+        1094
+      ],
+      "source_record": "User-provided screenshot S02",
+      "source_sha256": "d9334097b263867f9a95259ec028344e87e0f3f8ddda68e7776c4aa2487c0d02",
+      "operation": "Lossless metadata-free save; all RGB pixels identical to the user-provided screenshot",
+      "redaction_box_left_top_right_bottom": null,
+      "authorization_scope": "User explicitly approved these two reconstructed-overview screenshots; S01 only after blurring the top-right real-photo thumbnail",
+      "review": "Reconstructed geometry intentionally unchanged; raw first screenshot is not committed"
+    }
+  ]
+}

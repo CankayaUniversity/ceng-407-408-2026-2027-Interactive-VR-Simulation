@@ -1,0 +1,27 @@
+# Override the inherited Unity Data rule for aggregate research records.
+!data/
+!data/*.json
+__pycache__/
+*.pyc
+# Private inputs/geometry/raster images require a separate explicit review.
+*.mp4
+*.MP4
+*.npz
+*.pt
+*.ply
+*.db
+*.bin
+*.png
+*.jpg
+*.jpeg
+
+# Explicit equipment-only derivative allowlist; other raster imagery stays ignored.
+!assets/approved/pc-cloud32.png
+!assets/approved/pc-cloud128.png
+!assets/approved/equipment-rgb-v1.png
+!assets/approved/equipment-A-v1.png
+!assets/approved/equipment-B-v1.png
+
+# Specifically user-authorized viewer screenshots.
+!assets/approved/lingbot-overview-blurred.png
+!assets/approved/lingbot-viewer-second.png

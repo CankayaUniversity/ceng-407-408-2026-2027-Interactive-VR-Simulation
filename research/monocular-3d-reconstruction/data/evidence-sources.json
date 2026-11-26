@@ -1,0 +1,60 @@
+{
+  "note": "Aggregate source-record provenance only; source files and private media are not distributed.",
+  "records": [
+    {
+      "evidence_id": "L32",
+      "source_record": "results/room-20261125-144111-02e590/metrics.json",
+      "sha256": "2c566efdd811e85848862a30e6fed107af32763151bdab06294ac6ec3f9dd7e7"
+    },
+    {
+      "evidence_id": "L128",
+      "source_record": "results/room-20261125-145906-fa9206/metrics.json",
+      "sha256": "f616f20490a6d6a88fd8a999468d81848778469d8127d57a7ddad1edc65e1269"
+    },
+    {
+      "evidence_id": "L2",
+      "source_record": "results/ev-v2-128/metrics.json",
+      "sha256": "48e22a49bced468ea0ba2a39fc9222d25eac63ff67b3b4770c03d725f8ccd361"
+    },
+    {
+      "evidence_id": "V1A",
+      "source_record": "benchmark/outputs/matched-038/A/metrics.json",
+      "sha256": "dd6528f9b4a2f3e5d306cc9fc02e09caa0fe2b1ed9992931bb4031507adec217"
+    },
+    {
+      "evidence_id": "V1B",
+      "source_record": "benchmark/outputs/matched-038/B/metrics.json",
+      "sha256": "b344011f1ff90679b0dc1fbdb8551ba527dc1a67e08706fdf54472ac84ce8f7c"
+    },
+    {
+      "evidence_id": "V2A",
+      "source_record": "benchmark/v2/outputs/final/A/metrics.json",
+      "sha256": "1c4476a60ad5b91c6b9a16abbae05fe52492fa39bee431b597c742aa63d4ba14"
+    },
+    {
+      "evidence_id": "V2B",
+      "source_record": "benchmark/v2/outputs/final/B/metrics.json",
+      "sha256": "cce5ce55f937d6c9c3e6b1af7235a2e1aa683659465a2425311d1e74ec5d0265"
+    },
+    {
+      "evidence_id": "baseline128",
+      "source_record": "benchmark/v2/outputs/sfm-exhaustive/metrics.json",
+      "sha256": "72ae0eda0ff55f58ac9db68e59b4c0a0a69340596c69511db7a931da44890cc5"
+    },
+    {
+      "evidence_id": "dense_sequential",
+      "source_record": "benchmark/v2-density/outputs/uniform-sequential/metrics.json",
+      "sha256": "85ba1ebee8b0e46e2bdeaa3c9672b1dc0129878753e1f958b86d00a856760662"
+    },
+    {
+      "evidence_id": "dense_exhaustive",
+      "source_record": "benchmark/v2-density/outputs/uniform-exhaustive/metrics.json",
+      "sha256": "2712b53f1368da3603286f07c353fe33d581eae45dab11927770db3e6b5173d7"
+    },
+    {
+      "evidence_id": "blur_sequential",
+      "source_record": "benchmark/v2-density/outputs/blur-aware-sequential/metrics.json",
+      "sha256": "66ec641f93f6bca115b9deffa117abc17a4f8a0a7e61379d101904fcc64753c6"
+    }
+  ]
+}
